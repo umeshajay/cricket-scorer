@@ -42,6 +42,7 @@ label{font-size:13px;font-weight:600;color:#374151;margin-bottom:2px;display:blo
   <div class="flex items-center justify-between">
     <h1 class="text-2xl font-bold text-gray-900">Cricket Scorer</h1>
     <button onclick="showView('leaderboard')" class="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium text-gray-700">Team Stats</button>
+    <button onclick="openSettingsModal()" class="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 text-xl leading-none">⚙️</button>
   </div>
   <div id="home-match-list" class="space-y-2"></div>
   <button onclick="showView('setup')" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 rounded-xl text-base shadow-sm active:scale-95 transition">+ New Match</button>
@@ -1018,6 +1019,56 @@ function renderLeaderboard() {
         '<div><span class="text-gray-400 text-xs">Won</span><div class="font-bold text-emerald-600 tabular-nums">' + s.won + '</div></div>' +
       '</div></div>';
   }).join('');
+}
+
+// ─────── SETTINGS ───────
+function openSettingsModal() {
+  document.getElementById('modal-title').textContent = '⚙️ Settings';
+  document.getElementById('modal-body').innerHTML =
+    '<button onclick="sendCompletedToWhatsApp();closeModal()" class="w-full btn-score btn-sm bg-green-50 text-green-700 border border-green-200 font-semibold mb-2">📱 Send completed matches to WhatsApp</button>' +
+    '<button onclick="deleteCompletedMatches()" class="w-full btn-score btn-sm bg-red-50 text-red-700 border border-red-200 font-semibold">🗑️ Delete all completed match data</button>';
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function sendCompletedToWhatsApp() {
+  const d = load();
+  const completed = Object.values(d.matches || {}).filter(m => m.status === 'completed');
+  if (!completed.length) return;
+  const lines = ['🏏 *Completed Matches*', '━━━━━━━━━━━━━━━'];
+  completed.forEach(m => {
+    const inn1 = d.innings[m.id + '_1'];
+    const inn2 = d.innings[m.id + '_2'];
+    lines.push('*' + m.teamA + ' vs ' + m.teamB + '*');
+    if (inn1) lines.push('Inn1: ' + inn1.runs + '/' + inn1.wickets + ' (' + inn1.batting + ')');
+    if (inn2) lines.push('Inn2: ' + inn2.runs + '/' + inn2.wickets + ' (' + inn2.batting + ')');
+    if (inn1 && inn2 && inn1.completed && inn2.completed) {
+      if (inn1.runs > inn2.runs) lines.push('🏆 *' + inn1.batting + ' won*');
+      else if (inn2.runs > inn1.runs) lines.push('🏆 *' + inn2.batting + ' won*');
+      else lines.push('🤝 Tied');
+    }
+    lines.push('━━━━━━━━━━━━━━━');
+  });
+  const text = lines.join('\n');
+  const link = document.getElementById('wa-link');
+  link.href = 'https://wa.me/?text=' + encodeURIComponent(text);
+  document.getElementById('wa-overlay').classList.add('open');
+}
+
+function deleteCompletedMatches() {
+  if (!confirm('Delete all completed match data? This cannot be undone.')) return;
+  const d = load();
+  Object.keys(d.matches || {}).forEach(mid => {
+    if (d.matches[mid].status === 'completed') {
+      delete d.matches[mid];
+      delete d.matchTeams[mid];
+      delete d.innings[mid + '_1'];
+      delete d.innings[mid + '_2'];
+      delete d.balls[mid];
+    }
+  });
+  save(d);
+  closeModal();
+  renderHome();
 }
 
 // ─────── MIGRATION ───────

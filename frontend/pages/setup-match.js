@@ -18,7 +18,7 @@ export default function SetupMatch() {
   const [pinErr, setPinErr] = useState('');
 
   useEffect(() => {
-    const fallback = setTimeout(() => { if (authed === null) setAuthed(true); }, 800);
+    const fallback = setTimeout(() => { if (authed === null) setAuthed(true); }, 200);
     if (sessionStorage.getItem(PIN_KEY)) {
       clearTimeout(fallback);
       setAuthed(true);

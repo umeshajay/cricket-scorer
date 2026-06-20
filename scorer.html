@@ -1056,7 +1056,6 @@ function toggleScorecard(mid, btn) {
     if (!sc.hasChildNodes() || sc.children.length === 0) {
       const d = load();
       const balls = (d.balls[mid] || []).sort((a, b) => a.id - b.id);
-      const p = d.players || {};
       if (!balls.length) {
         sc.innerHTML = '<div class="text-xs text-gray-400">No ball data recorded</div>';
         return;
@@ -1065,18 +1064,18 @@ function toggleScorecard(mid, btn) {
       let curOver = 0, curInn = 0, overBalls = [];
       balls.forEach(b => {
         if (b.inningsNo !== curInn) {
-          if (overBalls.length) { html += overRow(curOver, overBalls, p); overBalls = []; }
+          if (overBalls.length) { html += overRow(curOver, overBalls); overBalls = []; }
           curInn = b.inningsNo;
           curOver = 0;
           html += '<div class="text-xs font-semibold text-gray-500 mb-1 mt-1">▸ Innings ' + curInn + '</div>';
         }
         if (b.over !== curOver) {
-          if (overBalls.length) { html += overRow(curOver, overBalls, p); overBalls = []; }
+          if (overBalls.length) { html += overRow(curOver, overBalls); overBalls = []; }
           curOver = b.over;
         }
         overBalls.push(b);
       });
-      if (overBalls.length) html += overRow(curOver, overBalls, p);
+      if (overBalls.length) html += overRow(curOver, overBalls);
       sc.innerHTML = html;
     }
   } else {
@@ -1085,7 +1084,7 @@ function toggleScorecard(mid, btn) {
   }
 }
 
-function overRow(overNum, balls, p) {
+function overRow(overNum, balls) {
   const dots = balls.map(b => {
     let cls = 'run', lbl = String(b.runs);
     if (b.wicket) { cls = 'wicket'; lbl = 'W'; }
@@ -1096,11 +1095,9 @@ function overRow(overNum, balls, p) {
     else if (b.runs === 0) { lbl = '•'; }
     return '<span class="ball-dot ' + cls + '" style="width:24px;height:24px;font-size:10px;margin:1px">' + lbl + '</span>';
   }).join('');
-  const bowler = p[balls[0]?.bowlerId]?.name || '?';
   const total = balls.reduce((s, b) => s + (b.totalRuns || b.runs || 0), 0);
   return '<div class="text-xs flex items-center gap-2">' +
     '<span class="text-gray-400 font-medium w-6">Ov ' + overNum + '</span>' +
-    '<span class="text-gray-500 truncate">' + bowler + '</span>' +
     '<span class="flex-1 text-right">' + dots + '</span>' +
     '<span class="text-gray-400 w-12 text-right">' + total + ' runs</span>' +
   '</div>';

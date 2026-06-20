@@ -571,7 +571,7 @@ function openExtraModal(type) {
   extraCtx = { type, extraRuns: 0, wicket: false, wicketType: null };
   document.getElementById('modal-title').textContent = type === 'wide' ? 'Wide' : 'No-Ball';
   document.getElementById('modal-body').innerHTML =
-    '<p class="text-sm text-gray-500 mb-3">+1 run. Additional runs?</p>' +
+    '<p class="text-sm text-gray-500 mb-3">Runs?</p>' +
     '<div class="grid grid-cols-5 gap-2 mb-3">' +
       [0,1,2,3,4].map(r => '<button onclick="extraRuns('+r+')" class="btn-score btn-sm bg-gray-100 border border-gray-200">'+(r||'0')+'</button>').join('') +
     '</div>' +
@@ -611,7 +611,7 @@ function processExtra() {
 
   const sId = inn.battingOrder[inn.strikerIdx];
   const nsId = inn.battingOrder[inn.nonStrikerIdx];
-  const extraRun = 1 + (extraCtx.extraRuns || 0);
+  const extraRun = extraCtx.extraRuns || 0;
 
   const ball = {
     id: nextBallId(),

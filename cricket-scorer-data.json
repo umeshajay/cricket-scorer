@@ -1,0 +1,1829 @@
+{
+  "matches": {
+    "M003": {
+      "id": "M003",
+      "teamA": "umesh",
+      "teamB": "sarath",
+      "overs": 4,
+      "status": "completed",
+      "created": "2026-06-20T07:24:49.578Z"
+    }
+  },
+  "players": {
+    "p1781933911553ll0f": {
+      "id": "p1781933911553ll0f",
+      "name": "P1",
+      "team": "a"
+    },
+    "p17819339115533ghk": {
+      "id": "p17819339115533ghk",
+      "name": "P2",
+      "team": "a"
+    },
+    "p1781933911553cjvx": {
+      "id": "p1781933911553cjvx",
+      "name": "P3",
+      "team": "a"
+    },
+    "p1781933911553oaiw": {
+      "id": "p1781933911553oaiw",
+      "name": "P4",
+      "team": "a"
+    },
+    "p1781933911553i0dy": {
+      "id": "p1781933911553i0dy",
+      "name": "P5",
+      "team": "a"
+    },
+    "p1781933911553lf7a": {
+      "id": "p1781933911553lf7a",
+      "name": "P6",
+      "team": "a"
+    },
+    "p1781933911553nxlm": {
+      "id": "p1781933911553nxlm",
+      "name": "P7",
+      "team": "a"
+    },
+    "p1781933911553x6we": {
+      "id": "p1781933911553x6we",
+      "name": "P1",
+      "team": "b"
+    },
+    "p1781933911553mmiy": {
+      "id": "p1781933911553mmiy",
+      "name": "P2",
+      "team": "b"
+    },
+    "p178193391155328p7": {
+      "id": "p178193391155328p7",
+      "name": "P3",
+      "team": "b"
+    },
+    "p17819339115533nue": {
+      "id": "p17819339115533nue",
+      "name": "P4",
+      "team": "b"
+    },
+    "p1781933911553r2fx": {
+      "id": "p1781933911553r2fx",
+      "name": "P5",
+      "team": "b"
+    },
+    "p1781933911553ar9t": {
+      "id": "p1781933911553ar9t",
+      "name": "P6",
+      "team": "b"
+    },
+    "p1781933911553g7ri": {
+      "id": "p1781933911553g7ri",
+      "name": "P7",
+      "team": "b"
+    },
+    "p1781934091921ylnh": {
+      "id": "p1781934091921ylnh",
+      "name": "P1",
+      "team": "a"
+    },
+    "p1781934091921uwp3": {
+      "id": "p1781934091921uwp3",
+      "name": "P2",
+      "team": "a"
+    },
+    "p17819340919217irm": {
+      "id": "p17819340919217irm",
+      "name": "P3",
+      "team": "a"
+    },
+    "p1781934091921f2qj": {
+      "id": "p1781934091921f2qj",
+      "name": "P4",
+      "team": "a"
+    },
+    "p17819340919213gze": {
+      "id": "p17819340919213gze",
+      "name": "P5",
+      "team": "a"
+    },
+    "p1781934091921g5s6": {
+      "id": "p1781934091921g5s6",
+      "name": "P1",
+      "team": "b"
+    },
+    "p178193409192176a2": {
+      "id": "p178193409192176a2",
+      "name": "P2",
+      "team": "b"
+    },
+    "p1781934091921nkt3": {
+      "id": "p1781934091921nkt3",
+      "name": "P3",
+      "team": "b"
+    },
+    "p1781934091921862e": {
+      "id": "p1781934091921862e",
+      "name": "P4",
+      "team": "b"
+    },
+    "p1781934091921bhvg": {
+      "id": "p1781934091921bhvg",
+      "name": "P5",
+      "team": "b"
+    },
+    "p1781934235654rmcg": {
+      "id": "p1781934235654rmcg",
+      "name": "P1",
+      "team": "a"
+    },
+    "p1781934235654ambz": {
+      "id": "p1781934235654ambz",
+      "name": "P2",
+      "team": "a"
+    },
+    "p1781934235654geuj": {
+      "id": "p1781934235654geuj",
+      "name": "P3",
+      "team": "a"
+    },
+    "p1781934235654f5hx": {
+      "id": "p1781934235654f5hx",
+      "name": "P4",
+      "team": "a"
+    },
+    "p1781934235654y9zz": {
+      "id": "p1781934235654y9zz",
+      "name": "P5",
+      "team": "a"
+    },
+    "p1781934235654gvyu": {
+      "id": "p1781934235654gvyu",
+      "name": "P1",
+      "team": "b"
+    },
+    "p1781934235654r31b": {
+      "id": "p1781934235654r31b",
+      "name": "P2",
+      "team": "b"
+    },
+    "p1781934235654s4l8": {
+      "id": "p1781934235654s4l8",
+      "name": "P3",
+      "team": "b"
+    },
+    "p1781934235654pppf": {
+      "id": "p1781934235654pppf",
+      "name": "P4",
+      "team": "b"
+    },
+    "p1781934235654xoac": {
+      "id": "p1781934235654xoac",
+      "name": "P5",
+      "team": "b"
+    },
+    "p1781935075457ynwm": {
+      "id": "p1781935075457ynwm",
+      "name": "P1",
+      "team": "a"
+    },
+    "p1781935075457d028": {
+      "id": "p1781935075457d028",
+      "name": "P2",
+      "team": "a"
+    },
+    "p1781935075457j300": {
+      "id": "p1781935075457j300",
+      "name": "P3",
+      "team": "a"
+    },
+    "p17819350754573lc6": {
+      "id": "p17819350754573lc6",
+      "name": "P4",
+      "team": "a"
+    },
+    "p1781935075457tsuw": {
+      "id": "p1781935075457tsuw",
+      "name": "P5",
+      "team": "a"
+    },
+    "p1781935075457rvfp": {
+      "id": "p1781935075457rvfp",
+      "name": "P6",
+      "team": "a"
+    },
+    "p1781935075457oipq": {
+      "id": "p1781935075457oipq",
+      "name": "P7",
+      "team": "a"
+    },
+    "p1781935075457lu0y": {
+      "id": "p1781935075457lu0y",
+      "name": "P1",
+      "team": "b"
+    },
+    "p1781935075457ysbi": {
+      "id": "p1781935075457ysbi",
+      "name": "P2",
+      "team": "b"
+    },
+    "p178193507545728nk": {
+      "id": "p178193507545728nk",
+      "name": "P3",
+      "team": "b"
+    },
+    "p1781935075457gb4u": {
+      "id": "p1781935075457gb4u",
+      "name": "P4",
+      "team": "b"
+    },
+    "p1781935075457cp30": {
+      "id": "p1781935075457cp30",
+      "name": "P5",
+      "team": "b"
+    },
+    "p1781935075457fxcb": {
+      "id": "p1781935075457fxcb",
+      "name": "P6",
+      "team": "b"
+    },
+    "p1781935075457cez0": {
+      "id": "p1781935075457cez0",
+      "name": "P7",
+      "team": "b"
+    },
+    "p17819352910035h6t": {
+      "id": "p17819352910035h6t",
+      "name": "P1",
+      "team": "a"
+    },
+    "p1781935291003cfmh": {
+      "id": "p1781935291003cfmh",
+      "name": "P2",
+      "team": "a"
+    },
+    "p1781935291003gcf2": {
+      "id": "p1781935291003gcf2",
+      "name": "P3",
+      "team": "a"
+    },
+    "p1781935291003pl8x": {
+      "id": "p1781935291003pl8x",
+      "name": "P4",
+      "team": "a"
+    },
+    "p17819352910038g4n": {
+      "id": "p17819352910038g4n",
+      "name": "P5",
+      "team": "a"
+    },
+    "p1781935291003jewf": {
+      "id": "p1781935291003jewf",
+      "name": "P6",
+      "team": "a"
+    },
+    "p1781935291003fzzm": {
+      "id": "p1781935291003fzzm",
+      "name": "P7",
+      "team": "a"
+    },
+    "p1781935291003jubt": {
+      "id": "p1781935291003jubt",
+      "name": "P1",
+      "team": "b"
+    },
+    "p1781935291003pav6": {
+      "id": "p1781935291003pav6",
+      "name": "P2",
+      "team": "b"
+    },
+    "p1781935291003ci2r": {
+      "id": "p1781935291003ci2r",
+      "name": "P3",
+      "team": "b"
+    },
+    "p1781935291003kr68": {
+      "id": "p1781935291003kr68",
+      "name": "P4",
+      "team": "b"
+    },
+    "p1781935291003iv94": {
+      "id": "p1781935291003iv94",
+      "name": "P5",
+      "team": "b"
+    },
+    "p17819352910032nkm": {
+      "id": "p17819352910032nkm",
+      "name": "P6",
+      "team": "b"
+    },
+    "p1781935291003ytr9": {
+      "id": "p1781935291003ytr9",
+      "name": "P7",
+      "team": "b"
+    },
+    "p1781935966020pe2x": {
+      "id": "p1781935966020pe2x",
+      "name": "P1",
+      "team": "a"
+    },
+    "p1781935966020fbxc": {
+      "id": "p1781935966020fbxc",
+      "name": "P2",
+      "team": "a"
+    },
+    "p1781935966020b5dv": {
+      "id": "p1781935966020b5dv",
+      "name": "P3",
+      "team": "a"
+    },
+    "p1781935966020azw6": {
+      "id": "p1781935966020azw6",
+      "name": "P4",
+      "team": "a"
+    },
+    "p1781935966020xf8w": {
+      "id": "p1781935966020xf8w",
+      "name": "P5",
+      "team": "a"
+    },
+    "p1781935966020afkg": {
+      "id": "p1781935966020afkg",
+      "name": "P6",
+      "team": "a"
+    },
+    "p1781935966020hf1z": {
+      "id": "p1781935966020hf1z",
+      "name": "P7",
+      "team": "a"
+    },
+    "p1781935966020jlep": {
+      "id": "p1781935966020jlep",
+      "name": "P1",
+      "team": "b"
+    },
+    "p1781935966020lkse": {
+      "id": "p1781935966020lkse",
+      "name": "P2",
+      "team": "b"
+    },
+    "p1781935966020x70o": {
+      "id": "p1781935966020x70o",
+      "name": "P3",
+      "team": "b"
+    },
+    "p1781935966020keoh": {
+      "id": "p1781935966020keoh",
+      "name": "P4",
+      "team": "b"
+    },
+    "p1781935966020ma6d": {
+      "id": "p1781935966020ma6d",
+      "name": "P5",
+      "team": "b"
+    },
+    "p1781935966020fv9f": {
+      "id": "p1781935966020fv9f",
+      "name": "P6",
+      "team": "b"
+    },
+    "p1781935966020j6kc": {
+      "id": "p1781935966020j6kc",
+      "name": "P7",
+      "team": "b"
+    },
+    "p1781936517676h7vh": {
+      "id": "p1781936517676h7vh",
+      "name": "P1",
+      "team": "a"
+    },
+    "p1781936517676vxb4": {
+      "id": "p1781936517676vxb4",
+      "name": "P2",
+      "team": "a"
+    },
+    "p1781936517676sxko": {
+      "id": "p1781936517676sxko",
+      "name": "P3",
+      "team": "a"
+    },
+    "p1781936517676ecxr": {
+      "id": "p1781936517676ecxr",
+      "name": "P4",
+      "team": "a"
+    },
+    "p17819365176765b1b": {
+      "id": "p17819365176765b1b",
+      "name": "P5",
+      "team": "a"
+    },
+    "p17819365176761pqt": {
+      "id": "p17819365176761pqt",
+      "name": "P6",
+      "team": "a"
+    },
+    "p1781936517676ah28": {
+      "id": "p1781936517676ah28",
+      "name": "P7",
+      "team": "a"
+    },
+    "p1781936517676ncr2": {
+      "id": "p1781936517676ncr2",
+      "name": "P1",
+      "team": "b"
+    },
+    "p1781936517676skkj": {
+      "id": "p1781936517676skkj",
+      "name": "P2",
+      "team": "b"
+    },
+    "p1781936517676k996": {
+      "id": "p1781936517676k996",
+      "name": "P3",
+      "team": "b"
+    },
+    "p1781936517676je4k": {
+      "id": "p1781936517676je4k",
+      "name": "P4",
+      "team": "b"
+    },
+    "p1781936517676ztga": {
+      "id": "p1781936517676ztga",
+      "name": "P5",
+      "team": "b"
+    },
+    "p17819365176761dag": {
+      "id": "p17819365176761dag",
+      "name": "P6",
+      "team": "b"
+    },
+    "p1781936517676e8fb": {
+      "id": "p1781936517676e8fb",
+      "name": "P7",
+      "team": "b"
+    },
+    "p17819369983870uwb": {
+      "id": "p17819369983870uwb",
+      "name": "P1",
+      "team": "a"
+    },
+    "p178193699838752kk": {
+      "id": "p178193699838752kk",
+      "name": "P2",
+      "team": "a"
+    },
+    "p1781936998387ewm9": {
+      "id": "p1781936998387ewm9",
+      "name": "P3",
+      "team": "a"
+    },
+    "p1781936998388krsn": {
+      "id": "p1781936998388krsn",
+      "name": "P4",
+      "team": "a"
+    },
+    "p1781936998388wvio": {
+      "id": "p1781936998388wvio",
+      "name": "P5",
+      "team": "a"
+    },
+    "p1781936998388ynkn": {
+      "id": "p1781936998388ynkn",
+      "name": "P6",
+      "team": "a"
+    },
+    "p1781936998388e5gx": {
+      "id": "p1781936998388e5gx",
+      "name": "P7",
+      "team": "a"
+    },
+    "p1781936998388yfrq": {
+      "id": "p1781936998388yfrq",
+      "name": "P1",
+      "team": "b"
+    },
+    "p1781936998388jt9b": {
+      "id": "p1781936998388jt9b",
+      "name": "P2",
+      "team": "b"
+    },
+    "p1781936998388cdu9": {
+      "id": "p1781936998388cdu9",
+      "name": "P3",
+      "team": "b"
+    },
+    "p1781936998388xblj": {
+      "id": "p1781936998388xblj",
+      "name": "P4",
+      "team": "b"
+    },
+    "p1781936998388lga5": {
+      "id": "p1781936998388lga5",
+      "name": "P5",
+      "team": "b"
+    },
+    "p1781936998388xu59": {
+      "id": "p1781936998388xu59",
+      "name": "P6",
+      "team": "b"
+    },
+    "p1781936998388rn4r": {
+      "id": "p1781936998388rn4r",
+      "name": "P7",
+      "team": "b"
+    },
+    "p17819402895795vsf": {
+      "id": "p17819402895795vsf",
+      "name": "P1",
+      "team": "a"
+    },
+    "p17819402895794c3r": {
+      "id": "p17819402895794c3r",
+      "name": "P2",
+      "team": "a"
+    },
+    "p1781940289579mteb": {
+      "id": "p1781940289579mteb",
+      "name": "P3",
+      "team": "a"
+    },
+    "p1781940289579mn66": {
+      "id": "p1781940289579mn66",
+      "name": "P4",
+      "team": "a"
+    },
+    "p1781940289579kb6i": {
+      "id": "p1781940289579kb6i",
+      "name": "P5",
+      "team": "a"
+    },
+    "p1781940289579jlyi": {
+      "id": "p1781940289579jlyi",
+      "name": "P6",
+      "team": "a"
+    },
+    "p1781940289579gsle": {
+      "id": "p1781940289579gsle",
+      "name": "P7",
+      "team": "a"
+    },
+    "p1781940289579rjha": {
+      "id": "p1781940289579rjha",
+      "name": "P1",
+      "team": "b"
+    },
+    "p1781940289579ce6p": {
+      "id": "p1781940289579ce6p",
+      "name": "P2",
+      "team": "b"
+    },
+    "p1781940289579n63m": {
+      "id": "p1781940289579n63m",
+      "name": "P3",
+      "team": "b"
+    },
+    "p1781940289579lzg4": {
+      "id": "p1781940289579lzg4",
+      "name": "P4",
+      "team": "b"
+    },
+    "p1781940289579k5q1": {
+      "id": "p1781940289579k5q1",
+      "name": "P5",
+      "team": "b"
+    },
+    "p1781940289579wenb": {
+      "id": "p1781940289579wenb",
+      "name": "P6",
+      "team": "b"
+    },
+    "p17819402895790opl": {
+      "id": "p17819402895790opl",
+      "name": "P7",
+      "team": "b"
+    }
+  },
+  "matchTeams": {
+    "M003": {
+      "teamAIds": [
+        "p17819402895795vsf",
+        "p17819402895794c3r",
+        "p1781940289579mteb",
+        "p1781940289579mn66",
+        "p1781940289579kb6i",
+        "p1781940289579jlyi",
+        "p1781940289579gsle"
+      ],
+      "teamBIds": [
+        "p1781940289579rjha",
+        "p1781940289579ce6p",
+        "p1781940289579n63m",
+        "p1781940289579lzg4",
+        "p1781940289579k5q1",
+        "p1781940289579wenb",
+        "p17819402895790opl"
+      ],
+      "xiA": [
+        "p17819402895795vsf",
+        "p17819402895794c3r",
+        "p1781940289579mteb",
+        "p1781940289579mn66",
+        "p1781940289579kb6i",
+        "p1781940289579jlyi",
+        "p1781940289579gsle"
+      ],
+      "xiB": [
+        "p1781940289579rjha",
+        "p1781940289579ce6p",
+        "p1781940289579n63m",
+        "p1781940289579lzg4",
+        "p1781940289579k5q1",
+        "p1781940289579wenb",
+        "p17819402895790opl"
+      ]
+    }
+  },
+  "innings": {
+    "M003_1": {
+      "id": "M003_1",
+      "matchId": "M003",
+      "inningsNo": 1,
+      "batting": "umesh",
+      "bowling": "sarath",
+      "runs": 26,
+      "wickets": 1,
+      "balls": 24,
+      "extras": 0,
+      "currentOver": 4,
+      "currentBall": 0,
+      "battingOrder": [
+        "p17819402895795vsf",
+        "p17819402895794c3r",
+        "p1781940289579mteb",
+        "p1781940289579mn66",
+        "p1781940289579kb6i",
+        "p1781940289579jlyi",
+        "p1781940289579gsle"
+      ],
+      "strikerIdx": 0,
+      "nonStrikerIdx": 2,
+      "nextIdx": 3,
+      "batsmanStats": {
+        "p17819402895795vsf": {
+          "runs": 15,
+          "balls": 12,
+          "fours": 2,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p17819402895794c3r": {
+          "runs": 0,
+          "balls": 1,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": true,
+          "dismissalType": "Run Out"
+        },
+        "p1781940289579mteb": {
+          "runs": 11,
+          "balls": 11,
+          "fours": 0,
+          "sixes": 1,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781940289579mn66": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781940289579kb6i": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781940289579jlyi": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781940289579gsle": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781940289579rjha": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781940289579ce6p": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781940289579n63m": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781940289579lzg4": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781940289579k5q1": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781940289579wenb": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p17819402895790opl": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        }
+      },
+      "currentBowler": "p1781940289579rjha",
+      "bowlerStats": {
+        "p1781940289579rjha": {
+          "runs": 26,
+          "wickets": 1,
+          "balls": 24
+        },
+        "p1781940289579ce6p": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1781940289579n63m": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1781940289579lzg4": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1781940289579k5q1": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1781940289579wenb": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p17819402895790opl": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        }
+      },
+      "overBalls": [],
+      "completed": true
+    },
+    "M003_2": {
+      "id": "M003_2",
+      "matchId": "M003",
+      "inningsNo": 2,
+      "batting": "sarath",
+      "bowling": "umesh",
+      "runs": 48,
+      "wickets": 0,
+      "balls": 24,
+      "extras": 0,
+      "currentOver": 4,
+      "currentBall": 0,
+      "battingOrder": [
+        "p1781940289579rjha",
+        "p1781940289579ce6p",
+        "p1781940289579n63m",
+        "p1781940289579lzg4",
+        "p1781940289579k5q1",
+        "p1781940289579wenb",
+        "p17819402895790opl"
+      ],
+      "strikerIdx": 0,
+      "nonStrikerIdx": 1,
+      "nextIdx": 2,
+      "batsmanStats": {
+        "p1781940289579rjha": {
+          "runs": 23,
+          "balls": 11,
+          "fours": 1,
+          "sixes": 1,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781940289579ce6p": {
+          "runs": 25,
+          "balls": 13,
+          "fours": 2,
+          "sixes": 2,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781940289579n63m": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781940289579lzg4": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781940289579k5q1": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781940289579wenb": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p17819402895790opl": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p17819402895795vsf": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p17819402895794c3r": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781940289579mteb": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781940289579mn66": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781940289579kb6i": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781940289579jlyi": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781940289579gsle": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        }
+      },
+      "currentBowler": "p17819402895795vsf",
+      "bowlerStats": {
+        "p17819402895795vsf": {
+          "runs": 48,
+          "wickets": 0,
+          "balls": 24
+        },
+        "p17819402895794c3r": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1781940289579mteb": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1781940289579mn66": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1781940289579kb6i": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1781940289579jlyi": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1781940289579gsle": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        }
+      },
+      "overBalls": [],
+      "completed": true
+    }
+  },
+  "balls": {
+    "M003": [
+      {
+        "id": 333,
+        "inningsNo": 1,
+        "over": 1,
+        "ballInOver": 1,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p17819402895795vsf",
+        "nonStrikerId": "p17819402895794c3r",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:24:51.145Z"
+      },
+      {
+        "id": 334,
+        "inningsNo": 1,
+        "over": 1,
+        "ballInOver": 2,
+        "runs": 1,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p17819402895795vsf",
+        "nonStrikerId": "p17819402895794c3r",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 1,
+        "timestamp": "2026-06-20T07:24:53.010Z"
+      },
+      {
+        "id": 335,
+        "inningsNo": 1,
+        "over": 1,
+        "ballInOver": 3,
+        "runs": 0,
+        "extras": 0,
+        "extraType": "noball",
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p17819402895794c3r",
+        "nonStrikerId": "p17819402895795vsf",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:24:55.242Z"
+      },
+      {
+        "id": 336,
+        "inningsNo": 1,
+        "over": 1,
+        "ballInOver": 3,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": true,
+        "wicketType": "Run Out",
+        "strikerId": "p17819402895794c3r",
+        "nonStrikerId": "p17819402895795vsf",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:25:01.249Z"
+      },
+      {
+        "id": 337,
+        "inningsNo": 1,
+        "over": 1,
+        "ballInOver": 4,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579mteb",
+        "nonStrikerId": "p17819402895795vsf",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:25:47.185Z"
+      },
+      {
+        "id": 338,
+        "inningsNo": 1,
+        "over": 1,
+        "ballInOver": 5,
+        "runs": 6,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579mteb",
+        "nonStrikerId": "p17819402895795vsf",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 6,
+        "timestamp": "2026-06-20T07:25:49.332Z"
+      },
+      {
+        "id": 339,
+        "inningsNo": 1,
+        "over": 1,
+        "ballInOver": 6,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579mteb",
+        "nonStrikerId": "p17819402895795vsf",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:25:50.622Z"
+      },
+      {
+        "id": 340,
+        "inningsNo": 1,
+        "over": 2,
+        "ballInOver": 1,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p17819402895795vsf",
+        "nonStrikerId": "p1781940289579mteb",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:25:59.993Z"
+      },
+      {
+        "id": 341,
+        "inningsNo": 2,
+        "over": 1,
+        "ballInOver": 1,
+        "runs": 4,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579rjha",
+        "nonStrikerId": "p1781940289579ce6p",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 4,
+        "timestamp": "2026-06-20T07:26:32.330Z"
+      },
+      {
+        "id": 342,
+        "inningsNo": 2,
+        "over": 1,
+        "ballInOver": 2,
+        "runs": 6,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579rjha",
+        "nonStrikerId": "p1781940289579ce6p",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 6,
+        "timestamp": "2026-06-20T07:26:32.819Z"
+      },
+      {
+        "id": 343,
+        "inningsNo": 2,
+        "over": 1,
+        "ballInOver": 3,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579rjha",
+        "nonStrikerId": "p1781940289579ce6p",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:26:33.952Z"
+      },
+      {
+        "id": 344,
+        "inningsNo": 2,
+        "over": 1,
+        "ballInOver": 4,
+        "runs": 1,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579rjha",
+        "nonStrikerId": "p1781940289579ce6p",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 1,
+        "timestamp": "2026-06-20T07:26:34.639Z"
+      },
+      {
+        "id": 345,
+        "inningsNo": 2,
+        "over": 1,
+        "ballInOver": 5,
+        "runs": 2,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579ce6p",
+        "nonStrikerId": "p1781940289579rjha",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 2,
+        "timestamp": "2026-06-20T07:26:35.177Z"
+      },
+      {
+        "id": 346,
+        "inningsNo": 1,
+        "over": 2,
+        "ballInOver": 2,
+        "runs": 4,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p17819402895795vsf",
+        "nonStrikerId": "p1781940289579mteb",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 4,
+        "timestamp": "2026-06-20T07:28:13.097Z"
+      },
+      {
+        "id": 347,
+        "inningsNo": 1,
+        "over": 2,
+        "ballInOver": 3,
+        "runs": 2,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p17819402895795vsf",
+        "nonStrikerId": "p1781940289579mteb",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 2,
+        "timestamp": "2026-06-20T07:28:13.563Z"
+      },
+      {
+        "id": 348,
+        "inningsNo": 1,
+        "over": 2,
+        "ballInOver": 4,
+        "runs": 0,
+        "extras": 0,
+        "extraType": "wide",
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p17819402895795vsf",
+        "nonStrikerId": "p1781940289579mteb",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:28:15.957Z"
+      },
+      {
+        "id": 349,
+        "inningsNo": 1,
+        "over": 2,
+        "ballInOver": 4,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p17819402895795vsf",
+        "nonStrikerId": "p1781940289579mteb",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:28:17.585Z"
+      },
+      {
+        "id": 350,
+        "inningsNo": 1,
+        "over": 2,
+        "ballInOver": 5,
+        "runs": 2,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p17819402895795vsf",
+        "nonStrikerId": "p1781940289579mteb",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 2,
+        "timestamp": "2026-06-20T07:28:18.781Z"
+      },
+      {
+        "id": 351,
+        "inningsNo": 1,
+        "over": 2,
+        "ballInOver": 6,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p17819402895795vsf",
+        "nonStrikerId": "p1781940289579mteb",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:28:20.558Z"
+      },
+      {
+        "id": 352,
+        "inningsNo": 1,
+        "over": 3,
+        "ballInOver": 1,
+        "runs": 2,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579mteb",
+        "nonStrikerId": "p17819402895795vsf",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 2,
+        "timestamp": "2026-06-20T07:28:38.772Z"
+      },
+      {
+        "id": 353,
+        "inningsNo": 1,
+        "over": 3,
+        "ballInOver": 2,
+        "runs": 3,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579mteb",
+        "nonStrikerId": "p17819402895795vsf",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 3,
+        "timestamp": "2026-06-20T07:28:39.357Z"
+      },
+      {
+        "id": 354,
+        "inningsNo": 1,
+        "over": 3,
+        "ballInOver": 3,
+        "runs": 4,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p17819402895795vsf",
+        "nonStrikerId": "p1781940289579mteb",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 4,
+        "timestamp": "2026-06-20T07:28:39.879Z"
+      },
+      {
+        "id": 355,
+        "inningsNo": 1,
+        "over": 3,
+        "ballInOver": 4,
+        "runs": 2,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p17819402895795vsf",
+        "nonStrikerId": "p1781940289579mteb",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 2,
+        "timestamp": "2026-06-20T07:28:40.376Z"
+      },
+      {
+        "id": 356,
+        "inningsNo": 1,
+        "over": 3,
+        "ballInOver": 5,
+        "runs": 0,
+        "extras": 0,
+        "extraType": "wide",
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p17819402895795vsf",
+        "nonStrikerId": "p1781940289579mteb",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:28:42.767Z"
+      },
+      {
+        "id": 357,
+        "inningsNo": 1,
+        "over": 3,
+        "ballInOver": 5,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p17819402895795vsf",
+        "nonStrikerId": "p1781940289579mteb",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:28:43.553Z"
+      },
+      {
+        "id": 358,
+        "inningsNo": 1,
+        "over": 3,
+        "ballInOver": 6,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p17819402895795vsf",
+        "nonStrikerId": "p1781940289579mteb",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:28:43.826Z"
+      },
+      {
+        "id": 359,
+        "inningsNo": 1,
+        "over": 4,
+        "ballInOver": 1,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579mteb",
+        "nonStrikerId": "p17819402895795vsf",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:28:44.799Z"
+      },
+      {
+        "id": 360,
+        "inningsNo": 1,
+        "over": 4,
+        "ballInOver": 2,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579mteb",
+        "nonStrikerId": "p17819402895795vsf",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:28:45.096Z"
+      },
+      {
+        "id": 361,
+        "inningsNo": 1,
+        "over": 4,
+        "ballInOver": 3,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579mteb",
+        "nonStrikerId": "p17819402895795vsf",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:28:45.369Z"
+      },
+      {
+        "id": 362,
+        "inningsNo": 1,
+        "over": 4,
+        "ballInOver": 4,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579mteb",
+        "nonStrikerId": "p17819402895795vsf",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:28:45.642Z"
+      },
+      {
+        "id": 363,
+        "inningsNo": 1,
+        "over": 4,
+        "ballInOver": 5,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579mteb",
+        "nonStrikerId": "p17819402895795vsf",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:28:46.079Z"
+      },
+      {
+        "id": 364,
+        "inningsNo": 1,
+        "over": 4,
+        "ballInOver": 6,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579mteb",
+        "nonStrikerId": "p17819402895795vsf",
+        "bowlerId": "p1781940289579rjha",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:28:46.879Z"
+      },
+      {
+        "id": 365,
+        "inningsNo": 2,
+        "over": 1,
+        "ballInOver": 6,
+        "runs": 1,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579ce6p",
+        "nonStrikerId": "p1781940289579rjha",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 1,
+        "timestamp": "2026-06-20T07:28:55.663Z"
+      },
+      {
+        "id": 366,
+        "inningsNo": 2,
+        "over": 2,
+        "ballInOver": 1,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579ce6p",
+        "nonStrikerId": "p1781940289579rjha",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:31:11.922Z"
+      },
+      {
+        "id": 367,
+        "inningsNo": 2,
+        "over": 2,
+        "ballInOver": 2,
+        "runs": 1,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579ce6p",
+        "nonStrikerId": "p1781940289579rjha",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 1,
+        "timestamp": "2026-06-20T07:31:15.511Z"
+      },
+      {
+        "id": 368,
+        "inningsNo": 2,
+        "over": 2,
+        "ballInOver": 3,
+        "runs": 2,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579rjha",
+        "nonStrikerId": "p1781940289579ce6p",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 2,
+        "timestamp": "2026-06-20T07:31:16.904Z"
+      },
+      {
+        "id": 369,
+        "inningsNo": 2,
+        "over": 2,
+        "ballInOver": 4,
+        "runs": 3,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579rjha",
+        "nonStrikerId": "p1781940289579ce6p",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 3,
+        "timestamp": "2026-06-20T07:31:17.894Z"
+      },
+      {
+        "id": 370,
+        "inningsNo": 2,
+        "over": 2,
+        "ballInOver": 5,
+        "runs": 4,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579ce6p",
+        "nonStrikerId": "p1781940289579rjha",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 4,
+        "timestamp": "2026-06-20T07:31:18.536Z"
+      },
+      {
+        "id": 371,
+        "inningsNo": 2,
+        "over": 2,
+        "ballInOver": 6,
+        "runs": 6,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579ce6p",
+        "nonStrikerId": "p1781940289579rjha",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 6,
+        "timestamp": "2026-06-20T07:31:19.018Z"
+      },
+      {
+        "id": 372,
+        "inningsNo": 2,
+        "over": 3,
+        "ballInOver": 1,
+        "runs": 2,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579rjha",
+        "nonStrikerId": "p1781940289579ce6p",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 2,
+        "timestamp": "2026-06-20T07:31:56.013Z"
+      },
+      {
+        "id": 373,
+        "inningsNo": 2,
+        "over": 3,
+        "ballInOver": 2,
+        "runs": 3,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579rjha",
+        "nonStrikerId": "p1781940289579ce6p",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 3,
+        "timestamp": "2026-06-20T07:31:56.495Z"
+      },
+      {
+        "id": 374,
+        "inningsNo": 2,
+        "over": 3,
+        "ballInOver": 3,
+        "runs": 4,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579ce6p",
+        "nonStrikerId": "p1781940289579rjha",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 4,
+        "timestamp": "2026-06-20T07:31:57.033Z"
+      },
+      {
+        "id": 375,
+        "inningsNo": 2,
+        "over": 3,
+        "ballInOver": 4,
+        "runs": 6,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579ce6p",
+        "nonStrikerId": "p1781940289579rjha",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 6,
+        "timestamp": "2026-06-20T07:31:57.539Z"
+      },
+      {
+        "id": 376,
+        "inningsNo": 2,
+        "over": 3,
+        "ballInOver": 5,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579ce6p",
+        "nonStrikerId": "p1781940289579rjha",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:31:58.415Z"
+      },
+      {
+        "id": 377,
+        "inningsNo": 2,
+        "over": 3,
+        "ballInOver": 6,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579ce6p",
+        "nonStrikerId": "p1781940289579rjha",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:31:58.800Z"
+      },
+      {
+        "id": 378,
+        "inningsNo": 2,
+        "over": 4,
+        "ballInOver": 1,
+        "runs": 1,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579rjha",
+        "nonStrikerId": "p1781940289579ce6p",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 1,
+        "timestamp": "2026-06-20T07:41:21.620Z"
+      },
+      {
+        "id": 379,
+        "inningsNo": 2,
+        "over": 4,
+        "ballInOver": 2,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579ce6p",
+        "nonStrikerId": "p1781940289579rjha",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:41:22.742Z"
+      },
+      {
+        "id": 380,
+        "inningsNo": 2,
+        "over": 4,
+        "ballInOver": 3,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579ce6p",
+        "nonStrikerId": "p1781940289579rjha",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:41:23.574Z"
+      },
+      {
+        "id": 381,
+        "inningsNo": 2,
+        "over": 4,
+        "ballInOver": 4,
+        "runs": 1,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579ce6p",
+        "nonStrikerId": "p1781940289579rjha",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 1,
+        "timestamp": "2026-06-20T07:41:24.621Z"
+      },
+      {
+        "id": 382,
+        "inningsNo": 2,
+        "over": 4,
+        "ballInOver": 5,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579rjha",
+        "nonStrikerId": "p1781940289579ce6p",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T07:41:25.433Z"
+      },
+      {
+        "id": 383,
+        "inningsNo": 2,
+        "over": 4,
+        "ballInOver": 6,
+        "runs": 1,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781940289579rjha",
+        "nonStrikerId": "p1781940289579ce6p",
+        "bowlerId": "p17819402895795vsf",
+        "totalRuns": 1,
+        "timestamp": "2026-06-20T07:41:26.728Z"
+      }
+    ]
+  },
+  "ballSeq": 383,
+  "teamPresets": [
+    "umesh",
+    "sarath"
+  ]
+}

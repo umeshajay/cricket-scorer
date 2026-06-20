@@ -981,13 +981,16 @@ function renderHome() {
     const inn1 = d.innings[m.id + '_1'];
     const inn2 = d.innings[m.id + '_2'];
     const isOn = m.status === 'ongoing';
-    const score1 = inn1 ? inn1.runs + '/' + inn1.wickets : '—';
-    const ov1 = inn1 ? inn1.currentOver + '.' + inn1.currentBall : '—';
-    const score2 = inn2 && inn1 && inn1.completed ? inn2.runs + '/' + inn2.wickets : null;
-    const ov2 = inn2 && inn2.currentOver !== undefined ? inn2.currentOver + '.' + inn2.currentBall : null;
+    const ta = m.teamA || '?';
+    const tb = m.teamB || '?';
+    const mov = m.overs != null ? m.overs : '?';
+    const score1 = inn1 && inn1.runs != null ? inn1.runs + '/' + (inn1.wickets != null ? inn1.wickets : '?') : '—';
+    const ov1 = inn1 && inn1.currentOver != null ? inn1.currentOver + '.' + (inn1.currentBall != null ? inn1.currentBall : 0) : '—';
+    const score2 = inn2 && inn1 && inn1.completed && inn2.runs != null ? inn2.runs + '/' + inn2.wickets : null;
+    const ov2 = inn2 && inn2.currentOver != null ? inn2.currentOver + '.' + (inn2.currentBall != null ? inn2.currentBall : 0) : null;
     return '<div onclick="openScorer(\'' + m.id + '\')" class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm flex items-center justify-between cursor-pointer active:scale-[0.98] transition">' +
-      '<div><div class="font-semibold text-gray-900 text-sm">' + m.teamA + ' vs ' + m.teamB + '</div>' +
-      '<div class="text-xs text-gray-500">' + m.id + ' &middot; ' + m.overs + ' ov &middot; <span class="' + (isOn ? 'text-green-600' : 'text-gray-400') + ' font-medium">' + m.status + '</span></div></div>' +
+      '<div><div class="font-semibold text-gray-900 text-sm">' + ta + ' vs ' + tb + '</div>' +
+      '<div class="text-xs text-gray-500">' + m.id + ' &middot; ' + mov + ' ov &middot; <span class="' + (isOn ? 'text-green-600' : 'text-gray-400') + ' font-medium">' + m.status + '</span></div></div>' +
       '<div class="text-right"><div class="text-lg font-black ' + (isOn ? 'text-cyan-600' : 'text-gray-500') + '">' + score1 + (score2 ? ' & ' + score2 : '') + '</div>' +
       '<div class="text-xs text-gray-400">Ov ' + ov1 + (ov2 ? ' & ' + ov2 : '') + '</div></div></div>';
   }).join('');
@@ -1248,8 +1251,6 @@ function deleteCompletedMatches() {
 function migrateOldData() {
   const d = load();
   let changed = false;
-  // Old format: d.innings[mid] = innings object (with inningsNo: 1)
-  // New format: d.innings[mid + '_1'] and d.innings[mid + '_2']
   Object.keys(d.innings || {}).forEach(key => {
     const inn = d.innings[key];
     if (inn && inn.matchId && !key.includes('_')) {
@@ -1260,6 +1261,23 @@ function migrateOldData() {
         delete d.innings[key];
         changed = true;
       }
+    }
+  });
+  // Clean corrupt matches
+  Object.keys(d.matches || {}).forEach(mid => {
+    const m = d.matches[mid];
+    if (!m || (typeof m !== 'object') || !m.id) {
+      delete d.matches[mid];
+      changed = true;
+      return;
+    }
+    if (!m.teamA || !m.teamB || m.overs == null) {
+      delete d.matches[mid];
+      // remove innings & balls too
+      delete d.innings[mid + '_1'];
+      delete d.innings[mid + '_2'];
+      delete d.balls;
+      changed = true;
     }
   });
   if (changed) save(d);

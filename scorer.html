@@ -82,7 +82,14 @@ label{font-size:13px;font-weight:600;color:#374151;margin-bottom:2px;display:blo
     <button onclick="endInnings()" class="text-red-500 text-sm font-medium">End Inns</button>
   </div>
 
+  <!-- Innings toggle -->
+  <div id="scorer-inns-toggle" class="flex gap-2 justify-center" style="display:none">
+    <button id="inns-btn-1" onclick="switchInnings(1)" class="px-4 py-1.5 rounded-lg text-sm font-semibold transition bg-cyan-500 text-white">Innings 1</button>
+    <button id="inns-btn-2" onclick="switchInnings(2)" class="px-4 py-1.5 rounded-lg text-sm font-semibold transition bg-gray-200 text-gray-500">Innings 2</button>
+  </div>
+
   <div id="scorer-scoreboard" class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm text-center">
+    <div class="text-xs text-gray-400 font-medium uppercase tracking-wide">Innings <span id="sb-inns-no">1</span></div>
     <div class="text-4xl font-black text-cyan-600"><span id="sb-runs">0</span>/<span id="sb-wkts">0</span></div>
     <div class="text-xs text-gray-500 mt-0.5">Ov <span id="sb-ov">0.0</span>/<span id="sb-maxov">0</span> &middot; RR <span id="sb-rr">0.00</span> &middot; <span id="sb-bat">Batting</span> &middot; Extras <span id="sb-ext">0</span></div>
   </div>
@@ -102,6 +109,20 @@ label{font-size:13px;font-weight:600;color:#374151;margin-bottom:2px;display:blo
 
   <div id="scorer-over" class="bg-white rounded-xl p-3 border border-gray-200 shadow-sm min-h-[40px]"></div>
 
+  <!-- WhatsApp share popup -->
+  <div id="wa-overlay" class="modal-overlay" onclick="hideWhatsAppShare()">
+    <div class="modal-content text-center space-y-4" style="max-width:320px">
+      <div class="text-5xl">📱</div>
+      <p class="text-gray-600 text-sm">Share score to WhatsApp group?</p>
+      <a id="wa-link" href="#" target="_blank" onclick="setTimeout(hideWhatsAppShare,500)"
+         class="inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-xl text-base transition shadow-sm active:scale-95 w-full">
+        <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Open WhatsApp
+      </a>
+      <button onclick="hideWhatsAppShare()" class="text-gray-400 text-sm hover:text-gray-600">Close</button>
+    </div>
+  </div>
+
   <div class="bg-white rounded-xl p-3 border border-gray-200 shadow-sm">
     <div class="grid grid-cols-6 gap-2">
       <button onclick="scoreRuns(0)" class="btn-score bg-gray-100 text-gray-800 text-2xl">0</button>
@@ -116,9 +137,10 @@ label{font-size:13px;font-weight:600;color:#374151;margin-bottom:2px;display:blo
       <button onclick="openExtraModal('noball')" class="btn-score btn-sm bg-orange-50 text-orange-800 border border-orange-200">No-Ball</button>
       <button onclick="openWicketModal()" class="btn-score btn-sm bg-red-50 text-red-800 border border-red-200">Wicket</button>
     </div>
-    <div class="grid grid-cols-2 gap-2 mt-2">
+    <div class="grid grid-cols-3 gap-2 mt-2">
       <button onclick="undoLast()" class="btn-score btn-sm bg-gray-100 text-gray-600 border border-gray-200">↩ Undo</button>
       <button onclick="endOver()" class="btn-score btn-sm bg-gray-100 text-gray-600 border border-gray-200">End Over</button>
+      <button onclick="showWhatsAppShare()" class="btn-score btn-sm bg-green-50 text-green-700 border border-green-200 font-semibold">📱 Share</button>
     </div>
   </div>
 </div>
@@ -167,7 +189,11 @@ function defaultData() {
 function nextBallId() { const d = load(); d.ballSeq = (d.ballSeq || 0) + 1; save(d); return d.ballSeq; }
 
 // ─────── STATE ───────
-let currentState = { matchId: null };
+let currentState = { matchId: null, inningsNo: 1 };
+
+function innKey(mid, innNo) {
+  return mid + '_' + (innNo != null ? innNo : currentState.inningsNo);
+}
 
 // ─────── VIEWS ───────
 function showView(name) {
@@ -216,25 +242,48 @@ function startMatch() {
     xiB: teamBplayers.map(p => p.id),
   };
 
-  const bs = {};
-  teamAplayers.forEach(p => { bs[p.id] = { runs: 0, balls: 0, fours: 0, sixes: 0, dismissed: false, dismissalType: null }; });
-  teamBplayers.forEach(p => { bs[p.id] = { runs: 0, balls: 0, fours: 0, sixes: 0, dismissed: false, dismissalType: null }; });
-  const br = {};
-  teamBplayers.forEach(p => { br[p.id] = { runs: 0, wickets: 0, balls: 0 }; });
+  // Innings 1: Team A bats, Team B bowls
+  const bs1 = {};
+  teamAplayers.forEach(p => { bs1[p.id] = { runs: 0, balls: 0, fours: 0, sixes: 0, dismissed: false, dismissalType: null }; });
+  teamBplayers.forEach(p => { bs1[p.id] = { runs: 0, balls: 0, fours: 0, sixes: 0, dismissed: false, dismissalType: null }; });
+  const br1 = {};
+  teamBplayers.forEach(p => { br1[p.id] = { runs: 0, wickets: 0, balls: 0 }; });
 
-  d.innings[mid] = {
+  d.innings[innKey(mid, 1)] = {
     id: mid + '_1', matchId: mid, inningsNo: 1,
     batting: ta, bowling: tb,
     runs: 0, wickets: 0, balls: 0, extras: 0,
     currentOver: 0, currentBall: 0,
     battingOrder: teamAplayers.map(p => p.id),
     strikerIdx: 0, nonStrikerIdx: 1, nextIdx: 2,
-    batsmanStats: bs,
+    batsmanStats: bs1,
     currentBowler: teamBplayers.length > 0 ? teamBplayers[0].id : null,
-    bowlerStats: br,
+    bowlerStats: br1,
     overBalls: [],
     completed: false,
   };
+
+  // Innings 2: Team B bats, Team A bowls
+  const bs2 = {};
+  teamBplayers.forEach(p => { bs2[p.id] = { runs: 0, balls: 0, fours: 0, sixes: 0, dismissed: false, dismissalType: null }; });
+  teamAplayers.forEach(p => { bs2[p.id] = { runs: 0, balls: 0, fours: 0, sixes: 0, dismissed: false, dismissalType: null }; });
+  const br2 = {};
+  teamAplayers.forEach(p => { br2[p.id] = { runs: 0, wickets: 0, balls: 0 }; });
+
+  d.innings[innKey(mid, 2)] = {
+    id: mid + '_2', matchId: mid, inningsNo: 2,
+    batting: tb, bowling: ta,
+    runs: 0, wickets: 0, balls: 0, extras: 0,
+    currentOver: 0, currentBall: 0,
+    battingOrder: teamBplayers.map(p => p.id),
+    strikerIdx: 0, nonStrikerIdx: 1, nextIdx: 2,
+    batsmanStats: bs2,
+    currentBowler: teamAplayers.length > 0 ? teamAplayers[0].id : null,
+    bowlerStats: br2,
+    overBalls: [],
+    completed: false,
+  };
+
   d.balls[mid] = [];
   save(d);
 
@@ -249,17 +298,20 @@ function startMatch() {
 // ─────── SCORER ───────
 function openScorer(mid) {
   currentState.matchId = mid;
+  currentState.inningsNo = 1;
   showView('scorer');
   renderScorer();
 }
 
-function getInnings(mid) {
+function getInnings(mid, innNo) {
   const d = load();
-  return d.innings[mid] || null;
+  const key = innKey(mid, innNo != null ? innNo : currentState.inningsNo);
+  return d.innings[key] || null;
 }
-function saveInnings(mid, inn) {
+function saveInnings(mid, inn, innNo) {
   const d = load();
-  d.innings[mid] = inn;
+  const key = innKey(mid, innNo != null ? innNo : inn.inningsNo);
+  d.innings[key] = inn;
   save(d);
 }
 function getMatch(mid) {
@@ -279,7 +331,13 @@ function saveBall(mid, ball) {
 function popLastBall(mid) {
   const d = load();
   if (!d.balls[mid] || !d.balls[mid].length) return null;
-  return d.balls[mid].pop();
+  const innNo = currentState.inningsNo;
+  for (let i = d.balls[mid].length - 1; i >= 0; i--) {
+    if (d.balls[mid][i].inningsNo === innNo) {
+      return d.balls[mid].splice(i, 1)[0];
+    }
+  }
+  return null;
 }
 
 function renderScorer() {
@@ -287,10 +345,11 @@ function renderScorer() {
   if (!mid) return;
   const d = load();
   const match = d.matches[mid];
-  const inn = d.innings[mid];
+  const inn = getInnings(mid, currentState.inningsNo);
   if (!match || !inn) return;
 
   document.getElementById('scorer-title').textContent = match.teamA + ' vs ' + match.teamB + ' (' + mid + ')';
+  document.getElementById('sb-inns-no').textContent = currentState.inningsNo;
   document.getElementById('sb-runs').textContent = inn.runs;
   document.getElementById('sb-wkts').textContent = inn.wickets;
   document.getElementById('sb-ov').textContent = inn.currentOver + '.' + inn.currentBall;
@@ -302,6 +361,22 @@ function renderScorer() {
   const totalDeliveries = inn.balls;
   const rr = totalDeliveries > 0 ? (inn.runs / (totalDeliveries / 6)).toFixed(2) : '0.00';
   document.getElementById('sb-rr').textContent = rr;
+
+  // Innings toggle
+  const inn1 = getInnings(mid, 1);
+  const inn2 = getInnings(mid, 2);
+  const toggleEl = document.getElementById('scorer-inns-toggle');
+  if (inn1 && inn1.completed && inn2) {
+    toggleEl.style.display = 'flex';
+    document.getElementById('inns-btn-1').className = currentState.inningsNo === 1
+      ? 'px-4 py-1.5 rounded-lg text-sm font-semibold transition bg-cyan-500 text-white'
+      : 'px-4 py-1.5 rounded-lg text-sm font-semibold transition bg-gray-200 text-gray-500';
+    document.getElementById('inns-btn-2').className = currentState.inningsNo === 2
+      ? 'px-4 py-1.5 rounded-lg text-sm font-semibold transition bg-cyan-500 text-white'
+      : 'px-4 py-1.5 rounded-lg text-sm font-semibold transition bg-gray-200 text-gray-500';
+  } else {
+    toggleEl.style.display = 'none';
+  }
 
   // Batsmen
   const sId = inn.battingOrder[inn.strikerIdx];
@@ -331,9 +406,6 @@ function renderScorer() {
   // Over balls
   const obEl = document.getElementById('scorer-over');
   const obs = inn.overBalls || [];
-  let completedOvers = inn.currentOver;
-  if (inn.currentBall === 0 && inn.currentOver > 0) completedOvers = inn.currentOver;
-  else if (inn.currentBall > 0) completedOvers = inn.currentOver;
 
   obEl.innerHTML = '<div class="text-xs text-gray-500 mb-1 font-medium">Over ' + (inn.currentOver + 1) + ':</div>';
   if (!obs.length) {
@@ -353,6 +425,60 @@ function renderScorer() {
   }
 }
 
+function switchInnings(no) {
+  if (currentState.inningsNo === no) return;
+  const inn = getInnings(currentState.matchId, no);
+  if (!inn) return;
+  currentState.inningsNo = no;
+  renderScorer();
+}
+
+// ─────── WHATSAPP SHARE ───────
+function buildScoreMessage() {
+  const mid = currentState.matchId;
+  const d = load();
+  const match = d.matches[mid];
+  if (!match) return '';
+  const inn1 = d.innings[mid + '_1'];
+  const inn2 = d.innings[mid + '_2'];
+  const lines = [];
+  lines.push('🏏 *' + match.teamA + ' vs ' + match.teamB + '*');
+  lines.push('━━━━━━━━━━━━━━━');
+  if (inn1) {
+    const ov1 = Math.floor(inn1.currentOver) + '.' + inn1.currentBall;
+    const rr1 = inn1.balls > 0 ? (inn1.runs / (inn1.balls / 6)).toFixed(2) : '0.00';
+    lines.push('*Innings 1:* ' + inn1.batting);
+    lines.push('Score: ' + inn1.runs + '/' + inn1.wickets + ' (Ov ' + ov1 + '/' + match.overs + '.0, RR ' + rr1 + ')');
+  }
+  if (inn2 && inn1 && inn1.completed) {
+    const ov2 = Math.floor(inn2.currentOver) + '.' + inn2.currentBall;
+    const rr2 = inn2.balls > 0 ? (inn2.runs / (inn2.balls / 6)).toFixed(2) : '0.00';
+    lines.push('*Innings 2:* ' + inn2.batting);
+    lines.push('Score: ' + inn2.runs + '/' + inn2.wickets + ' (Ov ' + ov2 + '/' + match.overs + '.0, RR ' + rr2 + ')');
+  }
+  if (match.status === 'completed' && inn1 && inn2 && inn1.completed && inn2.completed) {
+    lines.push('━━━━━━━━━━━━━━━');
+    if (inn1.runs > inn2.runs) lines.push('🏆 *' + match.teamA + ' won!*');
+    else if (inn2.runs > inn1.runs) lines.push('🏆 *' + match.teamB + ' won!*');
+    else lines.push('🤝 *Match Tied!*');
+  }
+  lines.push('━━━━━━━━━━━━━━━');
+  lines.push('📱 Cricket Scorer');
+  return lines.join('\n');
+}
+
+function showWhatsAppShare() {
+  const text = buildScoreMessage();
+  if (!text) return;
+  const link = document.getElementById('wa-link');
+  link.href = 'https://wa.me/?text=' + encodeURIComponent(text);
+  document.getElementById('wa-overlay').classList.add('open');
+}
+
+function hideWhatsAppShare() {
+  document.getElementById('wa-overlay').classList.remove('open');
+}
+
 // ─────── SCORE RUNS ───────
 function scoreRuns(runs) {
   const mid = currentState.matchId;
@@ -366,6 +492,7 @@ function scoreRuns(runs) {
 
   const ball = {
     id: nextBallId(),
+    inningsNo: currentState.inningsNo,
     over: inn.currentOver + 1,
     ballInOver: inn.currentBall + 1,
     runs, extras: 0, extraType: null,
@@ -379,7 +506,7 @@ function scoreRuns(runs) {
   inn.runs += runs;
   inn.balls += 1;
   inn.currentBall += 1;
-  if (inn.currentBall === 6) { inn.currentOver += 1; inn.currentBall = 0; }
+  if (inn.currentBall === 6) { inn.currentOver += 1; inn.currentBall = 0; showWhatsAppShare(); }
 
   if (sId && inn.batsmanStats[sId]) {
     inn.batsmanStats[sId].runs += runs;
@@ -459,6 +586,7 @@ function processExtra() {
 
   const ball = {
     id: nextBallId(),
+    inningsNo: currentState.inningsNo,
     over: inn.currentOver + 1,
     ballInOver: inn.currentBall + 1,
     runs: extraCtx.extraRuns || 0,
@@ -531,6 +659,7 @@ function processWicket(type) {
 
   const ball = {
     id: nextBallId(),
+    inningsNo: currentState.inningsNo,
     over: inn.currentOver + 1,
     ballInOver: inn.currentBall + 1,
     runs: 0, extras: 0, extraType: null,
@@ -544,7 +673,7 @@ function processWicket(type) {
   inn.wickets += 1;
   inn.balls += 1;
   inn.currentBall += 1;
-  if (inn.currentBall === 6) { inn.currentOver += 1; inn.currentBall = 0; }
+  if (inn.currentBall === 6) { inn.currentOver += 1; inn.currentBall = 0; showWhatsAppShare(); }
 
   if (sId && inn.batsmanStats[sId]) {
     inn.batsmanStats[sId].balls += 1;
@@ -606,14 +735,14 @@ function endOver() {
   inn.overBalls = [];
   saveInnings(mid, inn);
   renderScorer();
+  showWhatsAppShare();
   checkInningsEnd();
 }
 
 // ─────── UNDO ───────
 function undoLast() {
   const mid = currentState.matchId;
-  const inn = getInnings(mid);
-  if (!inn) return;
+  if (!getInnings(mid)) return;
   const last = popLastBall(mid);
   if (!last) return;
   recalculateInnings(mid);
@@ -623,8 +752,10 @@ function undoLast() {
 function recalculateInnings(mid) {
   const d = load();
   const match = d.matches[mid];
-  const inn = d.innings[mid];
-  const balls = d.balls[mid] || [];
+  const innNo = currentState.inningsNo;
+  const inn = getInnings(mid, innNo);
+  const allBalls = d.balls[mid] || [];
+  const balls = allBalls.filter(b => b.inningsNo === innNo);
 
   inn.runs = 0; inn.wickets = 0; inn.balls = 0; inn.extras = 0;
   inn.currentOver = 0; inn.currentBall = 0;
@@ -711,7 +842,7 @@ function recalculateInnings(mid) {
     inn.overBalls = balls.filter(b => b.over === lo);
   }
 
-  saveInnings(mid, inn);
+  saveInnings(mid, inn, innNo);
 }
 
 // ─────── CHANGE BOWLER ───────
@@ -722,7 +853,8 @@ function nextBowler() {
   const d = load();
   const mt = d.matchTeams[mid];
   if (!mt) return;
-  const ids = mt.xiB || mt.teamBIds || [];
+  // Innings 1: bowling team is Team B; Innings 2: bowling team is Team A
+  const ids = inn.inningsNo === 1 ? (mt.xiB || mt.teamBIds || []) : (mt.xiA || mt.teamAIds || []);
   if (!ids.length) return;
   const idx = ids.indexOf(inn.currentBowler);
   inn.currentBowler = ids[(idx + 1) % ids.length];
@@ -740,11 +872,25 @@ function endInnings() {
   if (!inn || inn.completed) return;
   inn.completed = true;
   const d = load();
-  d.matches[mid].status = 'completed';
   saveInnings(mid, inn);
+
+  // Check if innings 2 just ended → match complete
+  if (currentState.inningsNo === 2) {
+    d.matches[mid].status = 'completed';
+    save(d);
+    showWhatsAppShare();
+    showView('home');
+    renderHome();
+    return;
+  }
+
+  // Innings 1 ended → auto-transition to innings 2
+  d.matches[mid].status = 'ongoing';
   save(d);
-  showView('home');
-  renderHome();
+  showWhatsAppShare();
+  currentState.inningsNo = 2;
+  renderScorer();
+  alert('Innings 1 complete! Now batting: ' + inn.bowling);
 }
 
 function checkInningsEnd() {
@@ -759,7 +905,11 @@ function checkInningsEnd() {
   const oversDone = inn.currentOver >= match.overs;
 
   if (active <= 1 || (oversDone && inn.currentBall === 0)) {
-    endInnings();
+    if (currentState.inningsNo === 1) {
+      endInnings(); // transitions to innings 2
+    } else {
+      endInnings(); // ends the match
+    }
   }
 }
 
@@ -778,15 +928,18 @@ function renderHome() {
     return;
   }
   el.innerHTML = matches.map(m => {
-    const inn = d.innings[m.id];
+    const inn1 = d.innings[m.id + '_1'];
+    const inn2 = d.innings[m.id + '_2'];
     const isOn = m.status === 'ongoing';
-    const score = inn ? inn.runs + '/' + inn.wickets : '—';
-    const ov = inn ? inn.currentOver + '.' + inn.currentBall : '—';
+    const score1 = inn1 ? inn1.runs + '/' + inn1.wickets : '—';
+    const ov1 = inn1 ? inn1.currentOver + '.' + inn1.currentBall : '—';
+    const score2 = inn2 && inn1 && inn1.completed ? inn2.runs + '/' + inn2.wickets : null;
+    const ov2 = inn2 && inn2.currentOver !== undefined ? inn2.currentOver + '.' + inn2.currentBall : null;
     return '<div onclick="openScorer(\'' + m.id + '\')" class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm flex items-center justify-between cursor-pointer active:scale-[0.98] transition">' +
       '<div><div class="font-semibold text-gray-900 text-sm">' + m.teamA + ' vs ' + m.teamB + '</div>' +
       '<div class="text-xs text-gray-500">' + m.id + ' &middot; ' + m.overs + ' ov &middot; <span class="' + (isOn ? 'text-green-600' : 'text-gray-400') + ' font-medium">' + m.status + '</span></div></div>' +
-      '<div class="text-right"><div class="text-lg font-black ' + (isOn ? 'text-cyan-600' : 'text-gray-500') + '">' + score + '</div>' +
-      '<div class="text-xs text-gray-400">Ov ' + ov + '</div></div></div>';
+      '<div class="text-right"><div class="text-lg font-black ' + (isOn ? 'text-cyan-600' : 'text-gray-500') + '">' + score1 + (score2 ? ' & ' + score2 : '') + '</div>' +
+      '<div class="text-xs text-gray-400">Ov ' + ov1 + (ov2 ? ' & ' + ov2 : '') + '</div></div></div>';
   }).join('');
 }
 
@@ -833,6 +986,28 @@ function renderLeaderboard() {
     ).join('')
     : '<div class="text-gray-400 text-sm">No data yet</div>';
 }
+
+// ─────── MIGRATION ───────
+function migrateOldData() {
+  const d = load();
+  let changed = false;
+  // Old format: d.innings[mid] = innings object (with inningsNo: 1)
+  // New format: d.innings[mid + '_1'] and d.innings[mid + '_2']
+  Object.keys(d.innings || {}).forEach(key => {
+    const inn = d.innings[key];
+    if (inn && inn.matchId && !key.includes('_')) {
+      const mid = key;
+      const newKey = mid + '_' + (inn.inningsNo || 1);
+      if (!d.innings[newKey]) {
+        d.innings[newKey] = inn;
+        delete d.innings[key];
+        changed = true;
+      }
+    }
+  });
+  if (changed) save(d);
+}
+migrateOldData();
 
 // ─────── INIT ───────
 renderHome();

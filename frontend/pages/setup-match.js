@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { fetchPlayers, createMatch, fetchMatchById, fetchSetting, upsertSetting } from '../lib/supabase';
+import { fetchPlayers, fetchMatches, createMatch, fetchMatchById, fetchSetting, upsertSetting } from '../lib/supabase';
 
 const PIN_KEY = 'scorer_authenticated';
 
@@ -22,7 +22,6 @@ export default function SetupMatch() {
     if (sessionStorage.getItem(PIN_KEY)) {
       clearTimeout(fallback);
       setAuthed(true);
-      fetchPlayers().then(setAllPlayers).catch(() => {});
     } else {
       fetchSetting('scorer_pin').then((pin) => {
         clearTimeout(fallback);
@@ -35,6 +34,20 @@ export default function SetupMatch() {
     }
     return () => clearTimeout(fallback);
   }, []);
+
+  const today = new Date();
+  const dateStr = `${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}`;
+
+  useEffect(() => {
+    if (authed !== true) return;
+    fetchPlayers().then(setAllPlayers).catch(() => {});
+    fetchMatches().then((list) => {
+      const prefix = `${dateStr}/`;
+      const nums = list.filter((m) => m.match_id?.startsWith(prefix)).map((m) => parseInt(m.match_id.slice(prefix.length), 10) || 0);
+      const next = nums.length > 0 ? Math.max(...nums) + 1 : 1;
+      setForm((prev) => ({ ...prev, matchId: `${dateStr}/${next}` }));
+    }).catch(() => {});
+  }, [authed]);
 
   const handlePinSubmit = async () => {
     setPinErr('');
@@ -49,7 +62,6 @@ export default function SetupMatch() {
     }
     sessionStorage.setItem(PIN_KEY, '1');
     setAuthed(true);
-    fetchPlayers().then(setAllPlayers).catch(() => {});
   };
 
   const handleSetupPin = async () => {
@@ -61,7 +73,6 @@ export default function SetupMatch() {
       await upsertSetting('scorer_pin', pinInput.trim());
       sessionStorage.setItem(PIN_KEY, '1');
       setAuthed(true);
-      fetchPlayers().then(setAllPlayers).catch(() => {});
     } catch {
       setPinErr('Failed to save PIN');
     }

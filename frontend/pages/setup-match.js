@@ -17,17 +17,22 @@ export default function SetupMatch() {
   const [pinErr, setPinErr] = useState('');
 
   useEffect(() => {
+    const fallback = setTimeout(() => { if (authed === null) setAuthed(true); }, 3000);
     if (sessionStorage.getItem(PIN_KEY)) {
+      clearTimeout(fallback);
       setAuthed(true);
       fetchPlayers().then(setAllPlayers).catch(() => {});
     } else {
       fetchSetting('scorer_pin').then((pin) => {
+        clearTimeout(fallback);
         if (!pin) setAuthed('setup');
         else setAuthed(false);
       }).catch(() => {
+        clearTimeout(fallback);
         setAuthed(true);
       });
     }
+    return () => clearTimeout(fallback);
   }, []);
 
   const handlePinSubmit = async () => {

@@ -133,14 +133,14 @@ label{font-size:13px;font-weight:600;color:#374151;margin-bottom:2px;display:blo
   </div>
 </div>
 
-<!-- ══ TEAM STATS ══ -->
+<!-- ══ MATCH LOG ══ -->
 <div id="view-leaderboard" class="view">
   <div class="flex items-center gap-2">
     <button onclick="showView('home')" class="text-cyan-600 font-medium text-sm">&larr; Back</button>
-    <h2 class="text-xl font-bold text-gray-900">Team Stats</h2>
+    <h2 class="text-xl font-bold text-gray-900">Match Log</h2>
     <button onclick="renderLeaderboard()" class="ml-auto bg-gray-100 border px-3 py-1.5 rounded-lg text-xs font-medium">↻</button>
   </div>
-  <div id="lb-teams" class="space-y-2"></div>
+  <div id="lb-teams" class="space-y-3"></div>
 </div>
 
 <!-- ══ MODAL ══ -->
@@ -963,99 +963,147 @@ function renderHome() {
   }).join('');
 }
 
-// ─────── TEAM STATS ───────
+// ─────── MATCH LOG ───────
 function renderLeaderboard() {
   const d = load();
-  const teams = {};
-  const matches = Object.values(d.matches || {}).sort((a, b) => (b.created || '').localeCompare(a.created || ''));
-  matches.forEach(m => {
-    [m.teamA, m.teamB].forEach(name => {
-      if (!teams[name]) teams[name] = { played: 0, runs: 0, wkts: 0, balls: 0, won: 0, matches: [] };
-    });
-    const inn1 = d.innings[m.id + '_1'];
-    const inn2 = d.innings[m.id + '_2'];
-    // Team A runs/wickets when batting
-    if (inn1 && inn1.batting === m.teamA) {
-      teams[m.teamA].runs += inn1.runs || 0;
-      teams[m.teamA].wkts += inn1.wickets || 0;
-      teams[m.teamA].balls += inn1.balls || 0;
-    }
-    if (inn2 && inn2.batting === m.teamA) {
-      teams[m.teamA].runs += inn2.runs || 0;
-      teams[m.teamA].wkts += inn2.wickets || 0;
-      teams[m.teamA].balls += inn2.balls || 0;
-    }
-    // Team B runs/wickets when batting
-    if (inn1 && inn1.batting === m.teamB) {
-      teams[m.teamB].runs += inn1.runs || 0;
-      teams[m.teamB].wkts += inn1.wickets || 0;
-      teams[m.teamB].balls += inn1.balls || 0;
-    }
-    if (inn2 && inn2.batting === m.teamB) {
-      teams[m.teamB].runs += inn2.runs || 0;
-      teams[m.teamB].wkts += inn2.wickets || 0;
-      teams[m.teamB].balls += inn2.balls || 0;
-    }
-    teams[m.teamA].played += 1;
-    teams[m.teamB].played += 1;
-    // Store match detail for both teams
-    [m.teamA, m.teamB].forEach(name => {
-      const opp = name === m.teamA ? m.teamB : m.teamA;
-      const inn1detail = inn1 ? {
-        batting: inn1.batting, runs: inn1.runs, wkts: inn1.wickets,
-        ov: inn1.currentOver + '.' + inn1.currentBall,
-        rr: inn1.balls > 0 ? (inn1.runs / (inn1.balls / 6)).toFixed(2) : '0.00',
-      } : null;
-      const inn2detail = inn2 ? {
-        batting: inn2.batting, runs: inn2.runs, wkts: inn2.wickets,
-        ov: inn2.currentOver + '.' + inn2.currentBall,
-        rr: inn2.balls > 0 ? (inn2.runs / (inn2.balls / 6)).toFixed(2) : '0.00',
-      } : null;
-      let result = '';
-      if (m.status === 'completed' && inn1 && inn1.completed && inn2 && inn2.completed) {
-        if (inn1.runs > inn2.runs) result = inn1.batting === name ? 'Won' : 'Lost';
-        else if (inn2.runs > inn1.runs) result = inn2.batting === name ? 'Won' : 'Lost';
-        else result = 'Tied';
-        if (result === 'Won') teams[name].won += 1;
-      }
-      teams[name].matches.push({ opp, inn1: inn1detail, inn2: inn2detail, result, id: m.id });
-    });
-  });
-
-  const sorted = Object.entries(teams).sort((a, b) => b[1].won - a[1].won || b[1].runs - a[1].runs);
+  const mids = Object.keys(d.matches || {}).sort((a, b) => ((d.matches[b].created || '') + b).localeCompare((d.matches[a].created || '') + a));
   const el = document.getElementById('lb-teams');
-  if (!sorted.length) {
-    el.innerHTML = '<div class="bg-white rounded-xl p-6 text-center text-gray-400 text-sm border border-gray-200 shadow-sm">No data yet</div>';
+  const completed = mids.filter(mid => d.matches[mid].status === 'completed');
+  if (!completed.length) {
+    el.innerHTML = '<div class="bg-white rounded-xl p-6 text-center text-gray-400 text-sm border border-gray-200 shadow-sm">No completed matches yet</div>';
     return;
   }
-  el.innerHTML = sorted.map(([name, s]) => {
-    const rr = s.balls > 0 ? (s.runs / (s.balls / 6)).toFixed(2) : '—';
-    return '<div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm mb-2">' +
-      '<div class="flex items-center justify-between mb-2">' +
-        '<span class="font-bold text-gray-900">' + name + '</span>' +
-        '<span class="text-xs text-gray-400">' + s.played + ' match' + (s.played > 1 ? 'es' : '') + '</span>' +
-      '</div>' +
-      '<div class="flex gap-4 mb-3 text-sm">' +
-        '<div><span class="text-gray-400 text-xs">Runs</span><div class="font-bold text-cyan-600 tabular-nums">' + s.runs + '</div></div>' +
-        '<div><span class="text-gray-400 text-xs">Wkts</span><div class="font-bold text-red-500 tabular-nums">' + s.wkts + '</div></div>' +
-        '<div><span class="text-gray-400 text-xs">RR</span><div class="font-bold text-gray-700 tabular-nums">' + rr + '</div></div>' +
-        '<div><span class="text-gray-400 text-xs">Won</span><div class="font-bold text-emerald-600 tabular-nums">' + s.won + '</div></div>' +
-      '</div>' +
-      '<div class="border-t border-gray-100 pt-2 space-y-2">' +
-        s.matches.map(mt => {
-          const clr = mt.result === 'Won' ? 'text-emerald-600' : mt.result === 'Lost' ? 'text-red-500' : 'text-gray-500';
-          return '<div class="text-xs">' +
-            '<div class="font-medium text-gray-700 mb-1">vs ' + mt.opp + (mt.result ? ' <span class="' + clr + ' font-semibold">' + mt.result + '</span>' : '') + '</div>' +
-            (mt.inn1
-              ? '<div class="flex justify-between text-gray-500 pl-2"><span>' + mt.inn1.batting + ' (Innings 1)</span><span class="tabular-nums font-medium text-gray-800">' + mt.inn1.runs + '/' + mt.inn1.wkts + ' (' + mt.inn1.ov + ' ov, RR ' + mt.inn1.rr + ')</span></div>'
-              : '') +
-            (mt.inn2
-              ? '<div class="flex justify-between text-gray-500 pl-2"><span>' + mt.inn2.batting + ' (Innings 2)</span><span class="tabular-nums font-medium text-gray-800">' + mt.inn2.runs + '/' + mt.inn2.wkts + ' (' + mt.inn2.ov + ' ov, RR ' + mt.inn2.rr + ')</span></div>'
-              : '') +
-          '</div>';
-        }).join('') +
-      '</div></div>';
+  el.innerHTML = '';
+  completed.forEach(mid => {
+    const m = d.matches[mid];
+    const inn1 = d.innings[mid + '_1'];
+    const inn2 = d.innings[mid + '_2'];
+    const p = d.players || {};
+
+    // Helper: compute RR string
+    function rrStr(inn) {
+      return inn && inn.balls > 0 ? (inn.runs / (inn.balls / 6)).toFixed(2) : '0.00';
+    }
+
+    // Result summary
+    let resultLine = '';
+    if (inn1 && inn2 && inn1.completed && inn2.completed) {
+      if (inn1.runs > inn2.runs) {
+        const diff = inn1.runs - inn2.runs;
+        resultLine = '<span class="text-emerald-600 font-bold">' + inn1.batting + ' won by ' + diff + ' runs</span>';
+      } else if (inn2.runs > inn1.runs) {
+        const dismissed = (inn2.battingOrder || []).filter(id => inn2.batsmanStats[id]?.dismissed).length;
+        const wktsLeft = (inn2.battingOrder || []).length - dismissed;
+        resultLine = '<span class="text-emerald-600 font-bold">' + inn2.batting + ' won by ' + wktsLeft + ' wicket' + (wktsLeft > 1 ? 's' : '') + '</span>';
+      } else {
+        resultLine = '<span class="text-gray-500 font-bold">Match Tied</span>';
+      }
+    } else if (m.status === 'ongoing') {
+      resultLine = '<span class="text-cyan-600 font-medium">Ongoing</span>';
+    }
+
+    // Format date
+    const date = m.created ? new Date(m.created).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+
+    // Birdie-style scorecard HTML
+    const card = document.createElement('div');
+    card.className = 'bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden';
+    card.innerHTML =
+      '<div class="p-4">' +
+        // Title row
+        '<div class="flex items-start justify-between mb-2">' +
+          '<div class="font-bold text-gray-900 text-sm leading-tight">' + m.teamA + ' vs ' + m.teamB + '</div>' +
+          '<div class="text-xs text-gray-400 whitespace-nowrap ml-2">' + date + '</div>' +
+        '</div>' +
+        // Result
+        (resultLine ? '<div class="mb-3 text-sm">' + resultLine + '</div>' : '') +
+        // Comparison table
+        '<div class="grid grid-cols-3 gap-0 border border-gray-200 rounded-lg text-sm mb-2">' +
+          '<div class="bg-gray-50 font-semibold text-gray-600 text-xs uppercase tracking-wide px-3 py-2 border-b border-r border-gray-200"></div>' +
+          '<div class="bg-gray-50 font-semibold text-gray-600 text-xs uppercase tracking-wide px-3 py-2 border-b border-r border-gray-200 text-center">' + (inn1 ? inn1.batting : m.teamA) + '</div>' +
+          '<div class="bg-gray-50 font-semibold text-gray-600 text-xs uppercase tracking-wide px-3 py-2 border-b border-gray-200 text-center">' + (inn2 ? inn2.batting : m.teamB) + '</div>' +
+          // Runs row
+          '<div class="px-3 py-2 text-xs text-gray-500 border-r border-gray-200 font-medium">Runs</div>' +
+          '<div class="px-3 py-2 text-center font-bold text-cyan-700 border-r border-gray-200 tabular-nums">' + (inn1 ? inn1.runs : '—') + '</div>' +
+          '<div class="px-3 py-2 text-center font-bold text-cyan-700 tabular-nums">' + (inn2 ? inn2.runs : '—') + '</div>' +
+          // Wkts row
+          '<div class="px-3 py-2 text-xs text-gray-500 border-r border-gray-200 font-medium">Wickets</div>' +
+          '<div class="px-3 py-2 text-center border-r border-gray-200 tabular-nums font-medium text-gray-800">' + (inn1 ? inn1.wickets : '—') + '</div>' +
+          '<div class="px-3 py-2 text-center tabular-nums font-medium text-gray-800">' + (inn2 ? inn2.wickets : '—') + '</div>' +
+          // Overs row
+          '<div class="px-3 py-2 text-xs text-gray-500 border-r border-gray-200 font-medium">Overs</div>' +
+          '<div class="px-3 py-2 text-center border-r border-gray-200 tabular-nums text-gray-600">' + (inn1 ? inn1.currentOver + '.' + inn1.currentBall : '—') + '</div>' +
+          '<div class="px-3 py-2 text-center tabular-nums text-gray-600">' + (inn2 ? inn2.currentOver + '.' + inn2.currentBall : '—') + '</div>' +
+          // RR row
+          '<div class="px-3 py-2 text-xs text-gray-500 border-r border-gray-200 font-medium">Run Rate</div>' +
+          '<div class="px-3 py-2 text-center border-r border-gray-200 tabular-nums text-gray-600">' + rrStr(inn1) + '</div>' +
+          '<div class="px-3 py-2 text-center tabular-nums text-gray-600">' + rrStr(inn2) + '</div>' +
+        '</div>' +
+        // View Scorecard link
+        '<button onclick="toggleScorecard(\'' + mid + '\',this)" class="text-xs text-cyan-600 font-medium hover:underline">📋 View Full Scorecard</button>' +
+        // Scorecard (hidden)
+        '<div id="sc-' + mid + '" class="hidden mt-3 border-t border-gray-100 pt-3 space-y-1.5"></div>' +
+      '</div>';
+    el.appendChild(card);
+  });
+}
+
+function toggleScorecard(mid, btn) {
+  const sc = document.getElementById('sc-' + mid);
+  if (sc.classList.contains('hidden')) {
+    sc.classList.remove('hidden');
+    btn.textContent = '📋 Hide Scorecard';
+    if (!sc.hasChildNodes() || sc.children.length === 0) {
+      const d = load();
+      const balls = (d.balls[mid] || []).sort((a, b) => a.id - b.id);
+      const p = d.players || {};
+      if (!balls.length) {
+        sc.innerHTML = '<div class="text-xs text-gray-400">No ball data recorded</div>';
+        return;
+      }
+      let html = '';
+      let curOver = 0, curInn = 0, overBalls = [];
+      balls.forEach(b => {
+        if (b.inningsNo !== curInn) {
+          if (overBalls.length) { html += overRow(curOver, overBalls, p); overBalls = []; }
+          curInn = b.inningsNo;
+          curOver = 0;
+          html += '<div class="text-xs font-semibold text-gray-500 mb-1 mt-1">▸ Innings ' + curInn + '</div>';
+        }
+        if (b.over !== curOver) {
+          if (overBalls.length) { html += overRow(curOver, overBalls, p); overBalls = []; }
+          curOver = b.over;
+        }
+        overBalls.push(b);
+      });
+      if (overBalls.length) html += overRow(curOver, overBalls, p);
+      sc.innerHTML = html;
+    }
+  } else {
+    sc.classList.add('hidden');
+    btn.textContent = '📋 View Full Scorecard';
+  }
+}
+
+function overRow(overNum, balls, p) {
+  const dots = balls.map(b => {
+    let cls = 'run', lbl = String(b.runs);
+    if (b.wicket) { cls = 'wicket'; lbl = 'W'; }
+    else if (b.extraType === 'wide') { cls = 'wide'; lbl = 'WD' + (b.runs > 0 ? b.runs : ''); }
+    else if (b.extraType === 'noball') { cls = 'noball'; lbl = 'NB' + (b.runs > 0 ? b.runs : ''); }
+    else if (b.runs === 4) { cls = 'four'; lbl = '4'; }
+    else if (b.runs === 6) { cls = 'six'; lbl = '6'; }
+    else if (b.runs === 0) { lbl = '•'; }
+    return '<span class="ball-dot ' + cls + '" style="width:24px;height:24px;font-size:10px;margin:1px">' + lbl + '</span>';
   }).join('');
+  const bowler = p[balls[0]?.bowlerId]?.name || '?';
+  const total = balls.reduce((s, b) => s + (b.totalRuns || b.runs || 0), 0);
+  return '<div class="text-xs flex items-center gap-2">' +
+    '<span class="text-gray-400 font-medium w-6">Ov ' + overNum + '</span>' +
+    '<span class="text-gray-500 truncate">' + bowler + '</span>' +
+    '<span class="flex-1 text-right">' + dots + '</span>' +
+    '<span class="text-gray-400 w-12 text-right">' + total + ' runs</span>' +
+  '</div>';
 }
 
 // ─────── TEAM PRESETS ───────

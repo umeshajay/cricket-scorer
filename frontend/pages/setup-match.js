@@ -132,6 +132,12 @@ export default function SetupMatch() {
       setForm({ matchId: '', overs: '6', teamA: 'Team A', teamB: 'Team B' });
       setTeamA([]);
       setTeamB([]);
+      // regenerate next match ID
+      fetchMatches().then((list) => {
+        const nums = list.filter((m) => m.match_id?.startsWith(`${dateStr}/`)).map((m) => parseInt(m.match_id.slice(dateStr.length+1), 10) || 0);
+        const next = nums.length > 0 ? Math.max(...nums) + 1 : 1;
+        setForm((prev) => ({ ...prev, matchId: `${dateStr}/${next}` }));
+      }).catch(() => {});
     } catch (e) {
       setMsg({ ok: false, text: e.message });
     }

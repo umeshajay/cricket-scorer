@@ -106,11 +106,16 @@ export default function SetupMatch() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMsg({ ok: false, text: '' });
-    if (!form.matchId || !form.teamA || !form.teamB) return setMsg({ ok: false, text: 'Fill all fields.' });
+    // auto-fill any empty fields so the form always works
+    const mid = form.matchId || `${dateStr}/1`;
+    const ta = form.teamA || 'Team A';
+    const tb = form.teamB || 'Team B';
+    if (mid !== form.matchId || ta !== form.teamA || tb !== form.teamB) setForm({ ...form, matchId: mid, teamA: ta, teamB: tb });
+    if (!mid || !ta || !tb) return setMsg({ ok: false, text: 'Fill all fields.' });
 
     setBusy(true);
     try {
-      const existing = await fetchMatchById(form.matchId);
+      const existing = await fetchMatchById(mid);
       if (existing) {
         setMsg({ ok: false, text: 'Match ID already exists.' });
         setBusy(false);
@@ -120,16 +125,16 @@ export default function SetupMatch() {
 
     try {
       await createMatch({
-        match_id: form.matchId,
+        match_id: mid,
         total_overs: parseInt(form.overs),
-        team_a_name: form.teamA,
-        team_b_name: form.teamB,
+        team_a_name: ta,
+        team_b_name: tb,
         team_a_players: teamA.map((p) => p.id),
         team_b_players: teamB.map((p) => p.id),
         players_per_team: playersPerTeam,
         status: 'upcoming',
       });
-      setMsg({ ok: true, text: `Match ${form.matchId} created!` });
+      setMsg({ ok: true, text: `Match ${mid} created!` });
       setForm({ overs: '6', teamA: 'Team A', teamB: 'Team B', matchId: `${dateStr}/1` });
       setTeamA([]);
       setTeamB([]);

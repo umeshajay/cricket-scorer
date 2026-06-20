@@ -9,6 +9,14 @@ venv/
 .env
 bot/.env
 
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+.next/
+frontend/.next/
+out/
+frontend/out/
+
 # IDE
 .vscode/
 .idea/

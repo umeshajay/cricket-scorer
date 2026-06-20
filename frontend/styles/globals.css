@@ -3,21 +3,19 @@
 @tailwind utilities;
 
 body {
-  @apply bg-slate-900 text-slate-100 font-sans antialiased;
+  @apply bg-gray-50 text-gray-800 font-sans antialiased;
 }
 
-/* Custom ball bubbles */
 .ball-dot {
   @apply inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold shrink-0;
 }
-.ball-dot.run    { @apply bg-slate-700 text-slate-200; }
-.ball-dot.four   { @apply bg-emerald-800 text-emerald-300; }
-.ball-dot.six    { @apply bg-blue-800 text-blue-300; }
-.ball-dot.wicket { @apply bg-red-900 text-red-300; }
-.ball-dot.wide   { @apply bg-yellow-800 text-yellow-200; }
-.ball-dot.noball { @apply bg-orange-800 text-orange-200; }
+.ball-dot.run    { @apply bg-gray-200 text-gray-600; }
+.ball-dot.four   { @apply bg-emerald-100 text-emerald-700; }
+.ball-dot.six    { @apply bg-blue-100 text-blue-700; }
+.ball-dot.wicket { @apply bg-red-100 text-red-700; }
+.ball-dot.wide   { @apply bg-yellow-100 text-yellow-700; }
+.ball-dot.noball { @apply bg-orange-100 text-orange-700; }
 
-/* Live pulse */
 .live-pulse {
   animation: pulse 1.5s infinite;
 }
@@ -26,7 +24,6 @@ body {
   50%      { opacity: 0.3; }
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #1e293b; }
-::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }

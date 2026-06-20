@@ -14,8 +14,8 @@ export default function Layout({ children }) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="bg-slate-800 border-b border-slate-700 px-4 py-3 flex items-center gap-6 flex-wrap">
-        <span className="text-cyan-400 font-bold text-lg tracking-tight">🏏 Cricket Scorer</span>
+      <header className="bg-white border-b border-gray-200 shadow-sm px-4 py-3 flex items-center gap-6 flex-wrap">
+        <span className="text-cyan-600 font-bold text-lg tracking-tight">Cricket Scorer</span>
         <nav className="flex gap-4 text-sm">
           {NAV.map((n) => (
             <Link
@@ -23,8 +23,8 @@ export default function Layout({ children }) {
               href={n.href}
               className={`transition-colors ${
                 pathname === n.href
-                  ? 'text-cyan-400 font-semibold'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'text-cyan-600 font-semibold'
+                  : 'text-gray-500 hover:text-gray-800'
               }`}
             >
               {n.label}
@@ -35,7 +35,7 @@ export default function Layout({ children }) {
 
       <main className="flex-1 px-4 py-6 max-w-5xl w-full mx-auto">{children}</main>
 
-      <footer className="text-center text-slate-600 text-xs py-4 border-t border-slate-800">
+      <footer className="text-center text-gray-400 text-xs py-4 border-t border-gray-200">
         Cricket Scorer &mdash; Supabase + Telegram
       </footer>
     </div>

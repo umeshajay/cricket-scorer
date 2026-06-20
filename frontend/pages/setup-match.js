@@ -69,20 +69,20 @@ export default function SetupMatch() {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-bold">New Match</h1>
+      <h1 className="text-2xl font-bold text-gray-900">New Match</h1>
 
-      <form onSubmit={handleSubmit} className="bg-slate-800 rounded-xl p-5 border border-slate-700 space-y-4">
+      <form onSubmit={handleSubmit} className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label className="text-xs text-slate-400 block mb-1">Match ID</label>
+            <label className="text-xs text-gray-500 block mb-1">Match ID</label>
             <input value={form.matchId} onChange={(e) => setForm({ ...form, matchId: e.target.value })}
-              className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"
+              className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-cyan-500"
               placeholder="M001" />
           </div>
           <div>
-            <label className="text-xs text-slate-400 block mb-1">Overs</label>
+            <label className="text-xs text-gray-500 block mb-1">Overs</label>
             <select value={form.overs} onChange={(e) => setForm({ ...form, overs: e.target.value })}
-              className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+              className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-cyan-500">
               {[4, 5, 6, 7].map((o) => <option key={o} value={o}>{o} Overs</option>)}
             </select>
           </div>
@@ -90,49 +90,47 @@ export default function SetupMatch() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-xs text-slate-400 block mb-1">Team A</label>
+            <label className="text-xs text-gray-500 block mb-1">Team A</label>
             <input value={form.teamA} onChange={(e) => setForm({ ...form, teamA: e.target.value })}
-              className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"
+              className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-cyan-500"
               placeholder="Eagles" />
           </div>
           <div>
-            <label className="text-xs text-slate-400 block mb-1">Team B</label>
+            <label className="text-xs text-gray-500 block mb-1">Team B</label>
             <input value={form.teamB} onChange={(e) => setForm({ ...form, teamB: e.target.value })}
-              className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"
+              className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-cyan-500"
               placeholder="Hawks" />
           </div>
         </div>
 
-        {/* Player selector */}
         <div>
-          <label className="text-xs text-slate-400 block mb-1">Assign Players</label>
+          <label className="text-xs text-gray-500 block mb-1">Assign Players</label>
           <div className="flex gap-2">
-            <select id="player-select" className="flex-1 bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+            <select id="player-select" className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-cyan-500">
               <option value="">-- Select --</option>
               {available.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
-            <button type="button" onClick={() => addTo('A')} className="bg-cyan-700 hover:bg-cyan-600 px-3 py-2 rounded-lg text-sm font-medium transition">→ A</button>
-            <button type="button" onClick={() => addTo('B')} className="bg-cyan-700 hover:bg-cyan-600 px-3 py-2 rounded-lg text-sm font-medium transition">→ B</button>
+            <button type="button" onClick={() => addTo('A')} className="bg-cyan-500 hover:bg-cyan-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition">→ A</button>
+            <button type="button" onClick={() => addTo('B')} className="bg-cyan-500 hover:bg-cyan-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition">→ B</button>
           </div>
         </div>
 
-        {/* Team chips */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <TeamBox name="Team A" players={teamA} color="cyan" onRemove={(id) => removeFrom('A', id)} />
           <TeamBox name="Team B" players={teamB} color="amber" onRemove={(id) => removeFrom('B', id)} />
         </div>
 
         <button type="submit" disabled={busy}
-          className="w-full bg-green-700 hover:bg-green-600 disabled:opacity-50 py-3 rounded-lg font-bold transition">
+          className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white py-3 rounded-lg font-bold transition shadow-sm">
           {busy ? 'Creating…' : 'Create Match'}
         </button>
       </form>
 
       {msg.text && (
-        <div className={`rounded-xl p-4 text-sm font-medium ${msg.ok ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}`}>
-          {msg.ok ? '✅ ' : '❌ '}{msg.text}
+        <div className={`rounded-xl p-4 text-sm font-medium shadow-sm ${msg.ok ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+          {msg.ok ? '✓ ' : '✗ '}{msg.text}
           {msg.ok && (
-            <button onClick={() => router.push(`/dashboard?match=${form.matchId}`)} className="ml-3 underline">
+            <button onClick={() => router.push(`/dashboard?match=${form.matchId}`)} className="ml-3 underline font-semibold">
               Go to Live Score →
             </button>
           )}
@@ -143,20 +141,20 @@ export default function SetupMatch() {
 }
 
 function TeamBox({ name, players, color, onRemove }) {
-  const border = color === 'cyan' ? 'border-cyan-800' : 'border-amber-800';
-  const btn = color === 'cyan' ? 'bg-cyan-800 text-cyan-200' : 'bg-amber-800 text-amber-200';
+  const border = color === 'cyan' ? 'border-cyan-200' : 'border-amber-200';
+  const chip = color === 'cyan' ? 'bg-cyan-100 text-cyan-700' : 'bg-amber-100 text-amber-700';
   return (
-    <div className={`bg-slate-900 rounded-lg border ${border} p-3`}>
+    <div className={`bg-gray-50 rounded-lg border ${border} p-3`}>
       <div className="flex justify-between items-center mb-2">
-        <h3 className="font-semibold text-sm">{name}</h3>
-        <span className="text-xs text-slate-500">{players.length} players</span>
+        <h3 className="font-semibold text-sm text-gray-700">{name}</h3>
+        <span className="text-xs text-gray-400">{players.length} players</span>
       </div>
       <div className="flex flex-wrap gap-1.5">
-        {players.length === 0 && <span className="text-xs text-slate-600">No players added</span>}
+        {players.length === 0 && <span className="text-xs text-gray-400">No players added</span>}
         {players.map((p) => (
-          <span key={p.id} className={`inline-flex items-center gap-1 ${btn} text-xs px-2 py-1 rounded-full`}>
+          <span key={p.id} className={`inline-flex items-center gap-1 ${chip} text-xs px-2 py-1 rounded-full`}>
             {p.name}
-            <button type="button" onClick={() => onRemove(p.id)} className="hover:text-white">&times;</button>
+            <button type="button" onClick={() => onRemove(p.id)} className="hover:opacity-70">&times;</button>
           </span>
         ))}
       </div>

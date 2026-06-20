@@ -29,40 +29,38 @@ export default function ManagePlayers() {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-bold">Players</h1>
+      <h1 className="text-2xl font-bold text-gray-900">Players</h1>
 
-      {/* Add */}
-      <div className="bg-slate-800 rounded-xl p-5 border border-slate-700 flex gap-3 items-end">
+      <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm flex gap-3 items-end">
         <div className="flex-1">
-          <label className="text-xs text-slate-400 block mb-1">Player name</label>
+          <label className="text-xs text-gray-500 block mb-1">Player name</label>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"
+            className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-cyan-500"
             placeholder="Enter name..."
           />
         </div>
-        <button onClick={handleAdd} className="bg-green-700 hover:bg-green-600 px-4 py-2 rounded-lg font-semibold text-sm transition whitespace-nowrap">
+        <button onClick={handleAdd} className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-semibold text-sm transition shadow-sm whitespace-nowrap">
           + Add
         </button>
       </div>
 
-      {err && <p className="text-red-400 text-sm">{err}</p>}
+      {err && <p className="text-red-500 text-sm">{err}</p>}
 
-      {/* List */}
-      <div className="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         {players.length === 0 ? (
-          <p className="p-5 text-slate-500 text-sm">No players yet.</p>
+          <p className="p-5 text-gray-400 text-sm">No players yet.</p>
         ) : (
-          <ul className="divide-y divide-slate-700">
+          <ul className="divide-y divide-gray-100">
             {players.map((p, i) => (
-              <li key={p.id} className="flex items-center justify-between px-5 py-3 hover:bg-slate-750">
+              <li key={p.id} className="flex items-center justify-between px-5 py-3 hover:bg-gray-50">
                 <div className="flex items-center gap-3">
-                  <span className="text-slate-500 text-xs w-5">{i + 1}.</span>
-                  <span className="font-medium">{p.name}</span>
+                  <span className="text-gray-400 text-xs w-5">{i + 1}.</span>
+                  <span className="font-medium text-gray-800">{p.name}</span>
                 </div>
-                <button onClick={() => handleDelete(p.id)} className="text-red-400 hover:text-red-300 text-xs font-medium">
+                <button onClick={() => handleDelete(p.id)} className="text-red-500 hover:text-red-600 text-xs font-medium">
                   Remove
                 </button>
               </li>

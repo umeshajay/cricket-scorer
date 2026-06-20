@@ -61,20 +61,12 @@ label{font-size:13px;font-weight:600;color:#374151;margin-bottom:2px;display:blo
       <div>
         <label>Team A</label>
         <input id="setup-ta" placeholder="Name" class="text-sm">
-        <div class="flex gap-1 mt-1">
-          <input id="setup-pa" placeholder="Add player" class="text-sm flex-1" onkeydown="if(event.key==='Enter')addPlayer('a')">
-          <button onclick="addPlayer('a')" class="bg-cyan-500 text-white px-3 py-2 rounded-lg text-sm font-medium shrink-0">Add</button>
-        </div>
-        <div id="setup-players-a" class="mt-2 flex flex-wrap min-h-[28px]"></div>
+        <div class="mt-2"><label class="text-xs">Players</label><select id="setup-na"><option>3</option><option>4</option><option>5</option><option>6</option><option selected>7</option><option>8</option><option>9</option><option>10</option><option>11</option></select></div>
       </div>
       <div>
         <label>Team B</label>
         <input id="setup-tb" placeholder="Name" class="text-sm">
-        <div class="flex gap-1 mt-1">
-          <input id="setup-pb" placeholder="Add player" class="text-sm flex-1" onkeydown="if(event.key==='Enter')addPlayer('b')">
-          <button onclick="addPlayer('b')" class="bg-cyan-500 text-white px-3 py-2 rounded-lg text-sm font-medium shrink-0">Add</button>
-        </div>
-        <div id="setup-players-b" class="mt-2 flex flex-wrap min-h-[28px]"></div>
+        <div class="mt-2"><label class="text-xs">Players</label><select id="setup-nb"><option>3</option><option>4</option><option>5</option><option>6</option><option selected>7</option><option>8</option><option>9</option><option>10</option><option>11</option></select></div>
       </div>
     </div>
     <button onclick="startMatch()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 rounded-xl text-base shadow-sm active:scale-95 transition">Start Match</button>
@@ -186,52 +178,16 @@ function showView(name) {
   if (name === 'leaderboard') renderLeaderboard();
 }
 
-// ─────── SETUP PLAYERS ───────
-const setupPlayers = { a: [], b: [] };
-
-function addPlayer(team) {
-  const input = document.getElementById('setup-p' + team);
-  const name = input.value.trim();
-  if (!name) return;
-  setupPlayers[team].push({ id: 'p' + Date.now() + Math.random().toString(36).slice(2,6), name, xi: true });
-  input.value = '';
-  renderSetupPlayers();
-  input.focus();
-}
-
-function removePlayer(team, idx) {
-  setupPlayers[team].splice(idx, 1);
-  renderSetupPlayers();
-}
-
-function toggleXi(team, idx) {
-  setupPlayers[team][idx].xi = !setupPlayers[team][idx].xi;
-  renderSetupPlayers();
-}
-
-function renderSetupPlayers() {
-  ['a','b'].forEach(t => {
-    document.getElementById('setup-players-' + t).innerHTML =
-      setupPlayers[t].map((p, i) =>
-        `<span class="xi-chip ${p.xi ? 'active' : 'dim'}" onclick="toggleXi('${t}',${i})">
-          ${p.name}
-          <span onclick="event.stopPropagation();removePlayer('${t}',${i})" class="ml-1 text-xs cursor-pointer hover:text-red-500">&times;</span>
-        </span>`
-      ).join('');
-  });
-}
-
 // ─────── START MATCH ───────
 function startMatch() {
   const midInput = document.getElementById('setup-mid').value.trim().toUpperCase();
   const overs = parseInt(document.getElementById('setup-overs').value);
   const ta = document.getElementById('setup-ta').value.trim();
   const tb = document.getElementById('setup-tb').value.trim();
+  const na = parseInt(document.getElementById('setup-na').value);
+  const nb = parseInt(document.getElementById('setup-nb').value);
   const err = document.getElementById('setup-err');
   if (!ta || !tb) { err.textContent = 'Enter both team names'; return; }
-  const pa = setupPlayers.a.filter(p => p.xi);
-  const pb = setupPlayers.b.filter(p => p.xi);
-  if (pa.length < 1 || pb.length < 1) { err.textContent = 'Each team needs at least 1 player in XI'; return; }
 
   const d = load();
   let mid = midInput;
@@ -244,23 +200,27 @@ function startMatch() {
 
   d.matches[mid] = { id: mid, teamA: ta, teamB: tb, overs, status: 'ongoing', created: new Date().toISOString() };
 
+  // Auto-generate players
+  const genId = () => 'p' + Date.now() + Math.random().toString(36).slice(2,6);
+  const teamAplayers = Array.from({length: na}, (_, i) => ({ id: genId(), name: 'P' + (i + 1), team: 'a' }));
+  const teamBplayers = Array.from({length: nb}, (_, i) => ({ id: genId(), name: 'P' + (i + 1), team: 'b' }));
   const allP = {};
-  setupPlayers.a.forEach(p => { allP[p.id] = { ...p, team: 'a' }; });
-  setupPlayers.b.forEach(p => { allP[p.id] = { ...p, team: 'b' }; });
+  teamAplayers.forEach(p => { allP[p.id] = p; });
+  teamBplayers.forEach(p => { allP[p.id] = p; });
   d.players = { ...(d.players || {}), ...allP };
 
   d.matchTeams[mid] = {
-    teamAIds: setupPlayers.a.map(p => p.id),
-    teamBIds: setupPlayers.b.map(p => p.id),
-    xiA: pa.map(p => p.id),
-    xiB: pb.map(p => p.id),
+    teamAIds: teamAplayers.map(p => p.id),
+    teamBIds: teamBplayers.map(p => p.id),
+    xiA: teamAplayers.map(p => p.id),
+    xiB: teamBplayers.map(p => p.id),
   };
 
   const bs = {};
-  pa.forEach(p => { bs[p.id] = { runs: 0, balls: 0, fours: 0, sixes: 0, dismissed: false, dismissalType: null }; });
-  pb.forEach(p => { bs[p.id] = { runs: 0, balls: 0, fours: 0, sixes: 0, dismissed: false, dismissalType: null }; });
+  teamAplayers.forEach(p => { bs[p.id] = { runs: 0, balls: 0, fours: 0, sixes: 0, dismissed: false, dismissalType: null }; });
+  teamBplayers.forEach(p => { bs[p.id] = { runs: 0, balls: 0, fours: 0, sixes: 0, dismissed: false, dismissalType: null }; });
   const br = {};
-  pb.forEach(p => { br[p.id] = { runs: 0, wickets: 0, balls: 0 }; });
+  teamBplayers.forEach(p => { br[p.id] = { runs: 0, wickets: 0, balls: 0 }; });
 
   d.innings[mid] = {
     id: mid + '_1', matchId: mid, inningsNo: 1,
@@ -279,12 +239,9 @@ function startMatch() {
   save(d);
 
   err.textContent = '';
-  setupPlayers.a = []; setupPlayers.b = [];
   document.getElementById('setup-mid').value = '';
   document.getElementById('setup-ta').value = '';
   document.getElementById('setup-tb').value = '';
-  document.getElementById('setup-players-a').innerHTML = '';
-  document.getElementById('setup-players-b').innerHTML = '';
 
   openScorer(mid);
 }

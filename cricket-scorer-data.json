@@ -1,5 +1,14 @@
 {
-  "matches": {},
+  "matches": {
+    "M001": {
+      "id": "M001",
+      "teamA": "sarath",
+      "teamB": "umesh",
+      "overs": 4,
+      "status": "ongoing",
+      "created": "2026-06-20T08:59:09.222Z"
+    }
+  },
   "players": {
     "p1781933911553ll0f": {
       "id": "p1781933911553ll0f",
@@ -590,12 +599,463 @@
       "id": "p17819402895790opl",
       "name": "P7",
       "team": "b"
+    },
+    "p1781945949223p1ms": {
+      "id": "p1781945949223p1ms",
+      "name": "P1",
+      "team": "a"
+    },
+    "p1781945949223smrh": {
+      "id": "p1781945949223smrh",
+      "name": "P2",
+      "team": "a"
+    },
+    "p1781945949223q9nw": {
+      "id": "p1781945949223q9nw",
+      "name": "P3",
+      "team": "a"
+    },
+    "p1781945949223zrrh": {
+      "id": "p1781945949223zrrh",
+      "name": "P4",
+      "team": "a"
+    },
+    "p17819459492232k83": {
+      "id": "p17819459492232k83",
+      "name": "P5",
+      "team": "a"
+    },
+    "p1781945949223hxu8": {
+      "id": "p1781945949223hxu8",
+      "name": "P1",
+      "team": "b"
+    },
+    "p1781945949223dr2c": {
+      "id": "p1781945949223dr2c",
+      "name": "P2",
+      "team": "b"
+    },
+    "p1781945949223ejsi": {
+      "id": "p1781945949223ejsi",
+      "name": "P3",
+      "team": "b"
+    },
+    "p1781945949223g59y": {
+      "id": "p1781945949223g59y",
+      "name": "P4",
+      "team": "b"
+    },
+    "p17819459492234jg4": {
+      "id": "p17819459492234jg4",
+      "name": "P5",
+      "team": "b"
     }
   },
-  "matchTeams": {},
-  "innings": {},
-  "balls": {},
-  "ballSeq": 383,
+  "matchTeams": {
+    "M001": {
+      "teamAIds": [
+        "p1781945949223p1ms",
+        "p1781945949223smrh",
+        "p1781945949223q9nw",
+        "p1781945949223zrrh",
+        "p17819459492232k83"
+      ],
+      "teamBIds": [
+        "p1781945949223hxu8",
+        "p1781945949223dr2c",
+        "p1781945949223ejsi",
+        "p1781945949223g59y",
+        "p17819459492234jg4"
+      ],
+      "xiA": [
+        "p1781945949223p1ms",
+        "p1781945949223smrh",
+        "p1781945949223q9nw",
+        "p1781945949223zrrh",
+        "p17819459492232k83"
+      ],
+      "xiB": [
+        "p1781945949223hxu8",
+        "p1781945949223dr2c",
+        "p1781945949223ejsi",
+        "p1781945949223g59y",
+        "p17819459492234jg4"
+      ]
+    }
+  },
+  "innings": {
+    "M001_1": {
+      "id": "M001_1",
+      "matchId": "M001",
+      "inningsNo": 1,
+      "batting": "sarath",
+      "bowling": "umesh",
+      "runs": 10,
+      "wickets": 0,
+      "balls": 6,
+      "extras": 0,
+      "currentOver": 1,
+      "currentBall": 0,
+      "battingOrder": [
+        "p1781945949223p1ms",
+        "p1781945949223smrh",
+        "p1781945949223q9nw",
+        "p1781945949223zrrh",
+        "p17819459492232k83"
+      ],
+      "strikerIdx": 1,
+      "nonStrikerIdx": 0,
+      "nextIdx": 2,
+      "batsmanStats": {
+        "p1781945949223p1ms": {
+          "runs": 5,
+          "balls": 4,
+          "fours": 1,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781945949223smrh": {
+          "runs": 5,
+          "balls": 2,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781945949223q9nw": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781945949223zrrh": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p17819459492232k83": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781945949223hxu8": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781945949223dr2c": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781945949223ejsi": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781945949223g59y": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p17819459492234jg4": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        }
+      },
+      "currentBowler": "p1781945949223hxu8",
+      "bowlerStats": {
+        "p1781945949223hxu8": {
+          "runs": 10,
+          "wickets": 0,
+          "balls": 6
+        },
+        "p1781945949223dr2c": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1781945949223ejsi": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1781945949223g59y": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p17819459492234jg4": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        }
+      },
+      "overBalls": [],
+      "completed": false
+    },
+    "M001_2": {
+      "id": "M001_2",
+      "matchId": "M001",
+      "inningsNo": 2,
+      "batting": "umesh",
+      "bowling": "sarath",
+      "runs": 0,
+      "wickets": 0,
+      "balls": 0,
+      "extras": 0,
+      "currentOver": 0,
+      "currentBall": 0,
+      "battingOrder": [
+        "p1781945949223hxu8",
+        "p1781945949223dr2c",
+        "p1781945949223ejsi",
+        "p1781945949223g59y",
+        "p17819459492234jg4"
+      ],
+      "strikerIdx": 0,
+      "nonStrikerIdx": 1,
+      "nextIdx": 2,
+      "batsmanStats": {
+        "p1781945949223hxu8": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781945949223dr2c": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781945949223ejsi": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781945949223g59y": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p17819459492234jg4": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781945949223p1ms": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781945949223smrh": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781945949223q9nw": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1781945949223zrrh": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p17819459492232k83": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        }
+      },
+      "currentBowler": "p1781945949223p1ms",
+      "bowlerStats": {
+        "p1781945949223p1ms": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1781945949223smrh": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1781945949223q9nw": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1781945949223zrrh": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p17819459492232k83": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        }
+      },
+      "overBalls": [],
+      "completed": false
+    }
+  },
+  "balls": {
+    "M001": [
+      {
+        "id": 384,
+        "inningsNo": 1,
+        "over": 1,
+        "ballInOver": 1,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781945949223p1ms",
+        "nonStrikerId": "p1781945949223smrh",
+        "bowlerId": "p1781945949223hxu8",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T08:59:18.865Z"
+      },
+      {
+        "id": 385,
+        "inningsNo": 1,
+        "over": 1,
+        "ballInOver": 2,
+        "runs": 1,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781945949223p1ms",
+        "nonStrikerId": "p1781945949223smrh",
+        "bowlerId": "p1781945949223hxu8",
+        "totalRuns": 1,
+        "timestamp": "2026-06-20T08:59:20.975Z"
+      },
+      {
+        "id": 386,
+        "inningsNo": 1,
+        "over": 1,
+        "ballInOver": 3,
+        "runs": 2,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781945949223smrh",
+        "nonStrikerId": "p1781945949223p1ms",
+        "bowlerId": "p1781945949223hxu8",
+        "totalRuns": 2,
+        "timestamp": "2026-06-20T08:59:22.246Z"
+      },
+      {
+        "id": 387,
+        "inningsNo": 1,
+        "over": 1,
+        "ballInOver": 4,
+        "runs": 3,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781945949223smrh",
+        "nonStrikerId": "p1781945949223p1ms",
+        "bowlerId": "p1781945949223hxu8",
+        "totalRuns": 3,
+        "timestamp": "2026-06-20T08:59:23.143Z"
+      },
+      {
+        "id": 388,
+        "inningsNo": 1,
+        "over": 1,
+        "ballInOver": 5,
+        "runs": 4,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781945949223p1ms",
+        "nonStrikerId": "p1781945949223smrh",
+        "bowlerId": "p1781945949223hxu8",
+        "totalRuns": 4,
+        "timestamp": "2026-06-20T08:59:24.167Z"
+      },
+      {
+        "id": 389,
+        "inningsNo": 1,
+        "over": 1,
+        "ballInOver": 6,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781945949223p1ms",
+        "nonStrikerId": "p1781945949223smrh",
+        "bowlerId": "p1781945949223hxu8",
+        "totalRuns": 0,
+        "timestamp": "2026-06-20T08:59:25.190Z"
+      }
+    ]
+  },
+  "ballSeq": 389,
   "teamPresets": [
     "umesh",
     "sarath"

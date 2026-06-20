@@ -8,11 +8,12 @@ export default function SetupMatch() {
   const router = useRouter();
   const [allPlayers, setAllPlayers] = useState([]);
   const [form, setForm] = useState({ matchId: '', overs: '6', teamA: '', teamB: '' });
+  const [playersPerTeam, setPlayersPerTeam] = useState(5);
   const [teamA, setTeamA] = useState([]);
   const [teamB, setTeamB] = useState([]);
   const [msg, setMsg] = useState({ ok: false, text: '' });
   const [busy, setBusy] = useState(false);
-  const [authed, setAuthed] = useState(null); // null=loading, true/false
+  const [authed, setAuthed] = useState(null);
   const [pinInput, setPinInput] = useState('');
   const [pinErr, setPinErr] = useState('');
 
@@ -75,8 +76,13 @@ export default function SetupMatch() {
     if (!pid) return;
     const p = allPlayers.find((x) => x.id === pid);
     if (!p) return;
-    if (team === 'A') setTeamA((prev) => [...prev, p]);
-    else setTeamB((prev) => [...prev, p]);
+    if (team === 'A') {
+      if (teamA.length >= playersPerTeam) return;
+      setTeamA((prev) => [...prev, p]);
+    } else {
+      if (teamB.length >= playersPerTeam) return;
+      setTeamB((prev) => [...prev, p]);
+    }
   };
 
   const removeFrom = (team, id) => {
@@ -108,6 +114,7 @@ export default function SetupMatch() {
         team_b_name: form.teamB,
         team_a_players: teamA.map((p) => p.id),
         team_b_players: teamB.map((p) => p.id),
+        players_per_team: playersPerTeam,
         status: 'upcoming',
       });
       setMsg({ ok: true, text: `Match ${form.matchId} created!` });
@@ -169,7 +176,7 @@ export default function SetupMatch() {
       </div>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <div>
             <label className="text-xs text-gray-500 block mb-1">Match ID</label>
             <input value={form.matchId} onChange={(e) => setForm({ ...form, matchId: e.target.value })}
@@ -181,6 +188,13 @@ export default function SetupMatch() {
             <select value={form.overs} onChange={(e) => setForm({ ...form, overs: e.target.value })}
               className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-cyan-500">
               {[4, 5, 6, 7].map((o) => <option key={o} value={o}>{o} Overs</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="text-xs text-gray-500 block mb-1">Players per Team</label>
+            <select value={playersPerTeam} onChange={(e) => setPlayersPerTeam(Number(e.target.value))}
+              className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-cyan-500">
+              {[3, 4, 5, 6, 7, 8, 9, 10, 11].map((n) => <option key={n} value={n}>{n} players</option>)}
             </select>
           </div>
         </div>
@@ -207,14 +221,18 @@ export default function SetupMatch() {
               <option value="">-- Select --</option>
               {available.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
-            <button type="button" onClick={() => addTo('A')} className="bg-cyan-500 hover:bg-cyan-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition">→ A</button>
-            <button type="button" onClick={() => addTo('B')} className="bg-cyan-500 hover:bg-cyan-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition">→ B</button>
+            <button type="button" onClick={() => addTo('A')}
+              disabled={teamA.length >= playersPerTeam}
+              className="bg-cyan-500 hover:bg-cyan-600 disabled:opacity-40 disabled:cursor-not-allowed text-white px-3 py-2 rounded-lg text-sm font-medium transition">→ A</button>
+            <button type="button" onClick={() => addTo('B')}
+              disabled={teamB.length >= playersPerTeam}
+              className="bg-cyan-500 hover:bg-cyan-600 disabled:opacity-40 disabled:cursor-not-allowed text-white px-3 py-2 rounded-lg text-sm font-medium transition">→ B</button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <TeamBox name="Team A" players={teamA} color="cyan" onRemove={(id) => removeFrom('A', id)} />
-          <TeamBox name="Team B" players={teamB} color="amber" onRemove={(id) => removeFrom('B', id)} />
+          <TeamBox name="Team A" players={teamA} max={playersPerTeam} color="cyan" onRemove={(id) => removeFrom('A', id)} />
+          <TeamBox name="Team B" players={teamB} max={playersPerTeam} color="amber" onRemove={(id) => removeFrom('B', id)} />
         </div>
 
         <button type="submit" disabled={busy}
@@ -237,14 +255,17 @@ export default function SetupMatch() {
   );
 }
 
-function TeamBox({ name, players, color, onRemove }) {
+function TeamBox({ name, players, max, color, onRemove }) {
   const border = color === 'cyan' ? 'border-cyan-200' : 'border-amber-200';
   const chip = color === 'cyan' ? 'bg-cyan-100 text-cyan-700' : 'bg-amber-100 text-amber-700';
+  const full = players.length >= max;
   return (
-    <div className={`bg-gray-50 rounded-lg border ${border} p-3`}>
+    <div className={`bg-gray-50 rounded-lg border ${border} p-3 ${full ? 'ring-2 ring-emerald-300' : ''}`}>
       <div className="flex justify-between items-center mb-2">
         <h3 className="font-semibold text-sm text-gray-700">{name}</h3>
-        <span className="text-xs text-gray-400">{players.length} players</span>
+        <span className={`text-xs ${full ? 'text-emerald-600 font-semibold' : 'text-gray-400'}`}>
+          {players.length}/{max} players
+        </span>
       </div>
       <div className="flex flex-wrap gap-1.5">
         {players.length === 0 && <span className="text-xs text-gray-400">No players added</span>}

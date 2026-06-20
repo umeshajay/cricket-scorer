@@ -26,6 +26,7 @@ CREATE TABLE matches (
   team_b_name TEXT NOT NULL,
   team_a_players UUID[] DEFAULT '{}',       -- array of player IDs
   team_b_players UUID[] DEFAULT '{}',
+  players_per_team INT DEFAULT 5,           -- how many players per side (3-11)
   status TEXT DEFAULT 'upcoming' CHECK (status IN ('upcoming','ongoing','completed')),
   toss_winner TEXT,
   elected_to TEXT,                           -- 'bat' or 'bowl'

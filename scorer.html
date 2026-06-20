@@ -181,8 +181,17 @@ label{font-size:13px;font-weight:600;color:#374151;margin-bottom:2px;display:blo
       <div class="text-sm font-semibold mt-1 text-emerald-600" id="report-match-result"></div>
     </div>
     <div class="bg-white rounded-xl p-3 border border-gray-200 shadow-sm">
-      <div class="text-xs font-semibold text-gray-500 uppercase mb-2">📊 Runs per Over</div>
-      <canvas id="chart-bars" style="max-height:320px"></canvas>
+      <div class="text-xs font-semibold text-gray-500 uppercase mb-2">📈 Run Rate Progression</div>
+      <canvas id="chart-worm"></canvas>
+    </div>
+    <div class="bg-white rounded-xl p-3 border border-gray-200 shadow-sm">
+      <div class="text-xs font-semibold text-gray-500 uppercase mb-2">🔥 Required vs Current Run Rate</div>
+      <canvas id="chart-rr"></canvas>
+      <div id="rr-fallback" class="text-xs text-gray-400 py-4 text-center" style="display:none">RR progression available after 2nd innings starts</div>
+    </div>
+    <div class="bg-white rounded-xl p-3 border border-gray-200 shadow-sm">
+      <div class="text-xs font-semibold text-gray-500 uppercase mb-2">🏏 Wickets per Over</div>
+      <canvas id="chart-wkts"></canvas>
     </div>
     <button onclick="shareReport()" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-xl text-base shadow-sm">📱 Share Match Report</button>
   </div>
@@ -1338,32 +1347,113 @@ function buildCharts(d, mid, inn1, inn2) {
   const overData = getOverData(d, mid);
   const maxOvers = d.matches[mid] ? d.matches[mid].overs : 20;
 
-  const labels = [], data1 = [], data2 = [];
-  for (let i = 0; i < maxOvers; i++) {
-    labels.push('Ov ' + (i + 1));
-    data1.push(overData[1][i] ? overData[1][i].runs : 0);
-    data2.push(overData[2][i] ? overData[2][i].runs : 0);
+  // Worm graph: cumulative runs per over for both innings
+  let cum1 = 0, cum2 = 0;
+  const wormLabels = [], wormInn1 = [], wormInn2 = [];
+  const len = Math.max(overData[1].length, overData[2].length);
+  for (let i = 0; i < len; i++) {
+    wormLabels.push('Ov ' + (i + 1));
+    if (overData[1][i]) { cum1 += overData[1][i].runs; }
+    wormInn1.push(cum1);
+    if (overData[2][i]) { cum2 += overData[2][i].runs; }
+    wormInn2.push(cum2);
+  }
+  // If only one innings completed, still show all overs up to max
+  if (!overData[2].length) {
+    for (let i = overData[1].length; i < maxOvers; i++) {
+      wormLabels.push('Ov ' + (i + 1));
+      wormInn1.push(cum1);
+      wormInn2.push(null);
+    }
   }
 
-  const ctx = document.getElementById('chart-bars').getContext('2d');
-  reportCharts.push(new Chart(ctx, {
-    type: 'bar',
+  const ctx1 = document.getElementById('chart-worm').getContext('2d');
+  reportCharts.push(new Chart(ctx1, {
+    type: 'line',
     data: {
-      labels,
+      labels: wormLabels,
       datasets: [
-        { label: inn1 ? inn1.batting : 'Innings 1', data: data1, backgroundColor: 'rgba(8,145,178,0.85)', borderRadius: 3 },
-        { label: inn2 ? inn2.batting : 'Innings 2', data: data2, backgroundColor: 'rgba(5,150,105,0.85)', borderRadius: 3 }
+        { label: inn1 ? inn1.batting : 'Innings 1', data: wormInn1, borderColor: '#0891b2', backgroundColor: 'rgba(8,145,178,0.1)', fill: true, tension: 0.3, pointRadius: 3, spanGaps: false },
+        { label: inn2 ? inn2.batting : 'Innings 2', data: wormInn2, borderColor: '#059669', backgroundColor: 'rgba(5,150,105,0.1)', fill: true, tension: 0.3, pointRadius: 3, spanGaps: false }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: true,
-      plugins: {
-        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } },
-        tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.raw + ' run' + (ctx.raw !== 1 ? 's' : '') } }
-      },
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } },
       scales: {
-        x: { ticks: { font: { size: 9 }, maxTicksLimit: 10 }, grid: { display: false } },
-        y: { beginAtZero: true, ticks: { font: { size: 9 }, stepSize: 1 }, title: { display: true, text: 'Runs', font: { size: 10 } } }
+        x: { ticks: { font: { size: 9 }, maxTicksLimit: 10 } },
+        y: { beginAtZero: true, ticks: { font: { size: 9 } }, title: { display: true, text: 'Cumulative Runs', font: { size: 10 } } }
+      }
+    }
+  }));
+
+  // RR Progression: current run rate vs required run rate (2nd innings only)
+  const rrCanvas = document.getElementById('chart-rr');
+  if (overData[2].length && inn1 && inn1.runs != null) {
+    const ctx2 = rrCanvas.getContext('2d');
+    const target = inn1.runs;
+    const rrLabels = [], currentRR = [], requiredRR = [];
+    let cum2RR = 0;
+    overData[2].forEach((o, i) => {
+      const ov = i + 1;
+      rrLabels.push('Ov ' + ov);
+      cum2RR += o.runs;
+      const ballsPlayed = overData[2].slice(0, ov).reduce((s, x) => s + x.balls, 0);
+      const crr = ballsPlayed > 0 ? +(cum2RR / (ballsPlayed / 6)).toFixed(2) : 0;
+      currentRR.push(crr);
+      const remOvers = maxOvers - ov + (ov > overData[2].length ? 1 : 0);
+      const remRuns = target - cum2RR + 1;
+      const rrr = remOvers > 0 ? +(remRuns / remOvers).toFixed(2) : 0;
+      requiredRR.push(ov <= overData[2].length ? rrr : null);
+    });
+    reportCharts.push(new Chart(ctx2, {
+      type: 'line',
+      data: {
+        labels: rrLabels,
+        datasets: [
+          { label: 'CRR (' + inn2.batting + ')', data: currentRR, borderColor: '#0891b2', backgroundColor: 'rgba(8,145,178,0.1)', fill: true, tension: 0.3, pointRadius: 3 },
+          { label: 'Req RR', data: requiredRR, borderColor: '#dc2626', borderDash: [5,3], tension: 0.3, pointRadius: 3, spanGaps: true }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: true,
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } },
+        scales: {
+          x: { ticks: { font: { size: 9 }, maxTicksLimit: 10 } },
+          y: { beginAtZero: true, ticks: { font: { size: 9 } }, title: { display: true, text: 'Run Rate', font: { size: 10 } } }
+        }
+      }
+    }));
+    document.getElementById('rr-fallback').style.display = 'none';
+    rrCanvas.style.display = '';
+  } else {
+    rrCanvas.style.display = 'none';
+    document.getElementById('rr-fallback').style.display = '';
+  }
+
+  // Wicket distribution: wickets per over
+  const ctx3 = document.getElementById('chart-wkts').getContext('2d');
+  const wktLabels = [], wktInn1 = [], wktInn2 = [];
+  for (let i = 0; i < maxOvers; i++) {
+    wktLabels.push('Ov ' + (i + 1));
+    wktInn1.push(overData[1][i] ? overData[1][i].wickets : 0);
+    wktInn2.push(overData[2][i] ? overData[2][i].wickets : 0);
+  }
+  reportCharts.push(new Chart(ctx3, {
+    type: 'bar',
+    data: {
+      labels: wktLabels,
+      datasets: [
+        { label: inn1 ? inn1.batting : 'Innings 1', data: wktInn1, backgroundColor: 'rgba(8,145,178,0.7)', borderRadius: 3 },
+        { label: inn2 ? inn2.batting : 'Innings 2', data: wktInn2, backgroundColor: 'rgba(5,150,105,0.7)', borderRadius: 3 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } },
+      scales: {
+        x: { ticks: { font: { size: 9 }, maxTicksLimit: 10 } },
+        y: { beginAtZero: true, ticks: { font: { size: 9 }, stepSize: 1 }, title: { display: true, text: 'Wickets', font: { size: 10 } } }
       }
     }
   }));

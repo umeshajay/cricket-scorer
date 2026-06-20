@@ -7,7 +7,7 @@ const PIN_KEY = 'scorer_authenticated';
 export default function SetupMatch() {
   const router = useRouter();
   const [allPlayers, setAllPlayers] = useState([]);
-  const [form, setForm] = useState({ matchId: '', overs: '6', teamA: '', teamB: '' });
+  const [form, setForm] = useState({ matchId: '', overs: '6', teamA: 'Team A', teamB: 'Team B' });
   const [playersPerTeam, setPlayersPerTeam] = useState(5);
   const [teamA, setTeamA] = useState([]);
   const [teamB, setTeamB] = useState([]);
@@ -94,7 +94,6 @@ export default function SetupMatch() {
     e.preventDefault();
     setMsg({ ok: false, text: '' });
     if (!form.matchId || !form.teamA || !form.teamB) return setMsg({ ok: false, text: 'Fill all fields.' });
-    if (teamA.length < 1 || teamB.length < 1) return setMsg({ ok: false, text: 'Each team needs at least one player.' });
 
     setBusy(true);
     try {
@@ -118,7 +117,7 @@ export default function SetupMatch() {
         status: 'upcoming',
       });
       setMsg({ ok: true, text: `Match ${form.matchId} created!` });
-      setForm({ matchId: '', overs: '6', teamA: '', teamB: '' });
+      setForm({ matchId: '', overs: '6', teamA: 'Team A', teamB: 'Team B' });
       setTeamA([]);
       setTeamB([]);
     } catch (e) {

@@ -16,6 +16,7 @@ export default function SetupMatch() {
   const [authed, setAuthed] = useState(null);
   const [pinInput, setPinInput] = useState('');
   const [pinErr, setPinErr] = useState('');
+  const [showPlayers, setShowPlayers] = useState(false);
 
   useEffect(() => {
     const fallback = setTimeout(() => { if (authed === null) setAuthed(true); }, 200);
@@ -225,6 +226,15 @@ export default function SetupMatch() {
         </div>
 
         <div>
+          <button type="button" onClick={() => setShowPlayers(!showPlayers)}
+            className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition">
+            <span>{showPlayers ? '▼' : '▶'}</span>
+            Assign Players <span className="text-xs text-gray-400">(optional)</span>
+          </button>
+        </div>
+
+        {showPlayers && (<>
+        <div>
           <label className="text-xs text-gray-500 block mb-1">Assign Players</label>
           <div className="flex gap-2">
             <select id="player-select" className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-cyan-500">
@@ -244,6 +254,7 @@ export default function SetupMatch() {
           <TeamBox name="Team A" players={teamA} max={playersPerTeam} color="cyan" onRemove={(id) => removeFrom('A', id)} />
           <TeamBox name="Team B" players={teamB} max={playersPerTeam} color="amber" onRemove={(id) => removeFrom('B', id)} />
         </div>
+        </>)}
 
         <button type="submit" disabled={busy}
           className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white py-3 rounded-lg font-bold transition shadow-sm">

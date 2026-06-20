@@ -67,7 +67,7 @@ label{font-size:13px;font-weight:600;color:#374151;margin-bottom:2px;display:blo
   </div>
   <div id="home-match-list" class="space-y-2"></div>
   <button onclick="showView('setup')" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 rounded-xl text-base shadow-sm active:scale-95 transition">+ New Match</button>
-  <div class="text-center text-xs text-gray-400">Data saves in your browser (localStorage)</div>
+   <div id="storage-text" class="text-center text-xs text-gray-400">Data saves in your browser (localStorage)</div>
 </div>
 
 <!-- ══ SETUP ══ -->
@@ -230,21 +230,13 @@ function load() {
   try { return JSON.parse(localStorage.getItem(KEY)) || defaultData(); }
   catch { return defaultData(); }
 }
-function save(d) { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch(e) { console.warn('save failed',e); } queueGithubSync(); }
+function save(d) {
+  try { localStorage.setItem(KEY, JSON.stringify(d)); } catch(e) { console.warn('save failed',e); }
+  const cfg = getGitHubConfig();
+  if (cfg.token && cfg.repo) githubPush(d).catch(e => console.warn('github sync failed', e));
+}
 function getGitHubConfig() { try { return JSON.parse(localStorage.getItem('gh_sync_config')) || {}; } catch { return {}; } }
 function saveGitHubConfig(cfg) { try { localStorage.setItem('gh_sync_config', JSON.stringify(cfg)); } catch(e) { console.warn('config save failed',e); } }
-
-let _ghSyncTimer = null;
-function queueGithubSync() {
-  const cfg = getGitHubConfig();
-  if (!cfg.token || !cfg.repo) return;
-  if (_ghSyncTimer) return;
-  _ghSyncTimer = setTimeout(() => {
-    _ghSyncTimer = null;
-    const d = load();
-    githubPush(d).catch(e => console.warn('auto-sync failed', e));
-  }, 30000);
-}
 function defaultData() {
   return { matches: {}, players: {}, matchTeams: {}, innings: {}, balls: {}, ballSeq: 0, teamPresets: [] };
 }
@@ -1021,6 +1013,10 @@ function closeModal() {
 // ─────── HOME ───────
 function renderHome() {
   const d = load();
+  const cfg = getGitHubConfig();
+  document.getElementById('storage-text').textContent = cfg.token && cfg.repo
+    ? '☁️ Auto-syncs to GitHub (' + cfg.repo + ')'
+    : 'Data saves in your browser (localStorage)';
   const matches = Object.values(d.matches || {}).sort((a, b) => (b.created || '').localeCompare(a.created || ''));
   const el = document.getElementById('home-match-list');
   if (!matches.length) {

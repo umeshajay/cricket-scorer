@@ -1277,7 +1277,7 @@ function openSettingsModal() {
     '<button onclick="exportData()" class="w-full btn-score btn-sm bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold mb-2">💾 Export data (download .json)</button>' +
     '<button onclick="importData()" class="w-full btn-score btn-sm bg-amber-50 text-amber-700 border border-amber-200 font-semibold mb-2">📂 Import data (upload .json)</button>' +
     '<div class="border-t border-gray-200 my-3"></div>' +
-    '<button onclick="deleteCompletedMatches()" class="w-full btn-score btn-sm bg-red-50 text-red-700 border border-red-200 font-semibold">🗑️ Delete all completed match data</button>';
+    '<button onclick="closeModal();openManageMatchesModal()" class="w-full btn-score btn-sm bg-red-50 text-red-700 border border-red-200 font-semibold">🗑️ Manage completed matches</button>';
   document.getElementById('modal-overlay').classList.add('open');
 }
 
@@ -1352,6 +1352,53 @@ function deleteCompletedMatches() {
   save(d);
   closeModal();
   renderHome();
+}
+
+function openManageMatchesModal() {
+  const d = load();
+  const completed = Object.values(d.matches || {}).filter(m => m.status === 'completed');
+  document.getElementById('modal-title').textContent = '🗑️ Manage Completed Matches';
+  if (!completed.length) {
+    document.getElementById('modal-body').innerHTML = '<div class="text-center text-gray-400 text-sm py-4">No completed matches</div><button onclick="closeModal()" class="w-full text-gray-400 text-sm py-2 hover:text-gray-600 font-medium">Back</button>';
+    document.getElementById('modal-overlay').classList.add('open');
+    return;
+  }
+  let html = '<div class="space-y-2 mb-3 max-h-64 overflow-y-auto">';
+  const mids = Object.keys(d.matches || {}).filter(mid => d.matches[mid].status === 'completed')
+    .sort((a, b) => ((d.matches[b].created || '') + b).localeCompare((d.matches[a].created || '') + a));
+  mids.forEach(mid => {
+    const m = d.matches[mid];
+    const inn1 = d.innings[mid + '_1'];
+    const s = (inn1 ? inn1.runs + '/' + inn1.wickets : '?');
+    html += '<label class="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 cursor-pointer">' +
+      '<input type="checkbox" class="match-del-cb" value="' + mid + '" style="width:18px;height:18px;accent-color:#dc2626">' +
+      '<span class="text-sm font-medium text-gray-700 flex-1">' + m.teamA + ' vs ' + m.teamB + ' — ' + s + '</span>' +
+      '<span class="text-xs text-gray-400">' + (m.created ? new Date(m.created).toLocaleDateString() : '') + '</span>' +
+      '</label>';
+  });
+  html += '</div>' +
+    '<button onclick="deleteSelectedMatches()" class="w-full btn-score btn-sm bg-red-500 hover:bg-red-600 text-white font-semibold">🗑️ Delete selected</button>' +
+    '<button onclick="closeModal()" class="w-full text-gray-400 text-sm py-2 hover:text-gray-600 font-medium">Cancel</button>';
+  document.getElementById('modal-body').innerHTML = html;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function deleteSelectedMatches() {
+  const checked = document.querySelectorAll('.match-del-cb:checked');
+  if (!checked.length) return;
+  const ids = Array.from(checked).map(cb => cb.value);
+  if (!confirm('Delete ' + ids.length + ' match' + (ids.length > 1 ? 'es' : '') + '? This cannot be undone.')) return;
+  const d = load();
+  ids.forEach(mid => {
+    delete d.matches[mid];
+    delete d.matchTeams[mid];
+    delete d.innings[mid + '_1'];
+    delete d.innings[mid + '_2'];
+    delete d.balls[mid];
+  });
+  save(d);
+  renderHome();
+  openManageMatchesModal();
 }
 
 // ─────── GITHUB SYNC ───────

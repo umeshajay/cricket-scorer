@@ -7,7 +7,8 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f1f5f9;min-height:100dvh}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f1f5f9;min-height:100dvh;touch-action:manipulation}
+button{touch-action:manipulation}
 .view{display:none}.view.active{display:block}
 #view-scorer.active{display:block;min-height:100dvh;padding-bottom:220px}
 .scorer-history{margin-top:8px}
@@ -191,7 +192,7 @@ function load() {
   try { return JSON.parse(localStorage.getItem(KEY)) || defaultData(); }
   catch { return defaultData(); }
 }
-function save(d) { localStorage.setItem(KEY, JSON.stringify(d)); }
+function save(d) { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch(e) { console.warn('save failed',e); } }
 function defaultData() {
   return { matches: {}, players: {}, matchTeams: {}, innings: {}, balls: {}, ballSeq: 0, teamPresets: [] };
 }

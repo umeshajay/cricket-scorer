@@ -300,7 +300,37 @@ function openScorer(mid) {
   currentState.matchId = mid;
   currentState.inningsNo = 1;
   showView('scorer');
+  ensureInningsTwo(mid);
   renderScorer();
+}
+
+function ensureInningsTwo(mid) {
+  const d = load();
+  if (d.innings[innKey(mid, 2)]) return;
+  const m = d.matches[mid];
+  if (!m) return;
+  const mt = d.matchTeams[mid];
+  const teamBplayers = mt ? (mt.xiB || mt.teamBIds || []) : [];
+  const teamAplayers = mt ? (mt.xiA || mt.teamAIds || []) : [];
+  const bs2 = {};
+  teamBplayers.forEach(p => { bs2[p.id] = { runs: 0, balls: 0, fours: 0, sixes: 0, dismissed: false, dismissalType: null }; });
+  teamAplayers.forEach(p => { bs2[p.id] = { runs: 0, balls: 0, fours: 0, sixes: 0, dismissed: false, dismissalType: null }; });
+  const br2 = {};
+  teamAplayers.forEach(p => { br2[p.id] = { runs: 0, wickets: 0, balls: 0 }; });
+  d.innings[innKey(mid, 2)] = {
+    id: mid + '_2', matchId: mid, inningsNo: 2,
+    batting: m.teamB, bowling: m.teamA,
+    runs: 0, wickets: 0, balls: 0, extras: 0,
+    currentOver: 0, currentBall: 0,
+    battingOrder: teamBplayers.map(p => p.id),
+    strikerIdx: 0, nonStrikerIdx: 1, nextIdx: 2,
+    batsmanStats: bs2,
+    currentBowler: teamAplayers.length > 0 ? teamAplayers[0].id : null,
+    bowlerStats: br2,
+    overBalls: [],
+    completed: false,
+  };
+  save(d);
 }
 
 function getInnings(mid, innNo) {
@@ -887,10 +917,11 @@ function endInnings() {
   // Innings 1 ended → auto-transition to innings 2
   d.matches[mid].status = 'ongoing';
   save(d);
-  showWhatsAppShare();
+  hideWhatsAppShare();
+  ensureInningsTwo(mid);
   currentState.inningsNo = 2;
   renderScorer();
-  alert('Innings 1 complete! Now batting: ' + inn.bowling);
+  alert('Innings 1 complete!\nNow batting: ' + inn.bowling + '\n\nTap "Share" to send score to WhatsApp group');
 }
 
 function checkInningsEnd() {

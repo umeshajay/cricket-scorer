@@ -3,8 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<!-- v4 -->
 <title>Cricket Scorer</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f1f5f9;min-height:100dvh;touch-action:manipulation}
@@ -157,6 +163,38 @@ label{font-size:13px;font-weight:600;color:#374151;margin-bottom:2px;display:blo
     <button onclick="renderLeaderboard()" class="ml-auto bg-gray-100 border px-3 py-1.5 rounded-lg text-xs font-medium">↻</button>
   </div>
   <div id="lb-teams" class="space-y-3"></div>
+</div>
+
+<!-- ══ MATCH REPORT ══ -->
+<div id="view-report" class="view">
+  <div class="flex items-center gap-2 flex-shrink-0">
+    <button onclick="showView('home')" class="text-cyan-600 font-medium text-sm">&larr; Back</button>
+    <h2 class="text-xl font-bold text-gray-900" id="report-title">Match Stats</h2>
+    <div class="ml-auto flex gap-2">
+      <button onclick="shareReport()" class="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-1.5 rounded-lg text-sm">📱 Share</button>
+    </div>
+  </div>
+  <div id="report-content" class="space-y-4 pb-4">
+    <div class="bg-white rounded-xl p-3 border border-gray-200 shadow-sm text-center">
+      <div class="font-bold text-gray-900" id="report-match-name"></div>
+      <div class="text-xs text-gray-500" id="report-match-date"></div>
+      <div class="text-sm font-semibold mt-1 text-emerald-600" id="report-match-result"></div>
+    </div>
+    <div class="bg-white rounded-xl p-3 border border-gray-200 shadow-sm">
+      <div class="text-xs font-semibold text-gray-500 uppercase mb-2">📈 Run Rate Progression</div>
+      <canvas id="chart-worm"></canvas>
+    </div>
+    <div class="bg-white rounded-xl p-3 border border-gray-200 shadow-sm">
+      <div class="text-xs font-semibold text-gray-500 uppercase mb-2">🔥 Required vs Current Run Rate</div>
+      <canvas id="chart-rr"></canvas>
+      <div id="rr-fallback" class="text-xs text-gray-400 py-4 text-center" style="display:none">RR progression available after 2nd innings starts</div>
+    </div>
+    <div class="bg-white rounded-xl p-3 border border-gray-200 shadow-sm">
+      <div class="text-xs font-semibold text-gray-500 uppercase mb-2">🏏 Wickets per Over</div>
+      <canvas id="chart-wkts"></canvas>
+    </div>
+    <button onclick="shareReport()" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-xl text-base shadow-sm">📱 Share Match Report</button>
+  </div>
 </div>
 
 <!-- ══ MODAL ══ -->
@@ -988,11 +1026,14 @@ function renderHome() {
     const ov1 = inn1 && inn1.currentOver != null ? inn1.currentOver + '.' + (inn1.currentBall != null ? inn1.currentBall : 0) : '—';
     const score2 = inn2 && inn1 && inn1.completed && inn2.runs != null ? inn2.runs + '/' + inn2.wickets : null;
     const ov2 = inn2 && inn2.currentOver != null ? inn2.currentOver + '.' + (inn2.currentBall != null ? inn2.currentBall : 0) : null;
-    return '<div onclick="openScorer(\'' + m.id + '\')" class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm flex items-center justify-between cursor-pointer active:scale-[0.98] transition">' +
+    return '<div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">' +
+      '<div onclick="openScorer(\'' + m.id + '\')" class="flex items-center justify-between cursor-pointer active:scale-[0.98] transition">' +
       '<div><div class="font-semibold text-gray-900 text-sm">' + ta + ' vs ' + tb + '</div>' +
       '<div class="text-xs text-gray-500">' + m.id + ' &middot; ' + mov + ' ov &middot; <span class="' + (isOn ? 'text-green-600' : 'text-gray-400') + ' font-medium">' + m.status + '</span></div></div>' +
       '<div class="text-right"><div class="text-lg font-black ' + (isOn ? 'text-cyan-600' : 'text-gray-500') + '">' + score1 + (score2 ? ' & ' + score2 : '') + '</div>' +
-      '<div class="text-xs text-gray-400">Ov ' + ov1 + (ov2 ? ' & ' + ov2 : '') + '</div></div></div>';
+      '<div class="text-xs text-gray-400">Ov ' + ov1 + (ov2 ? ' & ' + ov2 : '') + '</div></div></div>' +
+      (isOn ? '' : '<button onclick="event.stopPropagation();openReport(\'' + m.id + '\')" class="mt-2 w-full bg-cyan-50 hover:bg-cyan-100 text-cyan-700 font-semibold py-1.5 rounded-lg text-xs border border-cyan-200">📊 Stats</button>') +
+      '</div>';
   }).join('');
 }
 
@@ -1073,7 +1114,8 @@ function renderLeaderboard() {
           '<div class="px-3 py-2 text-center tabular-nums text-gray-600">' + rrStr(inn2) + '</div>' +
         '</div>' +
         // View Scorecard link
-        '<button onclick="toggleScorecard(\'' + mid + '\',this)" class="text-xs text-cyan-600 font-medium hover:underline">📋 View Full Scorecard</button>' +
+        '<div class="flex gap-2 mt-1"><button onclick="toggleScorecard(\'' + mid + '\',this)" class="text-xs text-cyan-600 font-medium hover:underline">📋 Scorecard</button>' +
+        '<button onclick="openReport(\'' + mid + '\')" class="text-xs text-emerald-600 font-medium hover:underline">📊 Stats</button></div>' +
         // Scorecard (hidden)
         '<div id="sc-' + mid + '" class="hidden mt-3 border-t border-gray-100 pt-3 space-y-1.5"></div>' +
       '</div>';
@@ -1247,6 +1289,219 @@ function deleteCompletedMatches() {
   renderHome();
 }
 
+// ─────── MATCH REPORT ───────
+function getOverData(d, mid) {
+  const balls = (d.balls[mid] || []).sort((a, b) => a.id - b.id);
+  const inningsOverData = { 1: [], 2: [] };
+  let curInn = 0, curOver = -1, overRuns = 0, overWkts = 0, overBalls = 0;
+  const flushOver = () => {
+    if (curInn && curOver >= 0) {
+      const overNum = curOver + 1;
+      inningsOverData[curInn].push({ over: overNum, runs: overRuns, wickets: overWkts, balls: overBalls });
+    }
+  };
+  balls.forEach(b => {
+    if (b.inningsNo !== curInn) { flushOver(); curInn = b.inningsNo; curOver = -1; overRuns = 0; overWkts = 0; overBalls = 0; }
+    if (b.over !== curOver) { flushOver(); curOver = b.over; overRuns = 0; overWkts = 0; overBalls = 0; }
+    overRuns += (b.totalRuns || b.runs || 0);
+    if (b.wicket) overWkts++;
+    overBalls++;
+  });
+  flushOver();
+  return inningsOverData;
+}
+
+let reportCharts = [];
+
+function destroyReportCharts() {
+  reportCharts.forEach(c => { try { c.destroy(); } catch(e) {} });
+  reportCharts = [];
+}
+
+function openReport(mid) {
+  const d = load();
+  const m = d.matches[mid];
+  if (!m) return;
+  const inn1 = d.innings[mid + '_1'];
+  const inn2 = d.innings[mid + '_2'];
+  document.getElementById('report-match-name').textContent = m.teamA + ' vs ' + m.teamB;
+  document.getElementById('report-match-date').textContent = m.created ? new Date(m.created).toLocaleString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+  let result = '';
+  if (inn1 && inn2 && inn1.completed && inn2.completed) {
+    if (inn1.runs > inn2.runs) result = inn1.batting + ' won by ' + (inn1.runs - inn2.runs) + ' runs';
+    else if (inn2.runs > inn1.runs) result = inn2.batting + ' won';
+    else result = 'Match Tied';
+  } else if (m.status === 'ongoing') {
+    result = 'Ongoing — ' + (inn1 ? inn1.batting : '?') + ' batting';
+  }
+  document.getElementById('report-match-result').textContent = result;
+  document.getElementById('report-title').dataset.mid = mid;
+  showView('report');
+  destroyReportCharts();
+  buildCharts(d, mid, inn1, inn2);
+}
+
+function buildCharts(d, mid, inn1, inn2) {
+  if (typeof Chart === 'undefined') {
+    document.getElementById('report-content').innerHTML = '<div class="text-center text-gray-400 py-8 text-sm">Charts library not loaded. Please reload and try again.</div>';
+    return;
+  }
+  const overData = getOverData(d, mid);
+  const maxOvers = d.matches[mid] ? d.matches[mid].overs : 20;
+
+  // Worm graph: cumulative runs per over for both innings
+  let cum1 = 0, cum2 = 0;
+  const wormLabels = [], wormInn1 = [], wormInn2 = [];
+  const len = Math.max(overData[1].length, overData[2].length);
+  for (let i = 0; i < len; i++) {
+    wormLabels.push('Ov ' + (i + 1));
+    if (overData[1][i]) { cum1 += overData[1][i].runs; }
+    wormInn1.push(cum1);
+    if (overData[2][i]) { cum2 += overData[2][i].runs; }
+    wormInn2.push(cum2);
+  }
+  // If only one innings completed, still show all overs up to max
+  if (!overData[2].length) {
+    for (let i = overData[1].length; i < maxOvers; i++) {
+      wormLabels.push('Ov ' + (i + 1));
+      wormInn1.push(cum1);
+      wormInn2.push(null);
+    }
+  }
+
+  const ctx1 = document.getElementById('chart-worm').getContext('2d');
+  reportCharts.push(new Chart(ctx1, {
+    type: 'line',
+    data: {
+      labels: wormLabels,
+      datasets: [
+        { label: inn1 ? inn1.batting : 'Innings 1', data: wormInn1, borderColor: '#0891b2', backgroundColor: 'rgba(8,145,178,0.1)', fill: true, tension: 0.3, pointRadius: 3, spanGaps: false },
+        { label: inn2 ? inn2.batting : 'Innings 2', data: wormInn2, borderColor: '#059669', backgroundColor: 'rgba(5,150,105,0.1)', fill: true, tension: 0.3, pointRadius: 3, spanGaps: false }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } },
+      scales: {
+        x: { ticks: { font: { size: 9 }, maxTicksLimit: 10 } },
+        y: { beginAtZero: true, ticks: { font: { size: 9 } }, title: { display: true, text: 'Cumulative Runs', font: { size: 10 } } }
+      }
+    }
+  }));
+
+  // RR Progression: current run rate vs required run rate (2nd innings only)
+  const rrCanvas = document.getElementById('chart-rr');
+  if (overData[2].length && inn1 && inn1.runs != null) {
+    const ctx2 = rrCanvas.getContext('2d');
+    const target = inn1.runs;
+    const rrLabels = [], currentRR = [], requiredRR = [];
+    let cum2RR = 0;
+    overData[2].forEach((o, i) => {
+      const ov = i + 1;
+      rrLabels.push('Ov ' + ov);
+      cum2RR += o.runs;
+      const ballsPlayed = overData[2].slice(0, ov).reduce((s, x) => s + x.balls, 0);
+      const crr = ballsPlayed > 0 ? +(cum2RR / (ballsPlayed / 6)).toFixed(2) : 0;
+      currentRR.push(crr);
+      const remOvers = maxOvers - ov + (ov > overData[2].length ? 1 : 0);
+      const remRuns = target - cum2RR + 1;
+      const rrr = remOvers > 0 ? +(remRuns / remOvers).toFixed(2) : 0;
+      requiredRR.push(ov <= overData[2].length ? rrr : null);
+    });
+    reportCharts.push(new Chart(ctx2, {
+      type: 'line',
+      data: {
+        labels: rrLabels,
+        datasets: [
+          { label: 'CRR (' + inn2.batting + ')', data: currentRR, borderColor: '#0891b2', backgroundColor: 'rgba(8,145,178,0.1)', fill: true, tension: 0.3, pointRadius: 3 },
+          { label: 'Req RR', data: requiredRR, borderColor: '#dc2626', borderDash: [5,3], tension: 0.3, pointRadius: 3, spanGaps: true }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: true,
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } },
+        scales: {
+          x: { ticks: { font: { size: 9 }, maxTicksLimit: 10 } },
+          y: { beginAtZero: true, ticks: { font: { size: 9 } }, title: { display: true, text: 'Run Rate', font: { size: 10 } } }
+        }
+      }
+    }));
+    document.getElementById('rr-fallback').style.display = 'none';
+    rrCanvas.style.display = '';
+  } else {
+    rrCanvas.style.display = 'none';
+    document.getElementById('rr-fallback').style.display = '';
+  }
+
+  // Wicket distribution: wickets per over
+  const ctx3 = document.getElementById('chart-wkts').getContext('2d');
+  const wktLabels = [], wktInn1 = [], wktInn2 = [];
+  for (let i = 0; i < maxOvers; i++) {
+    wktLabels.push('Ov ' + (i + 1));
+    wktInn1.push(overData[1][i] ? overData[1][i].wickets : 0);
+    wktInn2.push(overData[2][i] ? overData[2][i].wickets : 0);
+  }
+  reportCharts.push(new Chart(ctx3, {
+    type: 'bar',
+    data: {
+      labels: wktLabels,
+      datasets: [
+        { label: inn1 ? inn1.batting : 'Innings 1', data: wktInn1, backgroundColor: 'rgba(8,145,178,0.7)', borderRadius: 3 },
+        { label: inn2 ? inn2.batting : 'Innings 2', data: wktInn2, backgroundColor: 'rgba(5,150,105,0.7)', borderRadius: 3 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } },
+      scales: {
+        x: { ticks: { font: { size: 9 }, maxTicksLimit: 10 } },
+        y: { beginAtZero: true, ticks: { font: { size: 9 }, stepSize: 1 }, title: { display: true, text: 'Wickets', font: { size: 10 } } }
+      }
+    }
+  }));
+}
+
+function shareReport() {
+  const mid = document.getElementById('report-title').dataset.mid;
+  const d = load();
+  const m = d.matches[mid];
+  if (!m) return;
+  const inn1 = d.innings[mid + '_1'];
+  const inn2 = d.innings[mid + '_2'];
+  const el = document.getElementById('report-content');
+  html2canvas(el, { scale: 2, backgroundColor: '#f1f5f9', useCORS: true, logging: false }).then(canvas => {
+    const imgData = canvas.toDataURL('image/png');
+    const text =
+      '🏏 *' + m.teamA + ' vs ' + m.teamB + '*\n' +
+      '━━━━━━━━━━━━━━━\n' +
+      '📊 Match Stats\n' +
+      (inn1 ? '▸ ' + inn1.batting + ': ' + inn1.runs + '/' + inn1.wickets + ' (' + inn1.currentOver + '.' + inn1.currentBall + ' ov, RR: ' + (inn1.balls > 0 ? (inn1.runs / (inn1.balls / 6)).toFixed(2) : '0.00') + ')\n' : '') +
+      (inn2 ? '▸ ' + inn2.batting + ': ' + inn2.runs + '/' + inn2.wickets + ' (' + inn2.currentOver + '.' + inn2.currentBall + ' ov, RR: ' + (inn2.balls > 0 ? (inn2.runs / (inn2.balls / 6)).toFixed(2) : '0.00') + ')\n' : '') +
+      (inn1 && inn2 && inn1.completed && inn2.completed
+        ? (inn1.runs > inn2.runs ? '🏆 ' + inn1.batting + ' won' : inn2.runs > inn1.runs ? '🏆 ' + inn2.batting + ' won' : '🤝 Tied') + '\n'
+        : '') +
+      '━━━━━━━━━━━━━━━\n' +
+      '📈 See graphs in the app\n' +
+      '🔗 https://umeshajay.github.io/cricket-scorer/scorer\n' +
+      '━━━━━━━━━━━━━━━';
+    const link = document.getElementById('wa-link');
+    link.href = 'https://wa.me/?text=' + encodeURIComponent(text);
+    document.getElementById('wa-overlay').classList.add('open');
+  }).catch(() => {
+    // Fallback: text-only share
+    const text =
+      '🏏 *' + m.teamA + ' vs ' + m.teamB + '*\n' +
+      '━━━━━━━━━━━━━━━\n' +
+      (inn1 ? inn1.batting + ': ' + inn1.runs + '/' + inn1.wickets + '\n' : '') +
+      (inn2 ? inn2.batting + ': ' + inn2.runs + '/' + inn2.wickets + '\n' : '') +
+      '━━━━━━━━━━━━━━━\n' +
+      '🔗 https://umeshajay.github.io/cricket-scorer/scorer';
+    const link = document.getElementById('wa-link');
+    link.href = 'https://wa.me/?text=' + encodeURIComponent(text);
+    document.getElementById('wa-overlay').classList.add('open');
+  });
+}
+
 // ─────── MIGRATION ───────
 function migrateOldData() {
   const d = load();
@@ -1273,10 +1528,9 @@ function migrateOldData() {
     }
     if (!m.teamA || !m.teamB || m.overs == null) {
       delete d.matches[mid];
-      // remove innings & balls too
       delete d.innings[mid + '_1'];
       delete d.innings[mid + '_2'];
-      delete d.balls;
+      if (d.balls) delete d.balls[mid];
       changed = true;
     }
   });

@@ -690,12 +690,12 @@
       "inningsNo": 1,
       "batting": "sarath",
       "bowling": "umesh",
-      "runs": 10,
+      "runs": 19,
       "wickets": 0,
-      "balls": 6,
+      "balls": 8,
       "extras": 0,
       "currentOver": 1,
-      "currentBall": 0,
+      "currentBall": 2,
       "battingOrder": [
         "p1781945949223p1ms",
         "p1781945949223smrh",
@@ -703,8 +703,8 @@
         "p1781945949223zrrh",
         "p17819459492232k83"
       ],
-      "strikerIdx": 1,
-      "nonStrikerIdx": 0,
+      "strikerIdx": 0,
+      "nonStrikerIdx": 1,
       "nextIdx": 2,
       "batsmanStats": {
         "p1781945949223p1ms": {
@@ -716,10 +716,10 @@
           "dismissalType": null
         },
         "p1781945949223smrh": {
-          "runs": 5,
-          "balls": 2,
+          "runs": 14,
+          "balls": 4,
           "fours": 0,
-          "sixes": 0,
+          "sixes": 1,
           "dismissed": false,
           "dismissalType": null
         },
@@ -791,9 +791,9 @@
       "currentBowler": "p1781945949223hxu8",
       "bowlerStats": {
         "p1781945949223hxu8": {
-          "runs": 10,
+          "runs": 19,
           "wickets": 0,
-          "balls": 6
+          "balls": 8
         },
         "p1781945949223dr2c": {
           "runs": 0,
@@ -816,7 +816,40 @@
           "balls": 0
         }
       },
-      "overBalls": [],
+      "overBalls": [
+        {
+          "id": 390,
+          "inningsNo": 1,
+          "over": 2,
+          "ballInOver": 1,
+          "runs": 6,
+          "extras": 0,
+          "extraType": null,
+          "wicket": false,
+          "wicketType": null,
+          "strikerId": "p1781945949223smrh",
+          "nonStrikerId": "p1781945949223p1ms",
+          "bowlerId": "p1781945949223hxu8",
+          "totalRuns": 6,
+          "timestamp": "2026-06-20T08:59:49.950Z"
+        },
+        {
+          "id": 391,
+          "inningsNo": 1,
+          "over": 2,
+          "ballInOver": 2,
+          "runs": 3,
+          "extras": 0,
+          "extraType": null,
+          "wicket": false,
+          "wicketType": null,
+          "strikerId": "p1781945949223smrh",
+          "nonStrikerId": "p1781945949223p1ms",
+          "bowlerId": "p1781945949223hxu8",
+          "totalRuns": 3,
+          "timestamp": "2026-06-20T08:59:51.124Z"
+        }
+      ],
       "completed": false
     },
     "M001_2": {
@@ -1052,10 +1085,42 @@
         "bowlerId": "p1781945949223hxu8",
         "totalRuns": 0,
         "timestamp": "2026-06-20T08:59:25.190Z"
+      },
+      {
+        "id": 390,
+        "inningsNo": 1,
+        "over": 2,
+        "ballInOver": 1,
+        "runs": 6,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781945949223smrh",
+        "nonStrikerId": "p1781945949223p1ms",
+        "bowlerId": "p1781945949223hxu8",
+        "totalRuns": 6,
+        "timestamp": "2026-06-20T08:59:49.950Z"
+      },
+      {
+        "id": 391,
+        "inningsNo": 1,
+        "over": 2,
+        "ballInOver": 2,
+        "runs": 3,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1781945949223smrh",
+        "nonStrikerId": "p1781945949223p1ms",
+        "bowlerId": "p1781945949223hxu8",
+        "totalRuns": 3,
+        "timestamp": "2026-06-20T08:59:51.124Z"
       }
     ]
   },
-  "ballSeq": 389,
+  "ballSeq": 391,
   "teamPresets": [
     "umesh",
     "sarath"

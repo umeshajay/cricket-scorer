@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { fetchMatches, fetchMatchById, fetchInnings, fetchBalls } from '../lib/supabase';
+import { fetchMatches, fetchMatchById, fetchInnings, fetchBalls } from '../lib/api';
 
 export default function Dashboard() {
   const router = useRouter();

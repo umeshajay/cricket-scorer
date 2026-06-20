@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { fetchPlayers, fetchMatches, createMatch, fetchMatchById, fetchSetting, upsertSetting } from '../lib/supabase';
+import { fetchPlayers, fetchMatches, createMatch, fetchMatchById, fetchSetting, upsertSetting } from '../lib/api';
 
 const PIN_KEY = 'scorer_authenticated';
 
@@ -199,9 +199,6 @@ export default function SetupMatch() {
       </div>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm space-y-4">
-        <div className="text-xs text-gray-400 mb-2">
-          Debug: ID="{form.matchId}" A="{form.teamA}" B="{form.teamB}"
-        </div>
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <div>
             <label className="text-xs text-gray-500 block mb-1">Match ID</label>

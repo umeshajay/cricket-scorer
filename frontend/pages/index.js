@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { fetchMatches } from '../lib/supabase';
+import { fetchMatches } from '../lib/api';
 
 const statusBadge = (s) => {
   const m = {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchTopRunScorers, fetchTopWicketTakers } from '../lib/supabase';
+import { fetchTopRunScorers, fetchTopWicketTakers } from '../lib/api';
 
 const PODIUM_COLORS = ['bg-amber-400', 'bg-gray-300', 'bg-amber-700'];
 const PODIUM_LABELS = ['1st', '2nd', '3rd'];

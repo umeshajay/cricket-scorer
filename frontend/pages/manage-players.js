@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchPlayers, addPlayer, deletePlayer } from '../lib/supabase';
+import { fetchPlayers, addPlayer, deletePlayer } from '../lib/api';
 
 export default function ManagePlayers() {
   const [players, setPlayers] = useState([]);

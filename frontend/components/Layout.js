@@ -5,6 +5,7 @@ const NAV = [
   { href: '/', label: 'Home' },
   { href: '/manage-players', label: 'Players' },
   { href: '/setup-match', label: 'New Match' },
+  { href: '/scorer', label: 'Scorer' },
   { href: '/dashboard', label: 'Live Score' },
   { href: '/leaderboard', label: 'Leaderboard' },
 ];
@@ -36,7 +37,7 @@ export default function Layout({ children }) {
       <main className="flex-1 px-4 py-6 max-w-5xl w-full mx-auto">{children}</main>
 
       <footer className="text-center text-gray-400 text-xs py-4 border-t border-gray-200">
-        Cricket Scorer &mdash; Supabase + Telegram
+        Cricket Scorer &mdash; GitHub + GitHub Actions
       </footer>
     </div>
   );

@@ -97,11 +97,7 @@ label{font-size:13px;font-weight:600;color:#374151;margin-bottom:2px;display:blo
     <div class="text-xs text-gray-500 mt-0.5">Ov <span id="sb-ov">0.0</span>/<span id="sb-maxov">0</span> &middot; RR <span id="sb-rr">0.00</span> &middot; <span id="sb-bat">Batting</span> &middot; Extras <span id="sb-ext">0</span></div>
   </div>
 
-  <div id="scorer-batsmen" class="bg-white rounded-xl p-3 border border-gray-200 shadow-sm">
-    <div class="flex justify-between text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 px-2"><span>Batsman</span><span>R B 4s 6s</span></div>
-    <div id="sb-striker" class="flex justify-between px-2 py-1.5 bg-blue-50 rounded-lg text-sm font-medium text-gray-800"><span></span><span></span></div>
-    <div id="sb-nonstriker" class="flex justify-between px-2 py-1.5 text-sm text-gray-600"><span></span><span></span></div>
-  </div>
+
 
   <div class="bg-white rounded-xl p-3 border border-gray-200 shadow-sm flex items-center justify-between">
     <span class="text-sm text-gray-600"><span class="font-semibold">Bowler:</span> <span id="sb-bowler">—</span></span>
@@ -407,24 +403,8 @@ function renderScorer() {
     toggleEl.style.display = 'none';
   }
 
-  // Batsmen
-  const sId = inn.battingOrder[inn.strikerIdx];
-  const nsId = inn.battingOrder[inn.nonStrikerIdx];
-  const p = d.players || {};
-  if (sId) {
-    const s = inn.batsmanStats[sId] || { runs: 0, balls: 0, fours: 0, sixes: 0 };
-    document.getElementById('sb-striker').innerHTML =
-      '<span>' + (p[sId]?.name || 'Bat') + '<span class="text-xs text-blue-500 ml-1">*</span></span>' +
-      '<span class="tabular-nums">' + s.runs + ' ' + s.balls + ' ' + s.fours + ' ' + s.sixes + '</span>';
-  }
-  if (nsId) {
-    const ns = inn.batsmanStats[nsId] || { runs: 0, balls: 0, fours: 0, sixes: 0 };
-    document.getElementById('sb-nonstriker').innerHTML =
-      '<span>' + (p[nsId]?.name || 'Bat') + '</span>' +
-      '<span class="tabular-nums">' + ns.runs + ' ' + ns.balls + ' ' + ns.fours + ' ' + ns.sixes + '</span>';
-  }
-
   // Bowler
+  const p = d.players || {};
   if (inn.currentBowler) {
     const b = inn.bowlerStats[inn.currentBowler] || { runs: 0, wickets: 0, balls: 0 };
     document.getElementById('sb-bowler').textContent = p[inn.currentBowler]?.name || '?';

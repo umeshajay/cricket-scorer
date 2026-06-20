@@ -189,9 +189,9 @@ export default function SetupMatch() {
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <div>
             <label className="text-xs text-gray-500 block mb-1">Match ID</label>
-            <input value={form.matchId} onChange={(e) => setForm({ ...form, matchId: e.target.value })}
-              className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-cyan-500"
-              placeholder="M001" />
+            <input value={form.matchId} readOnly
+              className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-500 cursor-not-allowed"
+              placeholder="Auto-generated" />
           </div>
           <div>
             <label className="text-xs text-gray-500 block mb-1">Overs</label>

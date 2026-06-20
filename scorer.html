@@ -1001,8 +1001,16 @@ function renderLeaderboard() {
     // Store match detail for both teams
     [m.teamA, m.teamB].forEach(name => {
       const opp = name === m.teamA ? m.teamB : m.teamA;
-      const s1 = inn1 ? inn1.runs + '/' + inn1.wickets + ' (' + inn1.batting + ')' : '—';
-      const s2 = inn2 ? inn2.runs + '/' + inn2.wickets + ' (' + inn2.batting + ')' : '—';
+      const inn1detail = inn1 ? {
+        batting: inn1.batting, runs: inn1.runs, wkts: inn1.wickets,
+        ov: inn1.currentOver + '.' + inn1.currentBall,
+        rr: inn1.balls > 0 ? (inn1.runs / (inn1.balls / 6)).toFixed(2) : '0.00',
+      } : null;
+      const inn2detail = inn2 ? {
+        batting: inn2.batting, runs: inn2.runs, wkts: inn2.wickets,
+        ov: inn2.currentOver + '.' + inn2.currentBall,
+        rr: inn2.balls > 0 ? (inn2.runs / (inn2.balls / 6)).toFixed(2) : '0.00',
+      } : null;
       let result = '';
       if (m.status === 'completed' && inn1 && inn1.completed && inn2 && inn2.completed) {
         if (inn1.runs > inn2.runs) result = inn1.batting === name ? 'Won' : 'Lost';
@@ -1010,7 +1018,7 @@ function renderLeaderboard() {
         else result = 'Tied';
         if (result === 'Won') teams[name].won += 1;
       }
-      teams[name].matches.push({ opp, s1, s2, result, id: m.id });
+      teams[name].matches.push({ opp, inn1: inn1detail, inn2: inn2detail, result, id: m.id });
     });
   });
 
@@ -1033,17 +1041,19 @@ function renderLeaderboard() {
         '<div><span class="text-gray-400 text-xs">RR</span><div class="font-bold text-gray-700 tabular-nums">' + rr + '</div></div>' +
         '<div><span class="text-gray-400 text-xs">Won</span><div class="font-bold text-emerald-600 tabular-nums">' + s.won + '</div></div>' +
       '</div>' +
-      '<div class="border-t border-gray-100 pt-2 space-y-1.5">' +
-        s.matches.map(mt =>
-          '<div class="flex items-center justify-between text-xs">' +
-            '<span class="text-gray-600">vs ' + mt.opp + '</span>' +
-            '<span class="tabular-nums">' +
-              '<span class="text-cyan-700 font-medium">' + mt.s1 + '</span>' +
-              (mt.s2 !== '—' ? ' & <span class="text-cyan-700 font-medium">' + mt.s2 + '</span>' : '') +
-              (mt.result ? ' <span class="' + (mt.result === 'Won' ? 'text-emerald-600' : mt.result === 'Lost' ? 'text-red-500' : 'text-gray-500') + ' font-semibold">' + mt.result + '</span>' : '') +
-            '</span>' +
-          '</div>'
-        ).join('') +
+      '<div class="border-t border-gray-100 pt-2 space-y-2">' +
+        s.matches.map(mt => {
+          const clr = mt.result === 'Won' ? 'text-emerald-600' : mt.result === 'Lost' ? 'text-red-500' : 'text-gray-500';
+          return '<div class="text-xs">' +
+            '<div class="font-medium text-gray-700 mb-1">vs ' + mt.opp + (mt.result ? ' <span class="' + clr + ' font-semibold">' + mt.result + '</span>' : '') + '</div>' +
+            (mt.inn1
+              ? '<div class="flex justify-between text-gray-500 pl-2"><span>' + mt.inn1.batting + ' (Innings 1)</span><span class="tabular-nums font-medium text-gray-800">' + mt.inn1.runs + '/' + mt.inn1.wkts + ' (' + mt.inn1.ov + ' ov, RR ' + mt.inn1.rr + ')</span></div>'
+              : '') +
+            (mt.inn2
+              ? '<div class="flex justify-between text-gray-500 pl-2"><span>' + mt.inn2.batting + ' (Innings 2)</span><span class="tabular-nums font-medium text-gray-800">' + mt.inn2.runs + '/' + mt.inn2.wkts + ' (' + mt.inn2.ov + ' ov, RR ' + mt.inn2.rr + ')</span></div>'
+              : '') +
+          '</div>';
+        }).join('') +
       '</div></div>';
   }).join('');
 }

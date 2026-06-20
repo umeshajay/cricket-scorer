@@ -231,6 +231,8 @@ function load() {
   catch { return defaultData(); }
 }
 function save(d) { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch(e) { console.warn('save failed',e); } }
+function getGitHubConfig() { try { return JSON.parse(localStorage.getItem('gh_sync_config')) || {}; } catch { return {}; } }
+function saveGitHubConfig(cfg) { try { localStorage.setItem('gh_sync_config', JSON.stringify(cfg)); } catch(e) { console.warn('config save failed',e); } }
 function defaultData() {
   return { matches: {}, players: {}, matchTeams: {}, innings: {}, balls: {}, ballSeq: 0, teamPresets: [] };
 }
@@ -1238,10 +1240,28 @@ function openManageTeamsModal() {
 
 // ─────── SETTINGS ───────
 function openSettingsModal() {
+  const cfg = getGitHubConfig();
   document.getElementById('modal-title').textContent = '⚙️ Settings';
   document.getElementById('modal-body').innerHTML =
     '<button onclick="closeModal();openManageTeamsModal()" class="w-full btn-score btn-sm bg-blue-50 text-blue-700 border border-blue-200 font-semibold mb-2">🏷️ Manage team presets</button>' +
     '<button onclick="sendCompletedToWhatsApp();closeModal()" class="w-full btn-score btn-sm bg-green-50 text-green-700 border border-green-200 font-semibold mb-2">📱 Send completed matches to WhatsApp</button>' +
+    '<div class="border-t border-gray-200 my-3"></div>' +
+    '<div class="text-sm font-bold text-gray-700 mb-2">☁️ GitHub Sync</div>' +
+    '<label class="text-xs text-gray-500">Token (<a class="text-cyan-600" href="https://github.com/settings/tokens" target="_blank">create one</a> with repo scope)</label>' +
+    '<input id="gh-token" type="password" value="' + (cfg.token || '') + '" class="w-full text-sm mb-2" placeholder="ghp_...">' +
+    '<label class="text-xs text-gray-500">Repo (owner/repo)</label>' +
+    '<input id="gh-repo" value="' + (cfg.repo || '') + '" class="w-full text-sm mb-2" placeholder="username/repo">' +
+    '<label class="text-xs text-gray-500">File path</label>' +
+    '<input id="gh-path" value="' + (cfg.path || 'cricket-scorer-data.json') + '" class="w-full text-sm mb-2">' +
+    '<label class="text-xs text-gray-500">Branch</label>' +
+    '<input id="gh-branch" value="' + (cfg.branch || 'main') + '" class="w-full text-sm mb-2">' +
+    '<div class="flex gap-2 mb-2">' +
+    '<button onclick="saveGitHubConfigFromUI()" class="flex-1 btn-score btn-sm bg-cyan-50 text-cyan-700 border border-cyan-200 font-semibold">💾 Save Config</button>' +
+    '<button onclick="githubSync()" class="flex-1 btn-score btn-sm bg-blue-50 text-blue-700 border border-blue-200 font-semibold">⬆ Sync Now</button>' +
+    '</div>' +
+    '<button onclick="githubRestore()" class="w-full btn-score btn-sm bg-amber-50 text-amber-700 border border-amber-200 font-semibold mb-2">⬇ Restore from GitHub</button>' +
+    '<div id="gh-status" class="text-xs text-gray-400 text-center min-h-[1.2em]"></div>' +
+    '<div class="border-t border-gray-200 my-3"></div>' +
     '<button onclick="deleteCompletedMatches()" class="w-full btn-score btn-sm bg-red-50 text-red-700 border border-red-200 font-semibold">🗑️ Delete all completed match data</button>';
   document.getElementById('modal-overlay').classList.add('open');
 }
@@ -1285,6 +1305,95 @@ function deleteCompletedMatches() {
   save(d);
   closeModal();
   renderHome();
+}
+
+// ─────── GITHUB SYNC ───────
+function saveGitHubConfigFromUI() {
+  const cfg = {
+    token: document.getElementById('gh-token').value.trim(),
+    repo: document.getElementById('gh-repo').value.trim(),
+    path: document.getElementById('gh-path').value.trim() || 'cricket-scorer-data.json',
+    branch: document.getElementById('gh-branch').value.trim() || 'main',
+  };
+  saveGitHubConfig(cfg);
+  document.getElementById('gh-status').textContent = '✅ Config saved';
+}
+
+function ghHeaders() {
+  const cfg = getGitHubConfig();
+  if (!cfg.token) throw new Error('No token configured');
+  return {
+    Authorization: 'token ' + cfg.token,
+    Accept: 'application/vnd.github.v3+json',
+    'Content-Type': 'application/json',
+  };
+}
+
+function ghUrl() {
+  const cfg = getGitHubConfig();
+  if (!cfg.repo) throw new Error('No repo configured');
+  return 'https://api.github.com/repos/' + cfg.repo + '/contents/' + (cfg.path || 'cricket-scorer-data.json');
+}
+
+function ghBranch() { return getGitHubConfig().branch || 'main'; }
+
+function githubPush(d) {
+  return new Promise((resolve, reject) => {
+    const url = ghUrl();
+    const branch = ghBranch();
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(d, null, 2))));
+    // Check if file exists to get SHA
+    fetch(url + '?ref=' + branch, { headers: ghHeaders() })
+      .then(r => r.ok ? r.json() : { sha: null })
+      .then(existing => {
+        const body = { message: 'Update cricket scorer data', content, branch };
+        if (existing.sha) body.sha = existing.sha;
+        return fetch(url, { method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) });
+      })
+      .then(r => { if (!r.ok) return r.json().then(e => reject(e.message)); resolve(); })
+      .catch(reject);
+  });
+}
+
+function githubPull() {
+  return new Promise((resolve, reject) => {
+    fetch(ghUrl() + '?ref=' + ghBranch(), { headers: ghHeaders() })
+      .then(r => { if (!r.ok) throw new Error('File not found on GitHub'); return r.json(); })
+      .then(data => {
+        const json = decodeURIComponent(escape(atob(data.content)));
+        resolve(JSON.parse(json));
+      })
+      .catch(reject);
+  });
+}
+
+function setStatus(msg, isErr) {
+  const el = document.getElementById('gh-status');
+  if (el) el.textContent = msg;
+  if (el) el.style.color = isErr ? '#dc2626' : '#6b7280';
+}
+
+function githubSync() {
+  setStatus('Syncing...');
+  try {
+    const d = load();
+    githubPush(d)
+      .then(() => setStatus('✅ Synced to GitHub'))
+      .catch(e => setStatus('❌ Sync failed: ' + (e.message || e), true));
+  } catch(e) { setStatus('❌ ' + e.message, true); }
+}
+
+function githubRestore() {
+  if (!confirm('Replace local data with data from GitHub? This cannot be undone.')) return;
+  setStatus('Downloading...');
+  githubPull()
+    .then(d => {
+      save(d);
+      setStatus('✅ Restored from GitHub');
+      renderHome();
+      closeModal();
+    })
+    .catch(e => { setStatus('❌ Restore failed: ' + (e.message || e), true); });
 }
 
 // ─────── MATCH REPORT ───────

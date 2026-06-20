@@ -958,10 +958,9 @@ function endInnings() {
   const inn = getInnings(mid);
   if (!inn || inn.completed) return;
   inn.completed = true;
-  const d = load();
   saveInnings(mid, inn);
+  const d = load();
 
-  // Check if innings 2 just ended → match complete
   if (currentState.inningsNo === 2) {
     d.matches[mid].status = 'completed';
     save(d);
@@ -971,7 +970,6 @@ function endInnings() {
     return;
   }
 
-  // Innings 1 ended → auto-transition to innings 2
   d.matches[mid].status = 'ongoing';
   save(d);
   hideWhatsAppShare();

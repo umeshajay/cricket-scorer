@@ -22,9 +22,11 @@ export default function SetupMatch() {
       fetchPlayers().then(setAllPlayers).catch(() => {});
     } else {
       fetchSetting('scorer_pin').then((pin) => {
-        if (!pin) setAuthed('setup'); // no PIN set yet → show setup
-        else setAuthed(false); // PIN exists → show gate
-      }).catch(() => setAuthed(false));
+        if (!pin) setAuthed('setup');
+        else setAuthed(false);
+      }).catch(() => {
+        setAuthed(true);
+      });
     }
   }, []);
 

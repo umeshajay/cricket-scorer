@@ -95,15 +95,15 @@ label{font-size:13px;font-weight:600;color:#374151;margin-bottom:2px;display:blo
 <div id="view-scorer" class="view">
   <!-- Top bar -->
   <div class="flex items-center justify-between flex-shrink-0">
-    <button onclick="showView('home')" class="text-cyan-600 font-medium text-sm">&larr; Home</button>
+    <button data-action="home" class="text-cyan-600 font-medium text-sm">&larr; Home</button>
     <span id="scorer-title" class="text-sm font-semibold text-gray-700 truncate mx-1"></span>
-    <button onclick="endInnings()" class="text-red-500 text-sm font-medium">End Inns</button>
+    <button data-action="endinnings" class="text-red-500 text-sm font-medium">End Inns</button>
   </div>
 
   <!-- Innings toggle -->
   <div id="scorer-inns-toggle" class="flex gap-2 justify-center flex-shrink-0" style="display:none">
-    <button id="inns-btn-1" onclick="switchInnings(1)" class="px-4 py-1.5 rounded-lg text-sm font-semibold transition bg-cyan-500 text-white">Innings 1</button>
-    <button id="inns-btn-2" onclick="switchInnings(2)" class="px-4 py-1.5 rounded-lg text-sm font-semibold transition bg-gray-200 text-gray-500">Innings 2</button>
+    <button id="inns-btn-1" data-action="switchInnings" data-arg="1" class="px-4 py-1.5 rounded-lg text-sm font-semibold transition bg-cyan-500 text-white">Innings 1</button>
+    <button id="inns-btn-2" data-action="switchInnings" data-arg="2" class="px-4 py-1.5 rounded-lg text-sm font-semibold transition bg-gray-200 text-gray-500">Innings 2</button>
   </div>
 
   <!-- Score banner (fixed) -->
@@ -116,7 +116,7 @@ label{font-size:13px;font-weight:600;color:#374151;margin-bottom:2px;display:blo
     <div class="bg-white rounded-xl p-2 border border-gray-200 shadow-sm flex items-center justify-between mt-1.5">
       <span class="text-xs text-gray-600"><span class="font-semibold">Bowler:</span> <span id="sb-bowler">—</span></span>
       <span class="text-xs text-gray-500"><span id="sb-bowl-stats">0-0-0-0</span></span>
-      <button onclick="nextBowler()" class="text-xs text-cyan-600 font-medium">Change</button>
+      <button data-action="nextBowler" class="text-xs text-cyan-600 font-medium">Change</button>
     </div>
   </div>
 
@@ -127,22 +127,22 @@ label{font-size:13px;font-weight:600;color:#374151;margin-bottom:2px;display:blo
   <div class="scorer-footer">
     <div class="inner">
       <div class="grid grid-cols-6 gap-1.5">
-        <button onclick="scoreRuns(0)" class="btn-score bg-gray-100 text-gray-800">0</button>
-        <button onclick="scoreRuns(1)" class="btn-score bg-gray-100 text-gray-800">1</button>
-        <button onclick="scoreRuns(2)" class="btn-score bg-gray-100 text-gray-800">2</button>
-        <button onclick="scoreRuns(3)" class="btn-score bg-gray-100 text-gray-800">3</button>
-        <button onclick="scoreRuns(4)" class="btn-score bg-blue-100 text-blue-800">4</button>
-        <button onclick="scoreRuns(6)" class="btn-score bg-purple-100 text-purple-800">6</button>
+        <button data-action="run" data-arg="0" class="btn-score bg-gray-100 text-gray-800">0</button>
+        <button data-action="run" data-arg="1" class="btn-score bg-gray-100 text-gray-800">1</button>
+        <button data-action="run" data-arg="2" class="btn-score bg-gray-100 text-gray-800">2</button>
+        <button data-action="run" data-arg="3" class="btn-score bg-gray-100 text-gray-800">3</button>
+        <button data-action="run" data-arg="4" class="btn-score bg-blue-100 text-blue-800">4</button>
+        <button data-action="run" data-arg="6" class="btn-score bg-purple-100 text-purple-800">6</button>
       </div>
       <div class="grid grid-cols-3 gap-1.5 mt-1.5">
-        <button onclick="openExtraModal('wide')" class="btn-score bg-yellow-50 text-yellow-800 border border-yellow-200">Wide</button>
-        <button onclick="openExtraModal('noball')" class="btn-score bg-orange-50 text-orange-800 border border-orange-200">No-Ball</button>
-        <button onclick="openWicketModal()" class="btn-score bg-red-50 text-red-800 border border-red-200">Wkt</button>
+        <button data-action="wide" class="btn-score bg-yellow-50 text-yellow-800 border border-yellow-200">Wide</button>
+        <button data-action="noball" class="btn-score bg-orange-50 text-orange-800 border border-orange-200">No-Ball</button>
+        <button data-action="wicket" class="btn-score bg-red-50 text-red-800 border border-red-200">Wkt</button>
       </div>
       <div class="grid grid-cols-3 gap-1.5 mt-1.5">
-        <button onclick="undoLast()" class="btn-score bg-gray-100 text-gray-600 border border-gray-200">↩ Undo</button>
-        <button onclick="endOver()" class="btn-score bg-gray-100 text-gray-600 border border-gray-200">End Over</button>
-        <button onclick="showWhatsAppShare()" class="btn-score bg-green-50 text-green-700 border border-green-200 font-semibold">📱 Share</button>
+        <button data-action="undo" class="btn-score bg-gray-100 text-gray-600 border border-gray-200">↩ Undo</button>
+        <button data-action="endover" class="btn-score bg-gray-100 text-gray-600 border border-gray-200">End Over</button>
+        <button data-action="share" class="btn-score bg-green-50 text-green-700 border border-green-200 font-semibold">📱 Share</button>
       </div>
     </div>
   </div>
@@ -383,6 +383,36 @@ function popLastBall(mid) {
   }
   return null;
 }
+
+// Map data-action attributes to handler functions
+const scorerActions = {
+  run: function(e, arg) { scoreRuns(parseInt(arg)); },
+  wide: function() { openExtraModal('wide'); },
+  noball: function() { openExtraModal('noball'); },
+  wicket: function() { openWicketModal(); },
+  undo: function() { undoLast(); },
+  endover: function() { endOver(); },
+  share: function() { showWhatsAppShare(); },
+  home: function() { showView('home'); },
+  endinnings: function() { endInnings(); },
+  switchInnings: function(e, arg) { switchInnings(parseInt(arg)); },
+  nextBowler: function() { nextBowler(); },
+};
+
+function setupScorerActions() {
+  var el = document.getElementById('view-scorer');
+  if (!el) return;
+  el.addEventListener('pointerdown', function(e) {
+    var btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    var action = btn.getAttribute('data-action');
+    var arg = btn.getAttribute('data-arg');
+    e.preventDefault();
+    var fn = scorerActions[action];
+    if (fn) fn(e, arg);
+  }, { passive: false });
+}
+setupScorerActions();
 
 function renderScorer() {
   const mid = currentState.matchId;

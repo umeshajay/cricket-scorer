@@ -6,8 +6,10 @@ const PIN_KEY = 'scorer_authenticated';
 
 export default function SetupMatch() {
   const router = useRouter();
+  const today = new Date();
+  const dateStr = `${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}`;
   const [allPlayers, setAllPlayers] = useState([]);
-  const [form, setForm] = useState({ matchId: '', overs: '6', teamA: 'Team A', teamB: 'Team B' });
+  const [form, setForm] = useState({ matchId: `${dateStr}/1`, overs: '6', teamA: 'Team A', teamB: 'Team B' });
   const [playersPerTeam, setPlayersPerTeam] = useState(5);
   const [teamA, setTeamA] = useState([]);
   const [teamB, setTeamB] = useState([]);
@@ -36,12 +38,11 @@ export default function SetupMatch() {
     return () => clearTimeout(fallback);
   }, []);
 
-  const today = new Date();
-  const dateStr = `${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}`;
-
   useEffect(() => {
     if (authed !== true) return;
     fetchPlayers().then(setAllPlayers).catch(() => {});
+    // set a default match ID immediately, then try to find the next number from DB
+    setForm((prev) => ({ ...prev, matchId: `${dateStr}/1` }));
     fetchMatches().then((list) => {
       const prefix = `${dateStr}/`;
       const nums = list.filter((m) => m.match_id?.startsWith(prefix)).map((m) => parseInt(m.match_id.slice(prefix.length), 10) || 0);
@@ -129,7 +130,7 @@ export default function SetupMatch() {
         status: 'upcoming',
       });
       setMsg({ ok: true, text: `Match ${form.matchId} created!` });
-      setForm({ matchId: '', overs: '6', teamA: 'Team A', teamB: 'Team B' });
+      setForm({ overs: '6', teamA: 'Team A', teamB: 'Team B', matchId: `${dateStr}/1` });
       setTeamA([]);
       setTeamB([]);
       // regenerate next match ID

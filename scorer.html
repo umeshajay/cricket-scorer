@@ -190,7 +190,7 @@ label{font-size:13px;font-weight:600;color:#374151;margin-bottom:2px;display:blo
       <div id="rr-fallback" class="text-xs text-gray-400 py-4 text-center" style="display:none">RR progression available after 2nd innings starts</div>
     </div>
     <div class="bg-white rounded-xl p-3 border border-gray-200 shadow-sm">
-      <div class="text-xs font-semibold text-gray-500 uppercase mb-2">🏏 Wickets per Over</div>
+      <div class="text-xs font-semibold text-gray-500 uppercase mb-2">🏏 Manhattan (Runs per Over)</div>
       <canvas id="chart-wkts"></canvas>
     </div>
     <button onclick="shareReport()" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-xl text-base shadow-sm">📱 Share Match Report</button>
@@ -1431,31 +1431,62 @@ function buildCharts(d, mid, inn1, inn2) {
     document.getElementById('rr-fallback').style.display = '';
   }
 
-  // Wicket distribution: wickets per over
+  // Manhattan chart: runs per over with wicket markers
   const ctx3 = document.getElementById('chart-wkts').getContext('2d');
-  const wktLabels = [], wktInn1 = [], wktInn2 = [];
+  const manLabels = [], manInn1 = [], manInn2 = [], manWkt1 = [], manWkt2 = [];
   for (let i = 0; i < maxOvers; i++) {
-    wktLabels.push('Ov ' + (i + 1));
-    wktInn1.push(overData[1][i] ? overData[1][i].wickets : 0);
-    wktInn2.push(overData[2][i] ? overData[2][i].wickets : 0);
+    manLabels.push('Ov ' + (i + 1));
+    manInn1.push(overData[1][i] ? overData[1][i].runs : 0);
+    manInn2.push(overData[2][i] ? overData[2][i].runs : 0);
+    manWkt1.push(overData[1][i] ? overData[1][i].wickets : 0);
+    manWkt2.push(overData[2][i] ? overData[2][i].wickets : 0);
   }
   reportCharts.push(new Chart(ctx3, {
     type: 'bar',
     data: {
-      labels: wktLabels,
+      labels: manLabels,
       datasets: [
-        { label: inn1 ? inn1.batting : 'Innings 1', data: wktInn1, backgroundColor: 'rgba(8,145,178,0.7)', borderRadius: 3 },
-        { label: inn2 ? inn2.batting : 'Innings 2', data: wktInn2, backgroundColor: 'rgba(5,150,105,0.7)', borderRadius: 3 }
+        { label: inn1 ? inn1.batting : 'Innings 1', data: manInn1, backgroundColor: 'rgba(8,145,178,0.8)', borderRadius: 3, wickets: manWkt1 },
+        { label: inn2 ? inn2.batting : 'Innings 2', data: manInn2, backgroundColor: 'rgba(5,150,105,0.8)', borderRadius: 3, wickets: manWkt2 }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: true,
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } },
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const w = ctx.dataset.wickets[ctx.dataIndex];
+              return ctx.dataset.label + ': ' + ctx.raw + ' runs' + (w ? ' (⬇ ' + w + ' wkt' + (w > 1 ? 's' : '') + ')' : '');
+            }
+          }
+        }
+      },
       scales: {
-        x: { ticks: { font: { size: 9 }, maxTicksLimit: 10 } },
-        y: { beginAtZero: true, ticks: { font: { size: 9 }, stepSize: 1 }, title: { display: true, text: 'Wickets', font: { size: 10 } } }
+        x: { ticks: { font: { size: 9 }, maxTicksLimit: 10 }, grid: { display: false } },
+        y: { beginAtZero: true, ticks: { font: { size: 9 }, stepSize: 1 }, title: { display: true, text: 'Runs', font: { size: 10 } } }
       }
-    }
+    },
+    plugins: [{
+      id: 'wicketMarkers',
+      afterDraw(chart) {
+        const ctx = chart.ctx;
+        chart.data.datasets.forEach((ds, dsIdx) => {
+          const meta = chart.getDatasetMeta(dsIdx);
+          meta.data.forEach((bar, i) => {
+            const w = ds.wickets[i];
+            if (w > 0) {
+              ctx.fillStyle = '#dc2626';
+              ctx.font = 'bold 11px sans-serif';
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'bottom';
+              ctx.fillText('⬇', bar.x, bar.y - 2);
+            }
+          });
+        });
+      }
+    }]
   }));
 }
 
@@ -1466,34 +1497,49 @@ function shareReport() {
   if (!m) return;
   const inn1 = d.innings[mid + '_1'];
   const inn2 = d.innings[mid + '_2'];
+  const rr1 = inn1 && inn1.balls > 0 ? (inn1.runs / (inn1.balls / 6)).toFixed(2) : '0.00';
+  const rr2 = inn2 && inn2.balls > 0 ? (inn2.runs / (inn2.balls / 6)).toFixed(2) : '0.00';
+  let trend = '';
+  if (inn1 && inn2) {
+    trend = parseFloat(rr2) > parseFloat(rr1) ? inn2.batting + ' is currently ahead' :
+            parseFloat(rr2) < parseFloat(rr1) ? inn1.batting + ' is currently ahead' : 'Both teams are evenly matched';
+  }
   const el = document.getElementById('report-content');
   html2canvas(el, { scale: 2, backgroundColor: '#f1f5f9', useCORS: true, logging: false }).then(canvas => {
     const imgData = canvas.toDataURL('image/png');
-    const text =
-      '🏏 *' + m.teamA + ' vs ' + m.teamB + '*\n' +
+    let text =
+      '🏏 *Match Analytics: ' + m.teamA + ' vs ' + m.teamB + '*\n' +
       '━━━━━━━━━━━━━━━\n' +
-      '📊 Match Stats\n' +
-      (inn1 ? '▸ ' + inn1.batting + ': ' + inn1.runs + '/' + inn1.wickets + ' (' + inn1.currentOver + '.' + inn1.currentBall + ' ov, RR: ' + (inn1.balls > 0 ? (inn1.runs / (inn1.balls / 6)).toFixed(2) : '0.00') + ')\n' : '') +
-      (inn2 ? '▸ ' + inn2.batting + ': ' + inn2.runs + '/' + inn2.wickets + ' (' + inn2.currentOver + '.' + inn2.currentBall + ' ov, RR: ' + (inn2.balls > 0 ? (inn2.runs / (inn2.balls / 6)).toFixed(2) : '0.00') + ')\n' : '') +
-      (inn1 && inn2 && inn1.completed && inn2.completed
-        ? (inn1.runs > inn2.runs ? '🏆 ' + inn1.batting + ' won' : inn2.runs > inn1.runs ? '🏆 ' + inn2.batting + ' won' : '🤝 Tied') + '\n'
-        : '') +
-      '━━━━━━━━━━━━━━━\n' +
-      '📈 See graphs in the app\n' +
-      '🔗 https://umeshajay.github.io/cricket-scorer/scorer\n' +
-      '━━━━━━━━━━━━━━━';
+      '📊 *Game Flow:*\n' +
+      (trend ? 'The worm graph shows the run-rate battle. ' + trend + '.\n' : '') +
+      '\n🏁 *Current Score:*\n' +
+      (inn1 ? '▸ ' + inn1.batting + ': ' + inn1.runs + '/' + inn1.wickets + ' (RR ' + rr1 + ')\n' : '') +
+      (inn2 ? '▸ ' + inn2.batting + ': ' + inn2.runs + '/' + inn2.wickets + ' (RR ' + rr2 + ')\n' : '');
+    if (inn2 && inn1 && inn1.runs != null && inn1.completed) {
+      const target = inn1.runs;
+      const remOvers = Math.max(0, m.overs - (inn2.currentOver + inn2.currentBall / 6));
+      const remRuns = target - inn2.runs;
+      const rrr = remOvers > 0 ? (remRuns / remOvers).toFixed(2) : '∞';
+      text += '🎯 *RRR:* ' + rrr + '\n';
+    }
+    if (inn1 && inn2 && inn1.completed && inn2.completed) {
+      text += '━━━━━━━━━━━━━━━\n';
+      if (inn1.runs > inn2.runs) text += '🏆 *' + inn1.batting + ' won!*\n';
+      else if (inn2.runs > inn1.runs) text += '🏆 *' + inn2.batting + ' won!*\n';
+      else text += '🤝 *Tied!*\n';
+    }
+    text += '━━━━━━━━━━━━━━━\n🔗 *Live Scorecard:* https://umeshajay.github.io/cricket-scorer/scorer';
     const link = document.getElementById('wa-link');
     link.href = 'https://wa.me/?text=' + encodeURIComponent(text);
     document.getElementById('wa-overlay').classList.add('open');
   }).catch(() => {
-    // Fallback: text-only share
-    const text =
-      '🏏 *' + m.teamA + ' vs ' + m.teamB + '*\n' +
+    let text =
+      '🏏 *Match Analytics: ' + m.teamA + ' vs ' + m.teamB + '*\n' +
       '━━━━━━━━━━━━━━━\n' +
-      (inn1 ? inn1.batting + ': ' + inn1.runs + '/' + inn1.wickets + '\n' : '') +
-      (inn2 ? inn2.batting + ': ' + inn2.runs + '/' + inn2.wickets + '\n' : '') +
+      (inn1 ? inn1.batting + ': ' + inn1.runs + '/' + inn1.wickets + ' (RR ' + rr1 + ')\n' : '') +
+      (inn2 ? inn2.batting + ': ' + inn2.runs + '/' + inn2.wickets + ' (RR ' + rr2 + ')\n' : '') +
       '━━━━━━━━━━━━━━━\n' +
-      '🔗 https://umeshajay.github.io/cricket-scorer/scorer';
+      '🔗 *Live Scorecard:* https://umeshajay.github.io/cricket-scorer/scorer';
     const link = document.getElementById('wa-link');
     link.href = 'https://wa.me/?text=' + encodeURIComponent(text);
     document.getElementById('wa-overlay').classList.add('open');

@@ -967,9 +967,10 @@ function renderHome() {
 function renderLeaderboard() {
   const d = load();
   const teams = {};
-  Object.values(d.matches || {}).forEach(m => {
+  const matches = Object.values(d.matches || {}).sort((a, b) => (b.created || '').localeCompare(a.created || ''));
+  matches.forEach(m => {
     [m.teamA, m.teamB].forEach(name => {
-      if (!teams[name]) teams[name] = { played: 0, runs: 0, wkts: 0, balls: 0, won: 0 };
+      if (!teams[name]) teams[name] = { played: 0, runs: 0, wkts: 0, balls: 0, won: 0, matches: [] };
     });
     const inn1 = d.innings[m.id + '_1'];
     const inn2 = d.innings[m.id + '_2'];
@@ -995,14 +996,22 @@ function renderLeaderboard() {
       teams[m.teamB].wkts += inn2.wickets || 0;
       teams[m.teamB].balls += inn2.balls || 0;
     }
-    // Count match as played for both teams
     teams[m.teamA].played += 1;
     teams[m.teamB].played += 1;
-    // Determine winner
-    if (m.status === 'completed' && inn1 && inn1.completed && inn2 && inn2.completed) {
-      if (inn1.runs > inn2.runs && inn1.batting) teams[inn1.batting].won += 1;
-      else if (inn2.runs > inn1.runs && inn2.batting) teams[inn2.batting].won += 1;
-    }
+    // Store match detail for both teams
+    [m.teamA, m.teamB].forEach(name => {
+      const opp = name === m.teamA ? m.teamB : m.teamA;
+      const s1 = inn1 ? inn1.runs + '/' + inn1.wickets + ' (' + inn1.batting + ')' : '—';
+      const s2 = inn2 ? inn2.runs + '/' + inn2.wickets + ' (' + inn2.batting + ')' : '—';
+      let result = '';
+      if (m.status === 'completed' && inn1 && inn1.completed && inn2 && inn2.completed) {
+        if (inn1.runs > inn2.runs) result = inn1.batting === name ? 'Won' : 'Lost';
+        else if (inn2.runs > inn1.runs) result = inn2.batting === name ? 'Won' : 'Lost';
+        else result = 'Tied';
+        if (result === 'Won') teams[name].won += 1;
+      }
+      teams[name].matches.push({ opp, s1, s2, result, id: m.id });
+    });
   });
 
   const sorted = Object.entries(teams).sort((a, b) => b[1].won - a[1].won || b[1].runs - a[1].runs);
@@ -1013,16 +1022,28 @@ function renderLeaderboard() {
   }
   el.innerHTML = sorted.map(([name, s]) => {
     const rr = s.balls > 0 ? (s.runs / (s.balls / 6)).toFixed(2) : '—';
-    return '<div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">' +
-      '<div class="flex items-center justify-between">' +
+    return '<div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm mb-2">' +
+      '<div class="flex items-center justify-between mb-2">' +
         '<span class="font-bold text-gray-900">' + name + '</span>' +
         '<span class="text-xs text-gray-400">' + s.played + ' match' + (s.played > 1 ? 'es' : '') + '</span>' +
       '</div>' +
-      '<div class="flex gap-4 mt-2 text-sm">' +
+      '<div class="flex gap-4 mb-3 text-sm">' +
         '<div><span class="text-gray-400 text-xs">Runs</span><div class="font-bold text-cyan-600 tabular-nums">' + s.runs + '</div></div>' +
         '<div><span class="text-gray-400 text-xs">Wkts</span><div class="font-bold text-red-500 tabular-nums">' + s.wkts + '</div></div>' +
         '<div><span class="text-gray-400 text-xs">RR</span><div class="font-bold text-gray-700 tabular-nums">' + rr + '</div></div>' +
         '<div><span class="text-gray-400 text-xs">Won</span><div class="font-bold text-emerald-600 tabular-nums">' + s.won + '</div></div>' +
+      '</div>' +
+      '<div class="border-t border-gray-100 pt-2 space-y-1.5">' +
+        s.matches.map(mt =>
+          '<div class="flex items-center justify-between text-xs">' +
+            '<span class="text-gray-600">vs ' + mt.opp + '</span>' +
+            '<span class="tabular-nums">' +
+              '<span class="text-cyan-700 font-medium">' + mt.s1 + '</span>' +
+              (mt.s2 !== '—' ? ' & <span class="text-cyan-700 font-medium">' + mt.s2 + '</span>' : '') +
+              (mt.result ? ' <span class="' + (mt.result === 'Won' ? 'text-emerald-600' : mt.result === 'Lost' ? 'text-red-500' : 'text-gray-500') + ' font-semibold">' + mt.result + '</span>' : '') +
+            '</span>' +
+          '</div>'
+        ).join('') +
       '</div></div>';
   }).join('');
 }

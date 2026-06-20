@@ -3,29 +3,23 @@ import Link from 'next/link';
 export default function SetupMatch() {
   return (
     <div className="max-w-lg mx-auto space-y-5">
-      <h1 className="text-2xl font-bold text-gray-900">New Match</h1>
+      <h1 className="text-2xl font-bold text-gray-900">How to Score</h1>
 
       <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm space-y-4">
-        <div className="text-center">
-          <div className="text-4xl mb-3">🏏</div>
-          <h2 className="text-lg font-semibold text-gray-800">Create & Score from this Website</h2>
-          <p className="text-sm text-gray-500 mt-1">
-            Everything runs on GitHub — no external services needed.
-          </p>
-        </div>
+        <p className="text-sm text-gray-600">
+        </p>
 
-        <div className="bg-gray-50 rounded-lg p-4 text-sm space-y-2">
-          <p className="font-medium text-gray-700">How to create a match:</p>
-          <ol className="list-decimal list-inside text-gray-600 space-y-1">
+        <div className="bg-gray-50 rounded-lg p-4 text-sm space-y-3">
+          <p className="font-medium text-gray-700">Quick start:</p>
+          <ol className="list-decimal list-inside text-gray-600 space-y-2">
             <li>Go to <Link href="/scorer" className="text-cyan-600 underline">Scorer page</Link></li>
-            <li>Enter your GitHub PAT (saved locally, needed once)</li>
-            <li>Select a match or create one using <code className="bg-gray-200 px-1.5 py-0.5 rounded text-xs">/create</code> format</li>
-            <li>Tap buttons to score — data saves instantly to GitHub</li>
+            <li>Tap <strong>+ New</strong>, type a Match ID and team names, pick overs</li>
+            <li>Tap run buttons (0,1,2,3,4,6) or extras/wickets to score</li>
           </ol>
         </div>
 
-        <div className="text-xs text-gray-400 text-center">
-          Dashboard auto-refreshes from the raw GitHub data file.
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-xs text-yellow-800">
+          ⚠ Data is saved in your browser (localStorage). It stays on THIS device. Clearing browser data will lose scores.
         </div>
       </div>
 

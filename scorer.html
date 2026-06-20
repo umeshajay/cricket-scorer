@@ -1262,6 +1262,9 @@ function openSettingsModal() {
     '<button onclick="githubRestore()" class="w-full btn-score btn-sm bg-amber-50 text-amber-700 border border-amber-200 font-semibold mb-2">⬇ Restore from GitHub</button>' +
     '<div id="gh-status" class="text-xs text-gray-400 text-center min-h-[1.2em]"></div>' +
     '<div class="border-t border-gray-200 my-3"></div>' +
+    '<button onclick="exportData()" class="w-full btn-score btn-sm bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold mb-2">💾 Export data (download .json)</button>' +
+    '<button onclick="importData()" class="w-full btn-score btn-sm bg-amber-50 text-amber-700 border border-amber-200 font-semibold mb-2">📂 Import data (upload .json)</button>' +
+    '<div class="border-t border-gray-200 my-3"></div>' +
     '<button onclick="deleteCompletedMatches()" class="w-full btn-score btn-sm bg-red-50 text-red-700 border border-red-200 font-semibold">🗑️ Delete all completed match data</button>';
   document.getElementById('modal-overlay').classList.add('open');
 }
@@ -1288,6 +1291,38 @@ function sendCompletedToWhatsApp() {
   const link = document.getElementById('wa-link');
   link.href = 'https://wa.me/?text=' + encodeURIComponent(text);
   document.getElementById('wa-overlay').classList.add('open');
+}
+
+// ─────── EXPORT / IMPORT ───────
+function exportData() {
+  const d = load();
+  const blob = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'cricket-scorer-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function importData() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!data.matches) throw new Error('Invalid file');
+        save(data);
+        renderHome();
+        closeModal();
+      } catch(err) { alert('Invalid backup file: ' + err.message); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
 }
 
 function deleteCompletedMatches() {

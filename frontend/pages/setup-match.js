@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { fetchPlayers, createMatch, fetchMatchById } from '../lib/supabase';
+import { fetchPlayers, createMatch, fetchMatchById, fetchSetting, upsertSetting } from '../lib/supabase';
+
+const PIN_KEY = 'scorer_authenticated';
 
 export default function SetupMatch() {
   const router = useRouter();
@@ -10,8 +12,52 @@ export default function SetupMatch() {
   const [teamB, setTeamB] = useState([]);
   const [msg, setMsg] = useState({ ok: false, text: '' });
   const [busy, setBusy] = useState(false);
+  const [authed, setAuthed] = useState(null); // null=loading, true/false
+  const [pinInput, setPinInput] = useState('');
+  const [pinErr, setPinErr] = useState('');
 
-  useEffect(() => { fetchPlayers().then(setAllPlayers).catch(() => {}); }, []);
+  useEffect(() => {
+    if (sessionStorage.getItem(PIN_KEY)) {
+      setAuthed(true);
+      fetchPlayers().then(setAllPlayers).catch(() => {});
+    } else {
+      fetchSetting('scorer_pin').then((pin) => {
+        if (!pin) setAuthed('setup'); // no PIN set yet → show setup
+        else setAuthed(false); // PIN exists → show gate
+      }).catch(() => setAuthed(false));
+    }
+  }, []);
+
+  const handlePinSubmit = async () => {
+    setPinErr('');
+    const pin = await fetchSetting('scorer_pin').catch(() => null);
+    if (!pin) {
+      setPinErr('No PIN configured. Contact admin.');
+      return;
+    }
+    if (pinInput.trim() !== pin) {
+      setPinErr('Incorrect PIN');
+      return;
+    }
+    sessionStorage.setItem(PIN_KEY, '1');
+    setAuthed(true);
+    fetchPlayers().then(setAllPlayers).catch(() => {});
+  };
+
+  const handleSetupPin = async () => {
+    if (pinInput.trim().length < 3) {
+      setPinErr('PIN must be at least 3 characters');
+      return;
+    }
+    try {
+      await upsertSetting('scorer_pin', pinInput.trim());
+      sessionStorage.setItem(PIN_KEY, '1');
+      setAuthed(true);
+      fetchPlayers().then(setAllPlayers).catch(() => {});
+    } catch {
+      setPinErr('Failed to save PIN');
+    }
+  };
 
   const usedIds = new Set([...teamA.map((p) => p.id), ...teamB.map((p) => p.id)]);
   const available = allPlayers.filter((p) => !usedIds.has(p.id));
@@ -67,9 +113,53 @@ export default function SetupMatch() {
     setBusy(false);
   };
 
+  if (authed === null) return null;
+
+  if (authed === 'setup') {
+    return (
+      <div className="max-w-sm mx-auto mt-12">
+        <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm text-center">
+          <h1 className="text-xl font-bold text-gray-900 mb-2">Set Scorer PIN</h1>
+          <p className="text-sm text-gray-500 mb-4">Create a PIN to restrict match creation.</p>
+          <input value={pinInput} onChange={(e) => setPinInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSetupPin()}
+            className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-center text-gray-700 focus:outline-none focus:border-cyan-500 mb-3"
+            placeholder="Enter a PIN" type="password" />
+          {pinErr && <p className="text-red-500 text-xs mb-3">{pinErr}</p>}
+          <button onClick={handleSetupPin} className="bg-cyan-500 hover:bg-cyan-600 text-white px-5 py-2 rounded-lg font-semibold text-sm transition shadow-sm w-full">
+            Set PIN
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!authed) {
+    return (
+      <div className="max-w-sm mx-auto mt-12">
+        <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm text-center">
+          <h1 className="text-xl font-bold text-gray-900 mb-2">Scorer PIN Required</h1>
+          <p className="text-sm text-gray-500 mb-4">Enter the scorer PIN to create a match.</p>
+          <input value={pinInput} onChange={(e) => setPinInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handlePinSubmit()}
+            className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-center text-gray-700 focus:outline-none focus:border-cyan-500 mb-3"
+            placeholder="PIN" type="password" />
+          {pinErr && <p className="text-red-500 text-xs mb-3">{pinErr}</p>}
+          <button onClick={handlePinSubmit} className="bg-cyan-500 hover:bg-cyan-600 text-white px-5 py-2 rounded-lg font-semibold text-sm transition shadow-sm w-full">
+            Unlock
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-bold text-gray-900">New Match</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-gray-900">New Match</h1>
+        <button onClick={() => { sessionStorage.removeItem(PIN_KEY); setAuthed(false); }}
+          className="text-xs text-gray-400 hover:text-gray-600">Lock</button>
+      </div>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

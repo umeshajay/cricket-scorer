@@ -169,6 +169,15 @@ GROUP BY p.id, p.name
 ORDER BY wickets DESC;
 
 -- ============================================================
+-- APP SETTINGS (key-value config, e.g. scorer_pin)
+-- ============================================================
+CREATE TABLE app_settings (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================================
 
 -- ============================================================
 -- Indexes for performance
@@ -186,9 +195,11 @@ ALTER TABLE players ENABLE ROW LEVEL SECURITY;
 ALTER TABLE matches ENABLE ROW LEVEL SECURITY;
 ALTER TABLE innings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE balls ENABLE ROW LEVEL SECURITY;
+ALTER TABLE app_settings ENABLE ROW LEVEL SECURITY;
 
 -- Allow anonymous read/write for all tables
 CREATE POLICY "anon_all_players" ON players FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "anon_all_matches" ON matches FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "anon_all_innings" ON innings FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "anon_all_balls" ON balls FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "anon_all_app_settings" ON app_settings FOR ALL USING (true) WITH CHECK (true);

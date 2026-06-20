@@ -79,6 +79,19 @@ export async function fetchBalls(matchId) {
 
 // ── Leaderboards ───────────────────────────────────────
 
+// ── Settings ────────────────────────────────────────────
+
+export async function fetchSetting(key) {
+  const { data, error } = await supabase.from('app_settings').select('value').eq('key', key).maybeSingle();
+  if (error) throw error;
+  return data?.value || null;
+}
+
+export async function upsertSetting(key, value) {
+  const { error } = await supabase.from('app_settings').upsert({ key, value }, { onConflict: 'key' });
+  if (error) throw error;
+}
+
 export async function fetchTopRunScorers() {
   const { data, error } = await supabase.from('top_run_scorers').select('*');
   if (error) throw error;

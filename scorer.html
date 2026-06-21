@@ -534,6 +534,12 @@ function startMatch() {
   d.balls[mid] = [];
   save(d);
 
+  // Immediate sync to GitHub so the PIN is available right away
+  const _cfg = getGitHubConfig();
+  if (_cfg.token && _cfg.repo) {
+    githubPush(load()).catch(e => console.warn('initial sync failed', e));
+  }
+
   err.textContent = '';
   document.getElementById('setup-mid').value = '';
   document.getElementById('setup-ta').value = '';
@@ -2111,35 +2117,50 @@ function migrateOldData() {
 }
 migrateOldData();
 
-function openMatchByPin() {
-  const pin = document.getElementById('home-pin-input').value.trim();
+let _pinRetries = 0;
+function openMatchByPin(pinOverride) {
+  const pin = pinOverride || document.getElementById('home-pin-input').value.trim();
   const err = document.getElementById('home-pin-err');
   if (!pin || pin.length !== 4) { err.textContent = 'Enter a 4-digit PIN'; err.style.display = ''; return; }
   const d = load();
   let mid = d.matchByPin && d.matchByPin[pin];
-  // If not found locally and repo is configured, try pulling from GitHub (public repo, no token needed)
-  if (!mid && hasUserConfiguredRepo()) {
-    githubPullRaw().then((data) => {
-      if (data && data.matchByPin && data.matchByPin[pin] && data.matches[data.matchByPin[pin]]) {
-        save(data);
-        openScorer(data.matchByPin[pin]);
-      } else {
-        err.textContent = 'Match not found with PIN ' + pin + ' on GitHub.';
-        err.style.display = '';
-      }
-    }).catch(() => {
-      err.textContent = 'Failed to fetch data from GitHub. Check your repo settings.';
-      err.style.display = '';
-    });
+  if (mid && d.matches[mid]) {
+    err.style.display = 'none';
+    openScorer(mid);
     return;
   }
-  if (!mid || !d.matches[mid]) {
+  // Not found locally — try GitHub (if repo is configured)
+  if (!hasUserConfiguredRepo()) {
     err.textContent = 'No match found with PIN ' + pin + '. Enter a repo in ⚙️ Settings and try again.';
     err.style.display = '';
     return;
   }
-  err.style.display = 'none';
-  openScorer(mid);
+  err.textContent = 'Looking up PIN ' + pin + ' on GitHub...';
+  err.style.display = '';
+  githubPullRaw().then((data) => {
+    if (data && data.matchByPin && data.matchByPin[pin] && data.matches[data.matchByPin[pin]]) {
+      save(data);
+      openScorer(data.matchByPin[pin]);
+    } else if (_pinRetries < 5) {
+      _pinRetries++;
+      err.textContent = 'Syncing from GitHub, retrying (' + _pinRetries + '/5)...';
+      setTimeout(() => openMatchByPin(pin), 4000);
+    } else {
+      _pinRetries = 0;
+      err.textContent = 'Match not found with PIN ' + pin + '. Tell the scorer to tap ⚙️ > Sync Now, then try again (CDN takes ~1 min).';
+      err.style.display = '';
+    }
+  }).catch(() => {
+    if (_pinRetries < 5) {
+      _pinRetries++;
+      err.textContent = 'Fetching from GitHub, retrying (' + _pinRetries + '/5)...';
+      setTimeout(() => openMatchByPin(pin), 4000);
+    } else {
+      _pinRetries = 0;
+      err.textContent = 'Failed to fetch from GitHub after 5 tries. Make sure the repo is public and data has been synced.';
+      err.style.display = '';
+    }
+  });
 }
 
 function openMatchFromHash() {
@@ -2153,6 +2174,10 @@ function openMatchFromHash() {
       openScorer(mid);
       return true;
     }
+    // PIN in URL but not found locally — pre-fill and auto-trigger lookup from GitHub
+    document.getElementById('home-pin-input').value = p[1];
+    setTimeout(() => openMatchByPin(p[1]), 500);
+    return true; // handled
   }
   // Then try match ID
   const m = hash.match(/match=([A-Za-z0-9_]+)/);

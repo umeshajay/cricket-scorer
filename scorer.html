@@ -165,7 +165,6 @@ select option{background:var(--surface);color:var(--text)}
   <div id="home-match-list" class="space-y-2"></div>
   <button id="home-new-match" onclick="showView('setup')" class="btn-score primary w-full py-3 text-base">+ New Match</button>
   <div id="home-local-msg" class="text-center text-xs" style="color:var(--text3)">Data saves in your browser (localStorage)</div>
-  <div class="text-center" style="margin-top:4px"><button onclick="clearLocalData()" class="pill-btn" style="font-size:11px;color:var(--text3)">🗑 Clear local data</button></div>
   <div id="home-gh-msg" class="text-center text-xs" style="color:var(--text3);display:none"></div>
 </div>
 
@@ -1495,7 +1494,9 @@ function openSettingsModal() {
     '<div style="border-top:1px solid var(--border);margin:12px 0"></div>' +
     '<button onclick="closeModal();openManageTeamsModal()" class="w-full btn-score btn-sm mb-2" style="background:var(--accent-light);color:var(--accent);font-weight:600">🏷️ Manage team presets</button>' +
     '<button onclick="sendCompletedToWhatsApp();closeModal()" class="w-full btn-score btn-sm mb-2" style="background:var(--green-light);color:var(--green);font-weight:600">📱 Send completed matches to WhatsApp</button>' +
-    '<button onclick="closeModal();openManageMatchesModal()" class="w-full btn-score btn-sm" style="background:var(--red-light);color:var(--red);font-weight:600">🗑️ Manage completed matches</button>';
+    '<button onclick="closeModal();openManageMatchesModal()" class="w-full btn-score btn-sm" style="background:var(--red-light);color:var(--red);font-weight:600">🗑️ Manage completed matches</button>' +
+    '<div style="border-top:1px solid var(--border);margin:12px 0"></div>' +
+    '<button onclick="clearLocalData();closeModal()" class="w-full btn-score btn-sm" style="background:none;color:var(--text3);font-weight:500;font-size:12px">🗑 Clear all local data</button>';
 
   document.getElementById('modal-body').innerHTML = html;
   document.getElementById('modal-overlay').classList.add('open');

@@ -249,10 +249,11 @@ select option{background:var(--surface);color:var(--text)}
         <button onclick="openExtraModal('noball')" class="btn-score warning">No-Ball</button>
         <button onclick="openWicketModal()" class="btn-score danger">Wkt</button>
       </div>
-      <div class="grid grid-cols-3 gap-1.5 mt-1.5">
+      <div class="grid grid-cols-4 gap-1.5 mt-1.5">
         <button onclick="undoLast()" class="btn-score">↩ Undo</button>
         <button onclick="endOver()" class="btn-score">End Over</button>
         <button onclick="showWhatsAppShare()" class="btn-score success">📱 Share</button>
+        <button onclick="copyMatchLink()" class="btn-score" style="background:var(--accent-light);color:var(--accent)">🔗 Link</button>
       </div>
     </div>
   </div>
@@ -760,6 +761,40 @@ function showWhatsAppShare() {
 
 function hideWhatsAppShare() {
   document.getElementById('wa-overlay').classList.remove('open');
+}
+
+function copyMatchLink() {
+  const cfg = getGitHubConfig();
+  if (!cfg.repo || !cfg.path) {
+    alert('Please configure GitHub repo and file path in Settings to enable sharing.');
+    return;
+  }
+  const url = window.location.href.split('#')[0] + '#match=' + currentState.matchId;
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('✅ Match link copied!');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = url;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    showToast('✅ Match link copied!');
+  });
+}
+
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:10px 20px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;z-index:100;box-shadow:var(--shadow-lg);animation:fadeIn .2s ease;transition:opacity .3s;pointer-events:none';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._hide);
+  t._hide = setTimeout(() => { t.style.opacity = '0'; }, 2500);
 }
 
 // ─────── SCORE RUNS ───────
@@ -2029,24 +2064,36 @@ function migrateOldData() {
 }
 migrateOldData();
 
+function openMatchFromHash() {
+  const m = window.location.hash.match(/match=([A-Za-z0-9_]+)/);
+  if (m) {
+    const d = load();
+    if (d.matches && d.matches[m[1]]) {
+      openScorer(m[1]);
+      return true;
+    }
+  }
+  return false;
+}
+
 // ─────── INIT ───────
 const cfg = getGitHubConfig();
 const hasData = hasMatchData();
 if (!hasGitHubToken()) {
   if (cfg.repo && hasData) {
     viewerPollStart();
-    renderHome();
+    if (!openMatchFromHash()) renderHome();
   } else if (cfg.repo && !hasData) {
     const rawUrl = 'https://raw.githubusercontent.com/' + cfg.repo + '/' + (cfg.branch || 'main') + '/' + (cfg.path || 'cricket-scorer-data.json');
     fetch(rawUrl + '?_=' + Date.now())
       .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data && Object.keys(data.matches || {}).length > 0) { save(data); renderHome(); viewerPollStart(); } else { renderHome(); } })
+      .then(data => { if (data && Object.keys(data.matches || {}).length > 0) { save(data); viewerPollStart(); if (!openMatchFromHash()) renderHome(); } else { renderHome(); } })
       .catch(() => renderHome());
   } else {
-    renderHome();
+    if (!openMatchFromHash()) renderHome();
   }
 } else {
-  renderHome();
+  if (!openMatchFromHash()) renderHome();
 }
 </script>
 </body>

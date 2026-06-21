@@ -352,7 +352,8 @@ function getGitHubConfig() {
 function saveGitHubConfig(cfg) { try { localStorage.setItem('gh_sync_config', JSON.stringify(cfg)); } catch(e) { console.warn('config save failed',e); } }
 function hasGitHubToken() { return !!getGitHubConfig().token; }
 function applyViewerMode() {
-  const viewer = !hasGitHubToken();
+  const cfg = getGitHubConfig();
+  const viewer = !hasGitHubToken() && cfg.repo;
   document.body.classList.toggle('viewer-mode', viewer);
   document.getElementById('viewer-badge').style.display = viewer ? '' : 'none';
   document.getElementById('home-viewer-badge').style.display = viewer ? '' : 'none';

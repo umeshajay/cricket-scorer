@@ -8,6 +8,7 @@ const NAV = [
   { href: '/scorer', label: 'Scorer' },
   { href: '/dashboard', label: 'Live Score' },
   { href: '/leaderboard', label: 'Leaderboard' },
+  { href: '/settings', label: '⚙️' },
 ];
 
 export default function Layout({ children }) {

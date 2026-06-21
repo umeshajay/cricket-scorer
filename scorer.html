@@ -164,7 +164,13 @@ select option{background:var(--surface);color:var(--text)}
   </div>
   <div id="home-match-list" class="space-y-2"></div>
   <button id="home-new-match" onclick="showView('setup')" class="btn-score primary w-full py-3 text-base">+ New Match</button>
+  <div class="flex gap-2 justify-center mt-2">
+    <input id="home-pin-input" type="text" maxlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="Enter 4-digit PIN" class="text-sm text-center" style="width:120px;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:16px;letter-spacing:4px;font-weight:700">
+    <button onclick="openMatchByPin()" class="pill-btn primary" style="font-size:13px">View Match</button>
+  </div>
+  <div id="home-pin-err" class="text-center text-xs" style="color:var(--red);display:none"></div>
   <div id="home-local-msg" class="text-center text-xs" style="color:var(--text3)">Data saves in your browser (localStorage)</div>
+  <div id="home-gh-msg" class="text-center text-xs" style="color:var(--text3);display:none"></div>
 </div>
 
 <!-- ══ SETUP ══ -->
@@ -219,6 +225,7 @@ select option{background:var(--surface);color:var(--text)}
       <div class="inn-label">Innings <span id="sb-inns-no">1</span></div>
       <div class="score"><span class="num" id="sb-runs">0</span>/<span id="sb-wkts">0</span></div>
       <div class="meta">Ov <span id="sb-ov">0.0</span>/<span id="sb-maxov">0</span> &middot; RR <span id="sb-rr">0.00</span> &middot; <span id="sb-bat">Batting</span> &middot; Extras <span id="sb-ext">0</span></div>
+      <div id="sb-pin-row" style="display:none;margin-top:8px;font-size:13px;font-weight:700;color:var(--accent);letter-spacing:2px">PIN: <span id="sb-pin"></span></div>
     </div>
     <div class="card bowler-card">
       <span class="label"><span class="name" id="sb-bowler">—</span></span>
@@ -352,18 +359,26 @@ function getGitHubConfig() {
 function saveGitHubConfig(cfg) { try { localStorage.setItem('gh_sync_config', JSON.stringify(cfg)); } catch(e) { console.warn('config save failed',e); } }
 function hasGitHubToken() { return !!getGitHubConfig().token; }
 function hasUserConfiguredRepo() {
-  try {
-    const raw = localStorage.getItem('gh_sync_config');
-    if (!raw) return false;
-    const c = JSON.parse(raw);
-    return !!c.repo;
-  } catch { return false; }
+  return !!getGitHubConfig().repo;
 }
 function applyViewerMode() {
   const viewer = !hasGitHubToken() && hasUserConfiguredRepo();
   document.body.classList.toggle('viewer-mode', viewer);
   document.getElementById('viewer-badge').style.display = viewer ? '' : 'none';
   document.getElementById('home-viewer-badge').style.display = viewer ? '' : 'none';
+  const cfg = getGitHubConfig();
+  const ghMsg = document.getElementById('home-gh-msg');
+  if (ghMsg) {
+    if (cfg.token && cfg.repo) {
+      ghMsg.textContent = '☁️ GitHub sync enabled → ' + cfg.repo;
+      ghMsg.style.display = '';
+    } else if (cfg.repo && !cfg.token) {
+      ghMsg.textContent = '👁 Viewing ' + cfg.repo + ' — tap ⚙️ to add a token and start scoring';
+      ghMsg.style.display = '';
+    } else {
+      ghMsg.style.display = 'none';
+    }
+  }
 }
 
 let _ghSyncTimer = null;
@@ -450,7 +465,13 @@ function startMatch() {
   }
   if (d.matches[mid]) { err.textContent = 'Match ID already exists'; return; }
 
-  d.matches[mid] = { id: mid, teamA: ta, teamB: tb, overs, status: 'ongoing', created: new Date().toISOString() };
+  // Generate unique 4-digit PIN
+  let pin = '';
+  do { pin = String(Math.floor(1000 + Math.random() * 9000)); } while (d.matchByPin && d.matchByPin[pin]);
+  if (!d.matchByPin) d.matchByPin = {};
+  d.matchByPin[pin] = mid;
+
+  d.matches[mid] = { id: mid, pin, teamA: ta, teamB: tb, overs, status: 'ongoing', created: new Date().toISOString() };
 
   // Auto-generate players
   const genId = () => 'p' + Date.now() + Math.random().toString(36).slice(2,6);
@@ -616,6 +637,14 @@ function renderScorer() {
   document.getElementById('sb-bat').textContent = inn.batting;
   document.getElementById('sb-ext').textContent = inn.extras;
 
+  // Show PIN
+  if (match.pin) {
+    document.getElementById('sb-pin-row').style.display = '';
+    document.getElementById('sb-pin').textContent = match.pin;
+  } else {
+    document.getElementById('sb-pin-row').style.display = 'none';
+  }
+
   const totalDeliveries = inn.balls;
   const rr = totalDeliveries > 0 ? (inn.runs / (totalDeliveries / 6)).toFixed(2) : '0.00';
   document.getElementById('sb-rr').textContent = rr;
@@ -748,15 +777,22 @@ function buildScoreMessage() {
 }
 
 function showWhatsAppShare() {
-  if (!hasUserConfiguredRepo()) {
-    alert('Please configure GitHub repo and file path in Settings to enable sharing.');
-    return;
-  }
   const text = buildScoreMessage();
   if (!text) return;
-  const textWithLink = text + '\n🔗 Live Scorecard: ' + window.location.href;
+  const d = load();
+  const match = d.matches[currentState.matchId];
+  let shareInfo = text;
+  if (match && match.pin) {
+    shareInfo += '\n🔢 Share PIN: ' + match.pin;
+  }
+  // Include the page link for live viewing
+  const pageUrl = window.location.href.split('#')[0] + '#pin=' + (match ? match.pin : '');
+  shareInfo += '\n🔗 Open: ' + pageUrl;
+  if (hasUserConfiguredRepo()) {
+    shareInfo += '\n☁️ Live scorecard: ' + window.location.href;
+  }
   const link = document.getElementById('wa-link');
-  link.href = 'https://wa.me/?text=' + encodeURIComponent(textWithLink);
+  link.href = 'https://wa.me/?text=' + encodeURIComponent(shareInfo);
   document.getElementById('wa-overlay').classList.add('open');
 }
 
@@ -765,11 +801,14 @@ function hideWhatsAppShare() {
 }
 
 function copyMatchLink() {
-  if (!hasUserConfiguredRepo()) {
-    alert('Please configure GitHub repo and file path in Settings to enable sharing.');
-    return;
+  const d = load();
+  const match = d.matches[currentState.matchId];
+  let url;
+  if (match && match.pin) {
+    url = window.location.href.split('#')[0] + '#pin=' + match.pin;
+  } else {
+    url = window.location.href.split('#')[0] + '#match=' + currentState.matchId;
   }
-  const url = window.location.href.split('#')[0] + '#match=' + currentState.matchId;
   navigator.clipboard.writeText(url).then(() => {
     showToast('✅ Match link copied!');
   }).catch(() => {
@@ -1229,8 +1268,17 @@ function renderHome() {
   const d = load();
   const matches = Object.values(d.matches || {}).sort((a, b) => (b.created || '').localeCompare(a.created || ''));
   const el = document.getElementById('home-match-list');
+  // Pre-fill PIN input from URL hash
+  const pinMatch = window.location.hash.match(/pin=(\d{4})/);
+  if (pinMatch) document.getElementById('home-pin-input').value = pinMatch[1];
+
   if (!matches.length) {
-    el.innerHTML = '<div class="card p-6 empty-state">No matches yet. Create your own match!</div>';
+    const cfg = getGitHubConfig();
+    if (!cfg.token) {
+      el.innerHTML = '<div class="card p-6 empty-state">No matches yet. Tap ⚙️ to configure a GitHub token + repo, then create your own match!</div>';
+    } else {
+      el.innerHTML = '<div class="card p-6 empty-state">No matches yet. Create your own match!</div>';
+    }
     return;
   }
   el.innerHTML = matches.map(m => {
@@ -1247,7 +1295,7 @@ function renderHome() {
     return '<div class="card match-card">' +
       '<div onclick="openScorer(\'' + m.id + '\')" class="flex items-center justify-between card-hover">' +
       '<div><div class="match-title">' + ta + ' vs ' + tb + '</div>' +
-      '<div class="match-sub">' + m.id + ' &middot; ' + mov + ' ov &middot; <span style="color:' + (isOn ? 'var(--green)' : 'var(--text3)') + '" class="font-medium">' + m.status + '</span></div></div>' +
+      '<div class="match-sub">' + m.id + (m.pin ? ' &middot; PIN <strong>' + m.pin + '</strong>' : '') + ' &middot; ' + mov + ' ov &middot; <span style="color:' + (isOn ? 'var(--green)' : 'var(--text3)') + '" class="font-medium">' + m.status + '</span></div></div>' +
       '<div class="score-display"><div class="score-num">' + score1 + (score2 ? ' & ' + score2 : '') + '</div>' +
       '<div class="ov">Ov ' + ov1 + (ov2 ? ' & ' + ov2 : '') + '</div></div></div>' +
       (isOn ? '' : '<button onclick="event.stopPropagation();openReport(\'' + m.id + '\')" class="mt-2 w-full btn-score primary py-2 text-xs">📊 Stats</button>') +
@@ -1446,40 +1494,40 @@ function openManageTeamsModal() {
 // ─────── SETTINGS ───────
 function openSettingsModal() {
   const cfg = getGitHubConfig();
-  const isViewer = !hasGitHubToken();
-  document.getElementById('modal-title').textContent = isViewer ? '👁 Viewing' : '⚙️ Settings';
+  const hasToken = hasGitHubToken();
+  document.getElementById('modal-title').textContent = '⚙️ Settings';
   const s = 'style="color:var(--text2);font-size:12px"';
   let html = '';
-  if (!isViewer) {
-    html +=
-      '<button onclick="closeModal();openManageTeamsModal()" class="w-full btn-score btn-sm mb-2" style="background:var(--accent-light);color:var(--accent);font-weight:600">🏷️ Manage team presets</button>' +
-      '<button onclick="sendCompletedToWhatsApp();closeModal()" class="w-full btn-score btn-sm mb-2" style="background:var(--green-light);color:var(--green);font-weight:600">📱 Send completed matches to WhatsApp</button>' +
-      '<div style="border-top:1px solid var(--border);margin:12px 0"></div>' +
-      '<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px">☁️ GitHub Sync</div>' +
-      '<label ' + s + '>Token (<a style="color:var(--accent)" href="https://github.com/settings/tokens" target="_blank">create one</a> with repo scope)</label>' +
-      '<input id="gh-token" type="password" value="' + (cfg.token || '') + '" class="w-full text-sm mb-2" placeholder="ghp_...">' +
-      '<label ' + s + '>Repo (owner/repo)</label>' +
-      '<input id="gh-repo" value="' + (cfg.repo || '') + '" class="w-full text-sm mb-2" placeholder="username/repo">' +
-      '<label ' + s + '>File path</label>' +
-      '<input id="gh-path" value="' + (cfg.path || 'cricket-scorer-data.json') + '" class="w-full text-sm mb-2">' +
-      '<label ' + s + '>Branch</label>' +
-      '<input id="gh-branch" value="' + (cfg.branch || 'main') + '" class="w-full text-sm mb-2">' +
-      '<div class="flex gap-2 mb-2">' +
-      '<button onclick="saveGitHubConfigFromUI()" class="flex-1 btn-score btn-sm" style="background:var(--accent-light);color:var(--accent);font-weight:600">💾 Save Config</button>' +
-      '<button onclick="githubSync()" class="flex-1 btn-score btn-sm" style="background:var(--accent-light);color:var(--accent);font-weight:600">⬆ Sync Now</button>' +
-      '</div>' +
-      '<button onclick="githubRestore()" class="w-full btn-score btn-sm mb-2" style="background:var(--accent-light);color:var(--accent);font-weight:600">⬇ Restore from GitHub</button>' +
-      '<div id="gh-status" class="text-xs text-center" style="color:var(--text3);min-height:1.2em"></div>' +
-      '<div style="border-top:1px solid var(--border);margin:12px 0"></div>' +
-      '<button onclick="exportData()" class="w-full btn-score btn-sm mb-2" style="background:var(--green-light);color:var(--green);font-weight:600">💾 Export data (download .json)</button>' +
-      '<button onclick="importData()" class="w-full btn-score btn-sm mb-2" style="background:var(--accent-light);color:var(--accent);font-weight:600">📂 Import data (upload .json)</button>' +
-      '<div style="border-top:1px solid var(--border);margin:12px 0"></div>' +
-      '<button onclick="closeModal();openManageMatchesModal()" class="w-full btn-score btn-sm" style="background:var(--red-light);color:var(--red);font-weight:600">🗑️ Manage completed matches</button>';
-  } else {
-    html +=
-      '<div style="text-align:center;padding:16px 0;color:var(--text2);font-size:14px">👁 You are viewing this match in read-only mode.</div>' +
-      '<button onclick="sendCompletedToWhatsApp();closeModal()" class="w-full btn-score btn-sm mb-2" style="background:var(--green-light);color:var(--green);font-weight:600">📱 Send completed matches to WhatsApp</button>';
+
+  if (!hasToken) {
+    html += '<div style="text-align:center;padding:12px 0;color:var(--text2);font-size:13px">👁 Enter a GitHub token below to enable scoring &amp; sharing.</div>';
   }
+
+  html +=
+    '<div style="border-top:1px solid var(--border);margin:8px 0 12px 0"></div>' +
+    '<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px">☁️ GitHub Sync</div>' +
+    '<label ' + s + '>Token (<a style="color:var(--accent)" href="https://github.com/settings/tokens" target="_blank">create one</a> with repo scope)</label>' +
+    '<input id="gh-token" type="password" value="' + (cfg.token || '') + '" class="w-full text-sm mb-2" placeholder="ghp_...">' +
+    '<label ' + s + '>Repo (owner/repo)</label>' +
+    '<input id="gh-repo" value="' + (cfg.repo || '') + '" class="w-full text-sm mb-2" placeholder="username/repo">' +
+    '<label ' + s + '>File path</label>' +
+    '<input id="gh-path" value="' + (cfg.path || 'cricket-scorer-data.json') + '" class="w-full text-sm mb-2">' +
+    '<label ' + s + '>Branch</label>' +
+    '<input id="gh-branch" value="' + (cfg.branch || 'main') + '" class="w-full text-sm mb-2">' +
+    '<div class="flex gap-2 mb-2">' +
+    '<button onclick="saveGitHubConfigFromUI()" class="flex-1 btn-score btn-sm" style="background:var(--accent-light);color:var(--accent);font-weight:600">💾 Save Config</button>' +
+    (hasToken ? '<button onclick="githubSync()" class="flex-1 btn-score btn-sm" style="background:var(--accent-light);color:var(--accent);font-weight:600">⬆ Sync Now</button>' : '') +
+    '</div>' +
+    (hasToken ? '<button onclick="githubRestore()" class="w-full btn-score btn-sm mb-2" style="background:var(--accent-light);color:var(--accent);font-weight:600">⬇ Restore from GitHub</button>' : '') +
+    '<div id="gh-status" class="text-xs text-center" style="color:var(--text3);min-height:1.2em"></div>' +
+    '<div style="border-top:1px solid var(--border);margin:12px 0"></div>' +
+    '<button onclick="exportData()" class="w-full btn-score btn-sm mb-2" style="background:var(--green-light);color:var(--green);font-weight:600">💾 Export data (download .json)</button>' +
+    '<button onclick="importData()" class="w-full btn-score btn-sm mb-2" style="background:var(--accent-light);color:var(--accent);font-weight:600">📂 Import data (upload .json)</button>' +
+    '<div style="border-top:1px solid var(--border);margin:12px 0"></div>' +
+    '<button onclick="closeModal();openManageTeamsModal()" class="w-full btn-score btn-sm mb-2" style="background:var(--accent-light);color:var(--accent);font-weight:600">🏷️ Manage team presets</button>' +
+    '<button onclick="sendCompletedToWhatsApp();closeModal()" class="w-full btn-score btn-sm mb-2" style="background:var(--green-light);color:var(--green);font-weight:600">📱 Send completed matches to WhatsApp</button>' +
+    '<button onclick="closeModal();openManageMatchesModal()" class="w-full btn-score btn-sm" style="background:var(--red-light);color:var(--red);font-weight:600">🗑️ Manage completed matches</button>';
+
   document.getElementById('modal-body').innerHTML = html;
   document.getElementById('modal-overlay').classList.add('open');
 }
@@ -1499,10 +1547,6 @@ function formatOverLine(over) {
 }
 
 function sendCompletedToWhatsApp() {
-  if (!hasUserConfiguredRepo()) {
-    alert('Please configure GitHub repo and file path in Settings to enable sharing.');
-    return;
-  }
   const d = load();
   const completed = Object.values(d.matches || {}).filter(m => m.status === 'completed');
   if (!completed.length) return;
@@ -1651,7 +1695,9 @@ function saveGitHubConfigFromUI() {
     branch: document.getElementById('gh-branch').value.trim() || 'main',
   };
   saveGitHubConfig(cfg);
-  document.getElementById('gh-status').textContent = '✅ Config saved';
+  applyViewerMode();
+  renderHome();
+  document.getElementById('gh-status').textContent = '✅ Config saved. ' + (cfg.token ? 'Scorer mode enabled!' : 'Repo set. Enter a token to start scoring.');
 }
 
 function ghHeaders() {
@@ -1698,6 +1744,19 @@ function githubPull() {
         const json = decodeURIComponent(escape(atob(data.content)));
         resolve(JSON.parse(json));
       })
+      .catch(reject);
+  });
+}
+
+// Fetch data from raw GitHub URL (no auth needed, works for public repos)
+function githubPullRaw() {
+  return new Promise((resolve, reject) => {
+    const cfg = getGitHubConfig();
+    if (!cfg.repo) return reject('No repo configured');
+    const url = 'https://raw.githubusercontent.com/' + cfg.repo + '/' + (cfg.branch || 'main') + '/' + (cfg.path || 'cricket-scorer-data.json');
+    fetch(url + '?_=' + Date.now())
+      .then(r => { if (!r.ok) throw new Error('File not found on GitHub'); return r.json(); })
+      .then(resolve)
       .catch(reject);
   });
 }
@@ -1976,10 +2035,6 @@ function overBreakdownText(d, mid, inns) {
 }
 
 function shareReport() {
-  if (!hasUserConfiguredRepo()) {
-    alert('Please configure GitHub repo and file path in Settings to enable sharing.');
-    return;
-  }
   const mid = document.getElementById('report-title').dataset.mid;
   const d = load();
   const m = d.matches[mid];
@@ -2056,8 +2111,51 @@ function migrateOldData() {
 }
 migrateOldData();
 
+function openMatchByPin() {
+  const pin = document.getElementById('home-pin-input').value.trim();
+  const err = document.getElementById('home-pin-err');
+  if (!pin || pin.length !== 4) { err.textContent = 'Enter a 4-digit PIN'; err.style.display = ''; return; }
+  const d = load();
+  let mid = d.matchByPin && d.matchByPin[pin];
+  // If not found locally and repo is configured, try pulling from GitHub (public repo, no token needed)
+  if (!mid && hasUserConfiguredRepo()) {
+    githubPullRaw().then((data) => {
+      if (data && data.matchByPin && data.matchByPin[pin] && data.matches[data.matchByPin[pin]]) {
+        save(data);
+        openScorer(data.matchByPin[pin]);
+      } else {
+        err.textContent = 'Match not found with PIN ' + pin + ' on GitHub.';
+        err.style.display = '';
+      }
+    }).catch(() => {
+      err.textContent = 'Failed to fetch data from GitHub. Check your repo settings.';
+      err.style.display = '';
+    });
+    return;
+  }
+  if (!mid || !d.matches[mid]) {
+    err.textContent = 'No match found with PIN ' + pin + '. Enter a repo in ⚙️ Settings and try again.';
+    err.style.display = '';
+    return;
+  }
+  err.style.display = 'none';
+  openScorer(mid);
+}
+
 function openMatchFromHash() {
-  const m = window.location.hash.match(/match=([A-Za-z0-9_]+)/);
+  const hash = window.location.hash;
+  // Try PIN first
+  const p = hash.match(/pin=(\d{4})/);
+  if (p) {
+    const d = load();
+    const mid = d.matchByPin && d.matchByPin[p[1]];
+    if (mid && d.matches[mid]) {
+      openScorer(mid);
+      return true;
+    }
+  }
+  // Then try match ID
+  const m = hash.match(/match=([A-Za-z0-9_]+)/);
   if (m) {
     const d = load();
     if (d.matches && d.matches[m[1]]) {

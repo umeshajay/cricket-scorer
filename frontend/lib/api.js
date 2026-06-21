@@ -1,6 +1,8 @@
 // Browser localStorage-based storage — zero setup, no auth needed
+// Optional GitHub sync — set GITHUB_TOKEN + GITHUB_REPO in settings to enable
 
 const STORAGE_KEY = 'cricket_scorer_data';
+const SETTINGS_KEY = 'cricket_scorer_settings';
 
 function defaultData() {
   return { matches: {}, innings: {}, balls: {}, players: [], settings: {}, ball_id_seq: 0 };
@@ -15,6 +17,119 @@ function load() {
 
 function save(data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+// ── GitHub Settings ─────────────────────────────────────
+// Stored in a separate localStorage key so the viewer can configure their own token.
+
+export function getGitHubSettings() {
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    return raw ? JSON.parse(raw) : { token: '', repo: '' };
+  } catch { return { token: '', repo: '' }; }
+}
+
+export function setGitHubSettings(token, repo) {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify({ token, repo }));
+}
+
+export function hasGitHubSettings() {
+  const s = getGitHubSettings();
+  return !!(s.token && s.repo);
+}
+
+/**
+ * Push all match data to GitHub as a single JSON file.
+ * Uses the GitHub Contents API (commit a file).
+ */
+export async function syncToGitHub() {
+  const settings = getGitHubSettings();
+  if (!settings.token || !settings.repo) throw new Error('GitHub token and repo not configured');
+
+  const data = load();
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+  const url = `https://api.github.com/repos/${settings.repo}/contents/data/match-data.json`;
+  const headers = {
+    Authorization: `Bearer ${settings.token}`,
+    Accept: 'application/vnd.github.v3+json',
+    'Content-Type': 'application/json',
+  };
+
+  // Try to get existing file SHA (for update)
+  let sha = null;
+  try {
+    const getRes = await fetch(url, { headers });
+    if (getRes.ok) {
+      const existing = await getRes.json();
+      sha = existing.sha;
+    }
+  } catch { /* file doesn't exist yet */ }
+
+  const body = { message: 'Update match data', content };
+  if (sha) body.sha = sha;
+
+  const res = await fetch(url, { method: 'PUT', headers, body: JSON.stringify(body) });
+  if (!res.ok) {
+    const errBody = await res.json().catch(() => ({}));
+    throw new Error(errBody.message || `GitHub sync failed (${res.status})`);
+  }
+  return true;
+}
+
+/**
+ * Pull match data from GitHub and merge into localStorage.
+ */
+export async function syncFromGitHub() {
+  const settings = getGitHubSettings();
+  if (!settings.token || !settings.repo) throw new Error('GitHub token and repo not configured');
+
+  const url = `https://api.github.com/repos/${settings.repo}/contents/data/match-data.json`;
+  const headers = {
+    Authorization: `Bearer ${settings.token}`,
+    Accept: 'application/vnd.github.v3+json',
+  };
+
+  const res = await fetch(url, { headers });
+  if (!res.ok) throw new Error(`Failed to fetch remote data (${res.status})`);
+
+  const data = await res.json();
+  const decoded = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+  save(decoded);
+  return decoded;
+}
+
+/**
+ * Get the raw URL for viewing match data (no auth needed if repo is public).
+ */
+export function getDataRawUrl() {
+  const settings = getGitHubSettings();
+  if (!settings.repo) return '';
+  return `https://raw.githubusercontent.com/${settings.repo}/main/data/match-data.json`;
+}
+
+/**
+ * Build a shareable viewer URL for a specific match.
+ */
+export function getMatchShareUrl(matchId) {
+  const settings = getGitHubSettings();
+  const base = window.location.origin + '/cricket-scorer/dashboard';
+  const params = new URLSearchParams({ match: matchId });
+  if (settings.repo) params.set('repo', settings.repo);
+  return `${base}?${params.toString()}`;
+}
+
+/**
+ * Fetch match data from the raw GitHub URL (no auth needed for public repos).
+ * Replaces localStorage data with remote data.
+ */
+export async function fetchFromPublicGitHub(repo, matchId) {
+  const rawUrl = `https://raw.githubusercontent.com/${repo}/main/data/match-data.json`;
+  const res = await fetch(rawUrl);
+  if (!res.ok) throw new Error('No synced data found on GitHub');
+  const remote = await res.json();
+  // Merge remote data into localStorage
+  save(remote);
+  return remote;
 }
 
 // ── Matches ────────────────────────────────────────────

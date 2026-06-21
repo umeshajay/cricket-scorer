@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { fetchMatches, fetchMatchById, fetchInnings, fetchBalls } from '../lib/api';
+import { fetchMatches, fetchMatchById, fetchInnings, fetchBalls, hasGitHubSettings, getGitHubSettings, syncFromGitHub, fetchFromPublicGitHub } from '../lib/api';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -11,7 +11,33 @@ export default function Dashboard() {
   const [innings, setInnings] = useState([]);
   const [balls, setBalls] = useState([]);
   const [err, setErr] = useState('');
+  const [repoInput, setRepoInput] = useState('');
+  const [ghMsg, setGhMsg] = useState('');
+  const [busy, setBusy] = useState(false);
 
+  // Pull data from GitHub
+  const pullFromGitHub = useCallback(async (repo) => {
+    setBusy(true);
+    setGhMsg('');
+    try {
+      const fromUrl = router.query.repo || repo || repoInput;
+      if (!fromUrl) { setGhMsg('Enter a repo (e.g. username/repo)'); setBusy(false); return; }
+      await fetchFromPublicGitHub(fromUrl);
+      setGhMsg('Data loaded from GitHub ✓');
+      // reload matches
+      const m = await fetchMatches();
+      setMatches(m);
+      // try to select the match from URL param
+      const q = router.query.match;
+      if (q && m.some(mm => mm.match_id === q)) setSelId(q);
+      else if (m.length > 0) setSelId(m[0].match_id);
+    } catch (e) {
+      setGhMsg('Error: ' + e.message);
+    }
+    setBusy(false);
+  }, [router.query.match, router.query.repo, repoInput]);
+
+  // On mount, load matches from localStorage
   useEffect(() => {
     fetchMatches()
       .then((data) => {
@@ -28,6 +54,18 @@ export default function Dashboard() {
       })
       .catch(() => {});
   }, [router.query]);
+
+  // If ?match= is set but no local data, prompt to pull from GitHub
+  useEffect(() => {
+    if (router.query.match && matches.length === 0 && !err) {
+      // check if repo is in URL params or settings
+      const qRepo = router.query.repo;
+      if (qRepo) {
+        setRepoInput(qRepo);
+        pullFromGitHub(qRepo);
+      }
+    }
+  }, [router.query, matches, err, pullFromGitHub]);
 
   const loadData = useCallback(async () => {
     if (!selId) return;
@@ -68,14 +106,34 @@ export default function Dashboard() {
         </button>
       </div>
 
+      {/* GitHub viewer panel */}
+      <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm space-y-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <input
+            type="text"
+            value={repoInput}
+            onChange={e => setRepoInput(e.target.value)}
+            placeholder="GitHub repo (username/repo)"
+            className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono"
+          />
+          <button onClick={() => pullFromGitHub()} disabled={busy} className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+            {busy ? 'Loading...' : 'Load from GitHub'}
+          </button>
+        </div>
+        {ghMsg && <p className={`text-xs ${ghMsg.includes('Error') ? 'text-red-500' : 'text-green-600'}`}>{ghMsg}</p>}
+        {router.query.match && matches.length === 0 && !ghMsg && (
+          <p className="text-xs text-amber-600">
+            No local data found for match {router.query.match}. Enter the repo above and click Load to fetch from GitHub.
+          </p>
+        )}
+      </div>
+
       {err && <p className="text-red-500 text-sm">{err}</p>}
 
       {!selId && (
         <div className="text-center py-12 bg-white rounded-xl border border-gray-200 shadow-sm">
           <p className="text-gray-400">No matches found.</p>
-          <Link href="/setup-match" className="inline-block mt-3 bg-cyan-500 hover:bg-cyan-600 text-white px-5 py-2 rounded-lg font-semibold text-sm transition shadow-sm">
-            Create a Match
-          </Link>
+          <p className="text-xs text-gray-400 mt-1">Enter a GitHub repo above and click Load to pull match data.</p>
         </div>
       )}
 

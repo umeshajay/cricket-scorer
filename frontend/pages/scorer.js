@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { fetchMatches, fetchMatchById, createMatch, insertBall, deleteBall, fetchInnings, fetchBalls, updateInnings } from '../lib/api';
+import { fetchMatches, fetchMatchById, createMatch, insertBall, deleteBall, fetchInnings, fetchBalls, updateInnings, hasGitHubSettings, syncToGitHub, getMatchShareUrl, getGitHubSettings, setGitHubSettings } from '../lib/api';
 
 const btn = (text, cb, cls = 'bg-gray-50') => (
   <button key={text} onClick={cb} className={`${cls} text-gray-800 font-bold text-xl rounded-xl py-4 px-2 shadow-sm active:scale-95 transition border border-gray-200`}>{text}</button>
@@ -16,6 +16,10 @@ export default function Scorer() {
   const [busy, setBusy] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
   const [createForm, setCreateForm] = useState({ matchId: '', overs: '5', teamA: 'Team A', teamB: 'Team B' });
+  const [showShare, setShowShare] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [settingsToken, setSettingsToken] = useState('');
+  const [settingsRepo, setSettingsRepo] = useState('');
 
   const load = async () => {
     const m = await fetchMatches();
@@ -32,6 +36,12 @@ export default function Scorer() {
       setBalls(await fetchBalls(selMid));
     })();
   }, [selMid]);
+
+  useEffect(() => {
+    const s = getGitHubSettings();
+    setSettingsToken(s.token);
+    setSettingsRepo(s.repo);
+  }, []);
 
   const refresh = async () => {
     if (!selMid) return;
@@ -83,6 +93,12 @@ export default function Scorer() {
       await fn();
       await refresh();
       setMsg('Saved ✓');
+      // auto-sync to GitHub if configured
+      if (hasGitHubSettings()) {
+        try {
+          await syncToGitHub();
+        } catch { /* silent fail for auto-sync */ }
+      }
     } catch (e) { setMsg('Error: ' + e.message); }
     setBusy(false);
   };
@@ -125,7 +141,6 @@ export default function Scorer() {
     const last = b[0];
     await deleteBall(last.id);
     await refresh();
-    // recalculate innings
     const remaining = await fetchBalls(selMid);
     const inn = getInn();
     if (inn) {
@@ -139,8 +154,17 @@ export default function Scorer() {
     setMsg('↩️ Undone');
   };
 
+  const handleSaveSettings = () => {
+    setGitHubSettings(settingsToken, settingsRepo);
+    setMsg('Settings saved ✓');
+    setShowSettings(false);
+  };
+
+  const shareUrl = selMid ? getMatchShareUrl(selMid) : '';
+
   const inn = getInn();
   const ovStr = inn ? `${Math.floor((inn.total_balls || 0) / 6)}.${(inn.total_balls || 0) % 6}` : '0.0';
+  const ghOk = hasGitHubSettings();
 
   return (
     <div className="max-w-md mx-auto space-y-3">
@@ -151,6 +175,7 @@ export default function Scorer() {
         </select>
         <button onClick={refresh} className="bg-gray-100 border border-gray-300 px-3 py-2 rounded-lg text-sm" disabled={busy}>↻</button>
         <button onClick={() => setShowCreate(!showCreate)} className="bg-emerald-500 text-white px-3 py-2 rounded-lg text-sm font-medium">+ New</button>
+        <button onClick={() => setShowSettings(!showSettings)} className="bg-gray-100 border border-gray-300 px-3 py-2 rounded-lg text-sm">{ghOk ? '⚙️✓' : '⚙️'}</button>
       </div>
 
       {showCreate && (
@@ -167,6 +192,30 @@ export default function Scorer() {
         </form>
       )}
 
+      {showSettings && (
+        <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm space-y-2">
+          <h3 className="text-sm font-semibold text-gray-700">GitHub Sync Settings</h3>
+          <input
+            type="password"
+            value={settingsToken}
+            onChange={e => setSettingsToken(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono"
+            placeholder="GitHub Token (ghp_...)"
+          />
+          <input
+            type="text"
+            value={settingsRepo}
+            onChange={e => setSettingsRepo(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono"
+            placeholder="Repo (username/repo)"
+          />
+          <div className="flex gap-2">
+            <button onClick={handleSaveSettings} className="flex-1 bg-cyan-500 hover:bg-cyan-600 text-white py-2 rounded-lg text-sm font-medium">Save</button>
+            <button onClick={() => setShowSettings(false)} className="flex-1 bg-gray-100 border border-gray-300 py-2 rounded-lg text-sm">Cancel</button>
+          </div>
+        </div>
+      )}
+
       {msg && <div className={`text-xs text-center ${msg.includes('Error') || msg.includes('Fill') ? 'text-red-500' : 'text-green-600'}`}>{msg}</div>}
 
       {match && inn && (
@@ -174,6 +223,11 @@ export default function Scorer() {
           <div className="text-3xl font-black text-cyan-600">{inn.total_runs}/{inn.total_wickets}</div>
           <div className="text-xs text-gray-500">Over {ovStr}/{match.total_overs}.0 · Extras {inn.extras || 0}</div>
           <div className="text-sm font-semibold text-gray-700 mt-1">{match.team_a_name} vs {match.team_b_name}</div>
+          {!ghOk && (
+            <div className="mt-2 text-xs text-amber-600">
+              Set ⚙️ GitHub token + repo above to share live
+            </div>
+          )}
         </div>
       )}
 
@@ -214,6 +268,50 @@ export default function Scorer() {
             <button onClick={handleUndo} className="flex-1 bg-gray-100 border border-gray-300 rounded-xl py-3 text-sm font-medium active:scale-95 transition">↩️ Undo Last Ball</button>
             <button onClick={() => { localStorage.removeItem('cricket_scorer_data'); setMsg('All data cleared!'); load(); setSelMid(''); }} className="flex-1 bg-red-50 border border-red-200 text-red-600 rounded-xl py-3 text-sm font-medium active:scale-95 transition">🗑 Clear All</button>
           </div>
+
+          <div className="flex gap-2">
+            {ghOk && (
+              <button onClick={() => { syncToGitHub().then(() => setMsg('Synced to GitHub ✓')).catch(e => setMsg('Sync error: ' + e.message)); }} className="flex-1 bg-cyan-50 border border-cyan-200 text-cyan-600 rounded-xl py-3 text-sm font-medium active:scale-95 transition">
+                ☁️ Sync Now
+              </button>
+            )}
+            <button onClick={() => setShowShare(!showShare)} className={`flex-1 rounded-xl py-3 text-sm font-medium active:scale-95 transition ${ghOk ? 'bg-emerald-50 border border-emerald-200 text-emerald-600' : 'bg-gray-100 border border-gray-300 text-gray-400'}`}>
+              📱 Share
+            </button>
+          </div>
+
+          {showShare && (
+            <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm space-y-2">
+              <h3 className="text-sm font-semibold text-gray-700">Share Live Match</h3>
+              {ghOk ? (
+                <>
+                  <p className="text-xs text-gray-500">Send this link to friends to watch live:</p>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      readOnly
+                      value={shareUrl}
+                      className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50"
+                      onClick={e => e.target.select()}
+                    />
+                    <button
+                      onClick={() => { navigator.clipboard.writeText(shareUrl); setMsg('Link copied!'); }}
+                      className="bg-cyan-500 hover:bg-cyan-600 text-white px-3 py-2 rounded-lg text-sm"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-400">
+                    Opens the Live Score dashboard for this match. Data syncs automatically to GitHub after each ball.
+                  </p>
+                </>
+              ) : (
+                <p className="text-xs text-amber-600">
+                  Configure your GitHub Token and Repo in ⚙️ settings above to enable sharing.
+                </p>
+              )}
+            </div>
+          )}
         </>
       )}
 

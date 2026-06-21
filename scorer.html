@@ -73,6 +73,17 @@ button{touch-action:manipulation}
 .scorer-history{margin-top:6px}
 .scorer-footer{position:fixed;bottom:0;left:0;right:0;z-index:20;max-width:32rem;margin:0 auto;padding:0 8px}
 .scorer-footer .inner{background:var(--footer-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:var(--radius-lg) var(--radius-lg) 0 0;border-top:1px solid var(--border);box-shadow:var(--footer-shadow);padding:8px;transition:background .2s}
+.viewer-mode .scorer-footer{display:none}
+.viewer-mode #end-inns-btn{display:none}
+.viewer-mode #scorer-inns-toggle{display:none!important}
+.viewer-mode .nav-btn-setup{display:none}
+.viewer-mode .nav-btn-export{display:none}
+.viewer-mode #home-new-match{display:none}
+.viewer-mode #home-local-msg{display:none}
+.viewer-mode #scorer-inns-toggle{display:none!important}
+.viewer-mode .header .pill-btn[style*="delete"]{display:none}
+.viewer-mode #view-home .btn-score.primary{display:none}
+.viewer-mode .pill-btn.danger{display:none}
 .card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--border);transition:background .2s,border-color .2s,box-shadow .2s}
 .card-hover{cursor:pointer;transition:all .15s}
 .card-hover:active{transform:scale(0.98);opacity:.8}
@@ -147,7 +158,7 @@ select option{background:var(--surface);color:var(--text)}
 <!-- ══ HOME ══ -->
 <div id="view-home" class="view active">
   <div class="header">
-    <h1>Cricket Scorer</h1>
+    <h1>Cricket Scorer <span id="home-viewer-badge" style="display:none;font-size:11px;color:var(--text3);font-weight:400">👁 Live</span></h1>
     <div class="header-actions">
       <button onclick="showView('leaderboard')" class="pill-btn">Log</button>
       <button onclick="openSettingsModal()" class="pill-btn">⚙️</button>
@@ -155,8 +166,8 @@ select option{background:var(--surface);color:var(--text)}
     </div>
   </div>
   <div id="home-match-list" class="space-y-2"></div>
-  <button onclick="showView('setup')" class="btn-score primary w-full py-3 text-base">+ New Match</button>
-  <div class="text-center text-xs" style="color:var(--text3)">Data saves in your browser (localStorage)</div>
+  <button id="home-new-match" onclick="showView('setup')" class="btn-score primary w-full py-3 text-base">+ New Match</button>
+  <div id="home-local-msg" class="text-center text-xs" style="color:var(--text3)">Data saves in your browser (localStorage)</div>
 </div>
 
 <!-- ══ SETUP ══ -->
@@ -194,7 +205,8 @@ select option{background:var(--surface);color:var(--text)}
   <div class="header">
     <button onclick="showView('home')" class="pill-btn">&larr; Home</button>
     <span id="scorer-title" class="text-sm font-semibold truncate mx-1" style="color:var(--text)"></span>
-    <button onclick="endInnings()" class="pill-btn" style="color:var(--red);border-color:var(--red-light)">End Inns</button>
+    <span id="viewer-badge" style="display:none;background:var(--surface2);color:var(--text3);font-size:11px;padding:2px 8px;border-radius:var(--radius-sm);font-weight:500">👁 Viewing</span>
+    <button id="end-inns-btn" onclick="endInnings()" class="pill-btn" style="color:var(--red);border-color:var(--red-light)">End Inns</button>
   </div>
 
   <!-- Innings toggle -->
@@ -221,7 +233,7 @@ select option{background:var(--surface);color:var(--text)}
   <div id="scorer-history" class="scorer-history"></div>
 
   <!-- Action buttons (sticky footer) -->
-  <div class="scorer-footer">
+  <div id="scorer-controls" class="scorer-footer">
     <div class="inner">
       <div class="grid grid-cols-6 gap-1.5">
         <button onclick="scoreRuns(0)" class="btn-score">0</button>
@@ -326,8 +338,26 @@ function load() {
   catch { return defaultData(); }
 }
 function save(d) { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch(e) { console.warn('save failed',e); } queueGithubSync(); }
-function getGitHubConfig() { try { return JSON.parse(localStorage.getItem('gh_sync_config')) || {}; } catch { return {}; } }
+function getGitHubConfig() {
+  let cfg;
+  try { cfg = JSON.parse(localStorage.getItem('gh_sync_config')) || {}; } catch { cfg = {}; }
+  if (!cfg.repo) {
+    const m = window.location.hostname.match(/^(.+)\.github\.io$/);
+    if (m) {
+      const p = window.location.pathname.replace(/\/[^/]+$/, '').split('/').filter(Boolean);
+      if (p.length) cfg.repo = m[1] + '/' + p[0];
+    }
+  }
+  return cfg;
+}
 function saveGitHubConfig(cfg) { try { localStorage.setItem('gh_sync_config', JSON.stringify(cfg)); } catch(e) { console.warn('config save failed',e); } }
+function hasGitHubToken() { return !!getGitHubConfig().token; }
+function applyViewerMode() {
+  const viewer = !hasGitHubToken();
+  document.body.classList.toggle('viewer-mode', viewer);
+  document.getElementById('viewer-badge').style.display = viewer ? '' : 'none';
+  document.getElementById('home-viewer-badge').style.display = viewer ? '' : 'none';
+}
 
 let _ghSyncTimer = null;
 function queueGithubSync() {
@@ -338,8 +368,37 @@ function queueGithubSync() {
     _ghSyncTimer = null;
     const d = load();
     githubPush(d).catch(e => console.warn('auto-sync failed', e));
-  }, 30000);
+  }, 5000);
 }
+
+// ─── View-only mode: auto-refresh from raw GitHub for non-scorers ───
+let _viewerPoll = null;
+let _viewerRawUrl = '';
+function viewerPollStart() {
+  if (_viewerPoll) return;
+  if (hasGitHubToken()) { document.getElementById('viewer-badge').style.display = 'none'; return; }
+  const cfg = getGitHubConfig();
+  if (!cfg.repo) return;
+  _viewerRawUrl = 'https://raw.githubusercontent.com/' + cfg.repo + '/' + (cfg.branch || 'main') + '/' + (cfg.path || 'cricket-scorer-data.json');
+  document.getElementById('viewer-badge').style.display = '';
+  const poll = () => {
+    fetch(_viewerRawUrl + '?_=' + Date.now())
+      .then(r => { if (!r.ok) throw new Error('fetch failed'); return r.json(); })
+      .then(d => {
+        const local = load();
+        if (JSON.stringify(d) !== JSON.stringify(local)) {
+          save(d);
+          const active = document.querySelector('.view.active');
+          if (active && active.id === 'view-home') renderHome();
+          if (active && active.id === 'view-scorer') renderScorer();
+        }
+      })
+      .catch(() => {});
+  };
+  poll();
+  _viewerPoll = setInterval(poll, 10000);
+}
+
 function defaultData() {
   return { matches: {}, players: {}, matchTeams: {}, innings: {}, balls: {}, ballSeq: 0, teamPresets: [] };
 }
@@ -538,6 +597,7 @@ function renderScorer() {
   const d = load();
   const match = d.matches[mid];
   const inn = getInnings(mid, currentState.inningsNo);
+  applyViewerMode();
   if (!match || !inn) return;
 
   document.getElementById('scorer-title').textContent = match.teamA + ' vs ' + match.teamB + ' (' + mid + ')';
@@ -1111,6 +1171,7 @@ function closeModal() {
 
 // ─────── HOME ───────
 function renderHome() {
+  applyViewerMode();
   const d = load();
   const matches = Object.values(d.matches || {}).sort((a, b) => (b.created || '').localeCompare(a.created || ''));
   const el = document.getElementById('home-match-list');
@@ -1331,32 +1392,41 @@ function openManageTeamsModal() {
 // ─────── SETTINGS ───────
 function openSettingsModal() {
   const cfg = getGitHubConfig();
-  document.getElementById('modal-title').textContent = '⚙️ Settings';
+  const isViewer = !hasGitHubToken();
+  document.getElementById('modal-title').textContent = isViewer ? '👁 Viewing' : '⚙️ Settings';
   const s = 'style="color:var(--text2);font-size:12px"';
-  document.getElementById('modal-body').innerHTML =
-    '<button onclick="closeModal();openManageTeamsModal()" class="w-full btn-score btn-sm mb-2" style="background:var(--accent-light);color:var(--accent);font-weight:600">🏷️ Manage team presets</button>' +
-    '<button onclick="sendCompletedToWhatsApp();closeModal()" class="w-full btn-score btn-sm mb-2" style="background:var(--green-light);color:var(--green);font-weight:600">📱 Send completed matches to WhatsApp</button>' +
-    '<div style="border-top:1px solid var(--border);margin:12px 0"></div>' +
-    '<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px">☁️ GitHub Sync</div>' +
-    '<label ' + s + '>Token (<a style="color:var(--accent)" href="https://github.com/settings/tokens" target="_blank">create one</a> with repo scope)</label>' +
-    '<input id="gh-token" type="password" value="' + (cfg.token || '') + '" class="w-full text-sm mb-2" placeholder="ghp_...">' +
-    '<label ' + s + '>Repo (owner/repo)</label>' +
-    '<input id="gh-repo" value="' + (cfg.repo || '') + '" class="w-full text-sm mb-2" placeholder="username/repo">' +
-    '<label ' + s + '>File path</label>' +
-    '<input id="gh-path" value="' + (cfg.path || 'cricket-scorer-data.json') + '" class="w-full text-sm mb-2">' +
-    '<label ' + s + '>Branch</label>' +
-    '<input id="gh-branch" value="' + (cfg.branch || 'main') + '" class="w-full text-sm mb-2">' +
-    '<div class="flex gap-2 mb-2">' +
-    '<button onclick="saveGitHubConfigFromUI()" class="flex-1 btn-score btn-sm" style="background:var(--accent-light);color:var(--accent);font-weight:600">💾 Save Config</button>' +
-    '<button onclick="githubSync()" class="flex-1 btn-score btn-sm" style="background:var(--accent-light);color:var(--accent);font-weight:600">⬆ Sync Now</button>' +
-    '</div>' +
-    '<button onclick="githubRestore()" class="w-full btn-score btn-sm mb-2" style="background:var(--accent-light);color:var(--accent);font-weight:600">⬇ Restore from GitHub</button>' +
-    '<div id="gh-status" class="text-xs text-center" style="color:var(--text3);min-height:1.2em"></div>' +
-    '<div style="border-top:1px solid var(--border);margin:12px 0"></div>' +
-    '<button onclick="exportData()" class="w-full btn-score btn-sm mb-2" style="background:var(--green-light);color:var(--green);font-weight:600">💾 Export data (download .json)</button>' +
-    '<button onclick="importData()" class="w-full btn-score btn-sm mb-2" style="background:var(--accent-light);color:var(--accent);font-weight:600">📂 Import data (upload .json)</button>' +
-    '<div style="border-top:1px solid var(--border);margin:12px 0"></div>' +
-    '<button onclick="closeModal();openManageMatchesModal()" class="w-full btn-score btn-sm" style="background:var(--red-light);color:var(--red);font-weight:600">🗑️ Manage completed matches</button>';
+  let html = '';
+  if (!isViewer) {
+    html +=
+      '<button onclick="closeModal();openManageTeamsModal()" class="w-full btn-score btn-sm mb-2" style="background:var(--accent-light);color:var(--accent);font-weight:600">🏷️ Manage team presets</button>' +
+      '<button onclick="sendCompletedToWhatsApp();closeModal()" class="w-full btn-score btn-sm mb-2" style="background:var(--green-light);color:var(--green);font-weight:600">📱 Send completed matches to WhatsApp</button>' +
+      '<div style="border-top:1px solid var(--border);margin:12px 0"></div>' +
+      '<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px">☁️ GitHub Sync</div>' +
+      '<label ' + s + '>Token (<a style="color:var(--accent)" href="https://github.com/settings/tokens" target="_blank">create one</a> with repo scope)</label>' +
+      '<input id="gh-token" type="password" value="' + (cfg.token || '') + '" class="w-full text-sm mb-2" placeholder="ghp_...">' +
+      '<label ' + s + '>Repo (owner/repo)</label>' +
+      '<input id="gh-repo" value="' + (cfg.repo || '') + '" class="w-full text-sm mb-2" placeholder="username/repo">' +
+      '<label ' + s + '>File path</label>' +
+      '<input id="gh-path" value="' + (cfg.path || 'cricket-scorer-data.json') + '" class="w-full text-sm mb-2">' +
+      '<label ' + s + '>Branch</label>' +
+      '<input id="gh-branch" value="' + (cfg.branch || 'main') + '" class="w-full text-sm mb-2">' +
+      '<div class="flex gap-2 mb-2">' +
+      '<button onclick="saveGitHubConfigFromUI()" class="flex-1 btn-score btn-sm" style="background:var(--accent-light);color:var(--accent);font-weight:600">💾 Save Config</button>' +
+      '<button onclick="githubSync()" class="flex-1 btn-score btn-sm" style="background:var(--accent-light);color:var(--accent);font-weight:600">⬆ Sync Now</button>' +
+      '</div>' +
+      '<button onclick="githubRestore()" class="w-full btn-score btn-sm mb-2" style="background:var(--accent-light);color:var(--accent);font-weight:600">⬇ Restore from GitHub</button>' +
+      '<div id="gh-status" class="text-xs text-center" style="color:var(--text3);min-height:1.2em"></div>' +
+      '<div style="border-top:1px solid var(--border);margin:12px 0"></div>' +
+      '<button onclick="exportData()" class="w-full btn-score btn-sm mb-2" style="background:var(--green-light);color:var(--green);font-weight:600">💾 Export data (download .json)</button>' +
+      '<button onclick="importData()" class="w-full btn-score btn-sm mb-2" style="background:var(--accent-light);color:var(--accent);font-weight:600">📂 Import data (upload .json)</button>' +
+      '<div style="border-top:1px solid var(--border);margin:12px 0"></div>' +
+      '<button onclick="closeModal();openManageMatchesModal()" class="w-full btn-score btn-sm" style="background:var(--red-light);color:var(--red);font-weight:600">🗑️ Manage completed matches</button>';
+  } else {
+    html +=
+      '<div style="text-align:center;padding:16px 0;color:var(--text2);font-size:14px">👁 You are viewing this match in read-only mode.</div>' +
+      '<button onclick="sendCompletedToWhatsApp();closeModal()" class="w-full btn-score btn-sm mb-2" style="background:var(--green-light);color:var(--green);font-weight:600">📱 Send completed matches to WhatsApp</button>';
+  }
+  document.getElementById('modal-body').innerHTML = html;
   document.getElementById('modal-overlay').classList.add('open');
 }
 
@@ -1909,7 +1979,22 @@ function migrateOldData() {
 migrateOldData();
 
 // ─────── INIT ───────
-renderHome();
+const cfg = getGitHubConfig();
+if (!hasGitHubToken() && cfg.repo) {
+  const d = load();
+  if (Object.keys(d.matches || {}).length === 0) {
+    const rawUrl = 'https://raw.githubusercontent.com/' + cfg.repo + '/' + (cfg.branch || 'main') + '/' + (cfg.path || 'cricket-scorer-data.json');
+    fetch(rawUrl + '?_=' + Date.now())
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) { save(data); } renderHome(); viewerPollStart(); })
+      .catch(() => renderHome());
+  } else {
+    viewerPollStart();
+    renderHome();
+  }
+} else {
+  renderHome();
+}
 </script>
 </body>
 </html>

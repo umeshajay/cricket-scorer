@@ -164,11 +164,6 @@ select option{background:var(--surface);color:var(--text)}
   </div>
   <div id="home-match-list" class="space-y-2"></div>
   <button id="home-new-match" onclick="showView('setup')" class="btn-score primary w-full py-3 text-base">+ New Match</button>
-  <div class="flex gap-2 justify-center mt-2">
-    <input id="home-pin-input" type="text" maxlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="Enter 4-digit PIN" class="text-sm text-center" style="width:120px;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:16px;letter-spacing:4px;font-weight:700">
-    <button onclick="openMatchByPin()" class="pill-btn primary" style="font-size:13px">View Match</button>
-  </div>
-  <div id="home-pin-err" class="text-center text-xs" style="color:var(--red);display:none"></div>
   <div id="home-local-msg" class="text-center text-xs" style="color:var(--text3)">Data saves in your browser (localStorage)</div>
   <div id="home-gh-msg" class="text-center text-xs" style="color:var(--text3);display:none"></div>
 </div>
@@ -225,7 +220,6 @@ select option{background:var(--surface);color:var(--text)}
       <div class="inn-label">Innings <span id="sb-inns-no">1</span></div>
       <div class="score"><span class="num" id="sb-runs">0</span>/<span id="sb-wkts">0</span></div>
       <div class="meta">Ov <span id="sb-ov">0.0</span>/<span id="sb-maxov">0</span> &middot; RR <span id="sb-rr">0.00</span> &middot; <span id="sb-bat">Batting</span> &middot; Extras <span id="sb-ext">0</span></div>
-      <div id="sb-pin-row" style="display:none;margin-top:8px;font-size:13px;font-weight:700;color:var(--accent);letter-spacing:2px">PIN: <span id="sb-pin"></span></div>
     </div>
     <div class="card bowler-card">
       <span class="label"><span class="name" id="sb-bowler">—</span></span>
@@ -465,13 +459,7 @@ function startMatch() {
   }
   if (d.matches[mid]) { err.textContent = 'Match ID already exists'; return; }
 
-  // Generate unique 4-digit PIN
-  let pin = '';
-  do { pin = String(Math.floor(1000 + Math.random() * 9000)); } while (d.matchByPin && d.matchByPin[pin]);
-  if (!d.matchByPin) d.matchByPin = {};
-  d.matchByPin[pin] = mid;
-
-  d.matches[mid] = { id: mid, pin, teamA: ta, teamB: tb, overs, status: 'ongoing', created: new Date().toISOString() };
+  d.matches[mid] = { id: mid, teamA: ta, teamB: tb, overs, status: 'ongoing', created: new Date().toISOString() };
 
   // Auto-generate players
   const genId = () => 'p' + Date.now() + Math.random().toString(36).slice(2,6);
@@ -533,12 +521,6 @@ function startMatch() {
 
   d.balls[mid] = [];
   save(d);
-
-  // Immediate sync to GitHub so the PIN is available right away
-  const _cfg = getGitHubConfig();
-  if (_cfg.token && _cfg.repo) {
-    githubPush(load()).catch(e => console.warn('initial sync failed', e));
-  }
 
   err.textContent = '';
   document.getElementById('setup-mid').value = '';
@@ -642,14 +624,6 @@ function renderScorer() {
   document.getElementById('sb-maxov').textContent = match.overs;
   document.getElementById('sb-bat').textContent = inn.batting;
   document.getElementById('sb-ext').textContent = inn.extras;
-
-  // Show PIN
-  if (match.pin) {
-    document.getElementById('sb-pin-row').style.display = '';
-    document.getElementById('sb-pin').textContent = match.pin;
-  } else {
-    document.getElementById('sb-pin-row').style.display = 'none';
-  }
 
   const totalDeliveries = inn.balls;
   const rr = totalDeliveries > 0 ? (inn.runs / (totalDeliveries / 6)).toFixed(2) : '0.00';
@@ -785,20 +759,14 @@ function buildScoreMessage() {
 function showWhatsAppShare() {
   const text = buildScoreMessage();
   if (!text) return;
-  const d = load();
-  const match = d.matches[currentState.matchId];
-  let shareInfo = text;
-  if (match && match.pin) {
-    shareInfo += '\n🔢 Share PIN: ' + match.pin;
-  }
-  // Include the page link for live viewing
-  const pageUrl = window.location.href.split('#')[0] + '#pin=' + (match ? match.pin : '');
-  shareInfo += '\n🔗 Open: ' + pageUrl;
+  let shareText = text;
   if (hasUserConfiguredRepo()) {
-    shareInfo += '\n☁️ Live scorecard: ' + window.location.href;
+    shareText += '\n🔗 Live Scorecard: ' + window.location.href;
+  } else {
+    shareText += '\n📱 Weekend cricket';
   }
   const link = document.getElementById('wa-link');
-  link.href = 'https://wa.me/?text=' + encodeURIComponent(shareInfo);
+  link.href = 'https://wa.me/?text=' + encodeURIComponent(shareText);
   document.getElementById('wa-overlay').classList.add('open');
 }
 
@@ -807,14 +775,7 @@ function hideWhatsAppShare() {
 }
 
 function copyMatchLink() {
-  const d = load();
-  const match = d.matches[currentState.matchId];
-  let url;
-  if (match && match.pin) {
-    url = window.location.href.split('#')[0] + '#pin=' + match.pin;
-  } else {
-    url = window.location.href.split('#')[0] + '#match=' + currentState.matchId;
-  }
+  const url = window.location.href.split('#')[0] + '#match=' + currentState.matchId;
   navigator.clipboard.writeText(url).then(() => {
     showToast('✅ Match link copied!');
   }).catch(() => {
@@ -1274,10 +1235,6 @@ function renderHome() {
   const d = load();
   const matches = Object.values(d.matches || {}).sort((a, b) => (b.created || '').localeCompare(a.created || ''));
   const el = document.getElementById('home-match-list');
-  // Pre-fill PIN input from URL hash
-  const pinMatch = window.location.hash.match(/pin=(\d{4})/);
-  if (pinMatch) document.getElementById('home-pin-input').value = pinMatch[1];
-
   if (!matches.length) {
     const cfg = getGitHubConfig();
     if (!cfg.token) {
@@ -1301,7 +1258,7 @@ function renderHome() {
     return '<div class="card match-card">' +
       '<div onclick="openScorer(\'' + m.id + '\')" class="flex items-center justify-between card-hover">' +
       '<div><div class="match-title">' + ta + ' vs ' + tb + '</div>' +
-      '<div class="match-sub">' + m.id + (m.pin ? ' &middot; PIN <strong>' + m.pin + '</strong>' : '') + ' &middot; ' + mov + ' ov &middot; <span style="color:' + (isOn ? 'var(--green)' : 'var(--text3)') + '" class="font-medium">' + m.status + '</span></div></div>' +
+      '<div class="match-sub">' + m.id + ' &middot; ' + mov + ' ov &middot; <span style="color:' + (isOn ? 'var(--green)' : 'var(--text3)') + '" class="font-medium">' + m.status + '</span></div></div>' +
       '<div class="score-display"><div class="score-num">' + score1 + (score2 ? ' & ' + score2 : '') + '</div>' +
       '<div class="ov">Ov ' + ov1 + (ov2 ? ' & ' + ov2 : '') + '</div></div></div>' +
       (isOn ? '' : '<button onclick="event.stopPropagation();openReport(\'' + m.id + '\')" class="mt-2 w-full btn-score primary py-2 text-xs">📊 Stats</button>') +
@@ -1754,19 +1711,6 @@ function githubPull() {
   });
 }
 
-// Fetch data from raw GitHub URL (no auth needed, works for public repos)
-function githubPullRaw() {
-  return new Promise((resolve, reject) => {
-    const cfg = getGitHubConfig();
-    if (!cfg.repo) return reject('No repo configured');
-    const url = 'https://raw.githubusercontent.com/' + cfg.repo + '/' + (cfg.branch || 'main') + '/' + (cfg.path || 'cricket-scorer-data.json');
-    fetch(url + '?_=' + Date.now())
-      .then(r => { if (!r.ok) throw new Error('File not found on GitHub'); return r.json(); })
-      .then(resolve)
-      .catch(reject);
-  });
-}
-
 function setStatus(msg, isErr) {
   const el = document.getElementById('gh-status');
   if (el) el.textContent = msg;
@@ -2117,70 +2061,8 @@ function migrateOldData() {
 }
 migrateOldData();
 
-let _pinRetries = 0;
-function openMatchByPin(pinOverride) {
-  const pin = pinOverride || document.getElementById('home-pin-input').value.trim();
-  const err = document.getElementById('home-pin-err');
-  if (!pin || pin.length !== 4) { err.textContent = 'Enter a 4-digit PIN'; err.style.display = ''; return; }
-  const d = load();
-  let mid = d.matchByPin && d.matchByPin[pin];
-  if (mid && d.matches[mid]) {
-    err.style.display = 'none';
-    openScorer(mid);
-    return;
-  }
-  // Not found locally — try GitHub (if repo is configured)
-  if (!hasUserConfiguredRepo()) {
-    err.textContent = 'No match found with PIN ' + pin + '. Enter a repo in ⚙️ Settings and try again.';
-    err.style.display = '';
-    return;
-  }
-  err.textContent = 'Looking up PIN ' + pin + ' on GitHub...';
-  err.style.display = '';
-  githubPullRaw().then((data) => {
-    if (data && data.matchByPin && data.matchByPin[pin] && data.matches[data.matchByPin[pin]]) {
-      save(data);
-      openScorer(data.matchByPin[pin]);
-    } else if (_pinRetries < 5) {
-      _pinRetries++;
-      err.textContent = 'Syncing from GitHub, retrying (' + _pinRetries + '/5)...';
-      setTimeout(() => openMatchByPin(pin), 4000);
-    } else {
-      _pinRetries = 0;
-      err.textContent = 'Match not found with PIN ' + pin + '. Tell the scorer to tap ⚙️ > Sync Now, then try again (CDN takes ~1 min).';
-      err.style.display = '';
-    }
-  }).catch(() => {
-    if (_pinRetries < 5) {
-      _pinRetries++;
-      err.textContent = 'Fetching from GitHub, retrying (' + _pinRetries + '/5)...';
-      setTimeout(() => openMatchByPin(pin), 4000);
-    } else {
-      _pinRetries = 0;
-      err.textContent = 'Failed to fetch from GitHub after 5 tries. Make sure the repo is public and data has been synced.';
-      err.style.display = '';
-    }
-  });
-}
-
 function openMatchFromHash() {
-  const hash = window.location.hash;
-  // Try PIN first
-  const p = hash.match(/pin=(\d{4})/);
-  if (p) {
-    const d = load();
-    const mid = d.matchByPin && d.matchByPin[p[1]];
-    if (mid && d.matches[mid]) {
-      openScorer(mid);
-      return true;
-    }
-    // PIN in URL but not found locally — pre-fill and auto-trigger lookup from GitHub
-    document.getElementById('home-pin-input').value = p[1];
-    setTimeout(() => openMatchByPin(p[1]), 500);
-    return true; // handled
-  }
-  // Then try match ID
-  const m = hash.match(/match=([A-Za-z0-9_]+)/);
+  const m = window.location.hash.match(/match=([A-Za-z0-9_]+)/);
   if (m) {
     const d = load();
     if (d.matches && d.matches[m[1]]) {

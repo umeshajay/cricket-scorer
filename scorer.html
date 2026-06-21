@@ -353,8 +353,10 @@ function getGitHubConfig() {
 }
 function saveGitHubConfig(cfg) { try { localStorage.setItem('gh_sync_config', JSON.stringify(cfg)); } catch(e) { console.warn('config save failed',e); } }
 function hasGitHubToken() { return !!getGitHubConfig().token; }
+function hasMatchData() { const d = load(); return Object.keys(d.matches || {}).length > 0; }
 function applyViewerMode() {
-  const viewer = !hasGitHubToken();
+  const cfg = getGitHubConfig();
+  const viewer = !hasGitHubToken() && cfg.repo && hasMatchData();
   document.body.classList.toggle('viewer-mode', viewer);
   document.getElementById('viewer-badge').style.display = viewer ? '' : 'none';
   document.getElementById('home-viewer-badge').style.display = viewer ? '' : 'none';
@@ -377,9 +379,10 @@ let _viewerPoll = null;
 let _viewerRawUrl = '';
 function viewerPollStart() {
   if (_viewerPoll) return;
-  if (hasGitHubToken()) { document.getElementById('viewer-badge').style.display = 'none'; return; }
+  if (hasGitHubToken()) { document.getElementById('viewer-badge').style.display = 'none'; clearInterval(_viewerPoll); _viewerPoll = null; return; }
   const cfg = getGitHubConfig();
   if (!cfg.repo) return;
+  if (!hasMatchData()) return;
   _viewerRawUrl = 'https://raw.githubusercontent.com/' + cfg.repo + '/' + (cfg.branch || 'main') + '/' + (cfg.path || 'cricket-scorer-data.json');
   document.getElementById('viewer-badge').style.display = '';
   const poll = () => {
@@ -742,10 +745,16 @@ function buildScoreMessage() {
 }
 
 function showWhatsAppShare() {
+  const cfg = getGitHubConfig();
+  if (!cfg.repo || !cfg.path) {
+    alert('Please configure GitHub repo and file path in Settings to enable sharing.');
+    return;
+  }
   const text = buildScoreMessage();
   if (!text) return;
+  const textWithLink = text + '\n🔗 Live Scorecard: ' + window.location.href;
   const link = document.getElementById('wa-link');
-  link.href = 'https://wa.me/?text=' + encodeURIComponent(text);
+  link.href = 'https://wa.me/?text=' + encodeURIComponent(textWithLink);
   document.getElementById('wa-overlay').classList.add('open');
 }
 
@@ -1186,7 +1195,13 @@ function renderHome() {
   const matches = Object.values(d.matches || {}).sort((a, b) => (b.created || '').localeCompare(a.created || ''));
   const el = document.getElementById('home-match-list');
   if (!matches.length) {
-    el.innerHTML = '<div class="card p-6 empty-state">No matches yet. Create one!</div>';
+    const cfg = getGitHubConfig();
+    const noToken = !hasGitHubToken();
+    const noRepo = !cfg.repo;
+    const msg = noToken && noRepo
+      ? 'No matches yet. Create your own match!'
+      : 'No matches yet.';
+    el.innerHTML = '<div class="card p-6 empty-state">' + msg + '</div>';
     return;
   }
   el.innerHTML = matches.map(m => {
@@ -1455,6 +1470,11 @@ function formatOverLine(over) {
 }
 
 function sendCompletedToWhatsApp() {
+  const cfg = getGitHubConfig();
+  if (!cfg.repo || !cfg.path) {
+    alert('Please configure GitHub repo and file path in Settings to enable sharing.');
+    return;
+  }
   const d = load();
   const completed = Object.values(d.matches || {}).filter(m => m.status === 'completed');
   if (!completed.length) return;
@@ -1928,6 +1948,11 @@ function overBreakdownText(d, mid, inns) {
 }
 
 function shareReport() {
+  const cfg = getGitHubConfig();
+  if (!cfg.repo || !cfg.path) {
+    alert('Please configure GitHub repo and file path in Settings to enable sharing.');
+    return;
+  }
   const mid = document.getElementById('report-title').dataset.mid;
   const d = load();
   const m = d.matches[mid];
@@ -2006,16 +2031,18 @@ migrateOldData();
 
 // ─────── INIT ───────
 const cfg = getGitHubConfig();
-if (!hasGitHubToken() && cfg.repo) {
-  const d = load();
-  if (Object.keys(d.matches || {}).length === 0) {
+const hasData = hasMatchData();
+if (!hasGitHubToken()) {
+  if (cfg.repo && hasData) {
+    viewerPollStart();
+    renderHome();
+  } else if (cfg.repo && !hasData) {
     const rawUrl = 'https://raw.githubusercontent.com/' + cfg.repo + '/' + (cfg.branch || 'main') + '/' + (cfg.path || 'cricket-scorer-data.json');
     fetch(rawUrl + '?_=' + Date.now())
       .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data) { save(data); } renderHome(); viewerPollStart(); })
+      .then(data => { if (data && Object.keys(data.matches || {}).length > 0) { save(data); renderHome(); viewerPollStart(); } else { renderHome(); } })
       .catch(() => renderHome());
   } else {
-    viewerPollStart();
     renderHome();
   }
 } else {

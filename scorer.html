@@ -1360,6 +1360,20 @@ function openSettingsModal() {
   document.getElementById('modal-overlay').classList.add('open');
 }
 
+function formatOverLine(over) {
+  let s = '';
+  over.forEach(b => {
+    if (b.wicket) s += 'W ';
+    else if (b.wide) s += 'Wd ';
+    else if (b.noball) s += 'Nb ';
+    else if (b.totalRuns === 4) s += '4 ';
+    else if (b.totalRuns === 6) s += '6 ';
+    else if (b.totalRuns > 0) s += b.totalRuns + ' ';
+    else s += '. ';
+  });
+  return s.trim();
+}
+
 function sendCompletedToWhatsApp() {
   const d = load();
   const completed = Object.values(d.matches || {}).filter(m => m.status === 'completed');
@@ -1368,13 +1382,33 @@ function sendCompletedToWhatsApp() {
   completed.forEach(m => {
     const inn1 = d.innings[m.id + '_1'];
     const inn2 = d.innings[m.id + '_2'];
+    const rr1 = inn1 && inn1.balls > 0 ? (inn1.runs / (inn1.balls / 6)).toFixed(2) : '-';
+    const rr2 = inn2 && inn2.balls > 0 ? (inn2.runs / (inn2.balls / 6)).toFixed(2) : '-';
     lines.push('*' + m.teamA + ' vs ' + m.teamB + '*');
-    if (inn1) lines.push('Inn1: ' + inn1.runs + '/' + inn1.wickets + ' (' + inn1.batting + ')');
-    if (inn2) lines.push('Inn2: ' + inn2.runs + '/' + inn2.wickets + ' (' + inn2.batting + ')');
+    if (inn1) lines.push('▸ ' + inn1.batting + ': ' + inn1.runs + '/' + inn1.wickets + ' (' + Math.floor(inn1.balls / 6) + '.' + (inn1.balls % 6) + ' ov, RR ' + rr1 + ')');
+    if (inn2) lines.push('▸ ' + inn2.batting + ': ' + inn2.runs + '/' + inn2.wickets + ' (' + Math.floor(inn2.balls / 6) + '.' + (inn2.balls % 6) + ' ov, RR ' + rr2 + ')');
     if (inn1 && inn2 && inn1.completed && inn2.completed) {
       if (inn1.runs > inn2.runs) lines.push('🏆 *' + inn1.batting + ' won*');
       else if (inn2.runs > inn1.runs) lines.push('🏆 *' + inn2.batting + ' won*');
       else lines.push('🤝 Tied');
+    }
+    const allBalls = (d.balls[m.id] || []).sort((a, b) => a.id - b.id);
+    if (allBalls.length) {
+      lines.push('▸ *Key overs:*');
+      const overMap = {};
+      allBalls.forEach(b => {
+        const k = b.inningsNo + '-' + b.over;
+        if (!overMap[k]) overMap[k] = [];
+        overMap[k].push(b);
+      });
+      const sortedKeys = Object.keys(overMap).sort().slice(0, 6);
+      sortedKeys.forEach(k => {
+        const parts = k.split('-');
+        const innLabel = parts[0] === '1' && inn1 ? inn1.batting : (inn2 ? inn2.batting : 'Inn ' + parts[0]);
+        const runs = overMap[k].reduce((s, b) => s + (b.totalRuns || 0), 0);
+        const wkts = overMap[k].filter(b => b.wicket).length;
+        lines.push('  Ov ' + parts[1] + ' (' + innLabel + '): ' + runs + '/' + wkts + ' — ' + formatOverLine(overMap[k]));
+      });
     }
     lines.push('━━━━━━━━━━━━━━━');
   });
@@ -1778,6 +1812,25 @@ function buildCharts(d, mid, inn1, inn2) {
   }));
 }
 
+function overBreakdownText(d, mid, inns) {
+  const oData = getOverData(d, mid);
+  let txt = '';
+  [1, 2].forEach(innNo => {
+    const inn = d.innings[mid + '_' + innNo];
+    if (!inn || !inn.batting) return;
+    txt += '\n▸ *' + inn.batting + ' Over-by-Over:*\n';
+    const overs = oData[innNo];
+    if (overs && overs.length) {
+      const rows = [];
+      overs.forEach(o => rows.push('Ov ' + o.over + ': ' + o.runs + '/' + o.wickets));
+      while (rows.length) txt += rows.splice(0, 6).join(' │ ') + '\n';
+    } else {
+      txt += 'No data\n';
+    }
+  });
+  return txt;
+}
+
 function shareReport() {
   const mid = document.getElementById('report-title').dataset.mid;
   const d = load();
@@ -1792,46 +1845,31 @@ function shareReport() {
     trend = parseFloat(rr2) > parseFloat(rr1) ? inn2.batting + ' is currently ahead' :
             parseFloat(rr2) < parseFloat(rr1) ? inn1.batting + ' is currently ahead' : 'Both teams are evenly matched';
   }
-  const el = document.getElementById('report-content');
-  html2canvas(el, { scale: 2, backgroundColor: '#f1f5f9', useCORS: true, logging: false }).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
-    let text =
-      '🏏 *Match Analytics: ' + m.teamA + ' vs ' + m.teamB + '*\n' +
-      '━━━━━━━━━━━━━━━\n' +
-      '📊 *Game Flow:*\n' +
-      (trend ? 'The worm graph shows the run-rate battle. ' + trend + '.\n' : '') +
-      '\n🏁 *Current Score:*\n' +
-      (inn1 ? '▸ ' + inn1.batting + ': ' + inn1.runs + '/' + inn1.wickets + ' (RR ' + rr1 + ')\n' : '') +
-      (inn2 ? '▸ ' + inn2.batting + ': ' + inn2.runs + '/' + inn2.wickets + ' (RR ' + rr2 + ')\n' : '');
-    if (inn2 && inn1 && inn1.runs != null && inn1.completed) {
-      const target = inn1.runs;
-      const remOvers = Math.max(0, m.overs - (inn2.currentOver + inn2.currentBall / 6));
-      const remRuns = target - inn2.runs;
-      const rrr = remOvers > 0 ? (remRuns / remOvers).toFixed(2) : '∞';
-      text += '🎯 *RRR:* ' + rrr + '\n';
-    }
-    if (inn1 && inn2 && inn1.completed && inn2.completed) {
-      text += '━━━━━━━━━━━━━━━\n';
-      if (inn1.runs > inn2.runs) text += '🏆 *' + inn1.batting + ' won!*\n';
-      else if (inn2.runs > inn1.runs) text += '🏆 *' + inn2.batting + ' won!*\n';
-      else text += '🤝 *Tied!*\n';
-    }
-    text += '━━━━━━━━━━━━━━━\n🔗 *Live Scorecard:* ' + window.location.href;
-    const link = document.getElementById('wa-link');
-    link.href = 'https://wa.me/?text=' + encodeURIComponent(text);
-    document.getElementById('wa-overlay').classList.add('open');
-  }).catch(() => {
-    let text =
-      '🏏 *Match Analytics: ' + m.teamA + ' vs ' + m.teamB + '*\n' +
-      '━━━━━━━━━━━━━━━\n' +
-      (inn1 ? inn1.batting + ': ' + inn1.runs + '/' + inn1.wickets + ' (RR ' + rr1 + ')\n' : '') +
-      (inn2 ? inn2.batting + ': ' + inn2.runs + '/' + inn2.wickets + ' (RR ' + rr2 + ')\n' : '') +
-      '━━━━━━━━━━━━━━━\n' +
-      '🔗 *Live Scorecard:* ' + window.location.href;
-    const link = document.getElementById('wa-link');
-    link.href = 'https://wa.me/?text=' + encodeURIComponent(text);
-    document.getElementById('wa-overlay').classList.add('open');
-  });
+  const overText = overBreakdownText(d, mid, [inn1, inn2].filter(Boolean));
+  let text =
+    '🏏 *Match Analytics: ' + m.teamA + ' vs ' + m.teamB + '*\n' +
+    '━━━━━━━━━━━━━━━\n' +
+    (trend ? '📊 *Game Flow:* ' + trend + '\n' : '') +
+    '\n🏁 *Scores:*\n' +
+    (inn1 ? '▸ ' + inn1.batting + ': ' + inn1.runs + '/' + inn1.wickets + ' (RR ' + rr1 + ')\n' : '') +
+    (inn2 ? '▸ ' + inn2.batting + ': ' + inn2.runs + '/' + inn2.wickets + ' (RR ' + rr2 + ')\n' : '');
+  if (inn2 && inn1 && inn1.runs != null && inn1.completed) {
+    const remOvers = Math.max(0, m.overs - (inn2.currentOver + inn2.currentBall / 6));
+    const remRuns = inn1.runs - inn2.runs;
+    const rrr = remOvers > 0 ? (remRuns / remOvers).toFixed(2) : '∞';
+    text += '🎯 *RRR:* ' + rrr + '\n';
+  }
+  text += overText;
+  if (inn1 && inn2 && inn1.completed && inn2.completed) {
+    text += '━━━━━━━━━━━━━━━\n';
+    if (inn1.runs > inn2.runs) text += '🏆 *' + inn1.batting + ' won!*\n';
+    else if (inn2.runs > inn1.runs) text += '🏆 *' + inn2.batting + ' won!*\n';
+    else text += '🤝 *Tied!*\n';
+  }
+  text += '━━━━━━━━━━━━━━━\n🔗 *Live Scorecard:* ' + window.location.href;
+  const link = document.getElementById('wa-link');
+  link.href = 'https://wa.me/?text=' + encodeURIComponent(text);
+  document.getElementById('wa-overlay').classList.add('open');
 }
 
 // ─────── MIGRATION ───────

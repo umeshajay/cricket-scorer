@@ -1,5 +1,14 @@
 {
-  "matches": {},
+  "matches": {
+    "M001": {
+      "id": "M001",
+      "teamA": "jap",
+      "teamB": "ned",
+      "overs": 6,
+      "status": "ongoing",
+      "created": "2026-06-21T04:15:38.775Z"
+    }
+  },
   "players": {
     "p1781933911553ll0f": {
       "id": "p1781933911553ll0f",
@@ -710,11 +719,481 @@
       "id": "p1782011700945l8h3",
       "name": "P7",
       "team": "b"
+    },
+    "p17820153387751163": {
+      "id": "p17820153387751163",
+      "name": "P1",
+      "team": "a"
+    },
+    "p1782015338775ixri": {
+      "id": "p1782015338775ixri",
+      "name": "P2",
+      "team": "a"
+    },
+    "p1782015338775gu8e": {
+      "id": "p1782015338775gu8e",
+      "name": "P3",
+      "team": "a"
+    },
+    "p1782015338775f3ow": {
+      "id": "p1782015338775f3ow",
+      "name": "P4",
+      "team": "a"
+    },
+    "p1782015338775ub9o": {
+      "id": "p1782015338775ub9o",
+      "name": "P5",
+      "team": "a"
+    },
+    "p1782015338775amxl": {
+      "id": "p1782015338775amxl",
+      "name": "P6",
+      "team": "a"
+    },
+    "p1782015338775ky3e": {
+      "id": "p1782015338775ky3e",
+      "name": "P7",
+      "team": "a"
+    },
+    "p1782015338775pyjl": {
+      "id": "p1782015338775pyjl",
+      "name": "P1",
+      "team": "b"
+    },
+    "p1782015338775mmz6": {
+      "id": "p1782015338775mmz6",
+      "name": "P2",
+      "team": "b"
+    },
+    "p1782015338775u6l5": {
+      "id": "p1782015338775u6l5",
+      "name": "P3",
+      "team": "b"
+    },
+    "p1782015338775zfs4": {
+      "id": "p1782015338775zfs4",
+      "name": "P4",
+      "team": "b"
+    },
+    "p1782015338775o0m1": {
+      "id": "p1782015338775o0m1",
+      "name": "P5",
+      "team": "b"
+    },
+    "p1782015338775liu4": {
+      "id": "p1782015338775liu4",
+      "name": "P6",
+      "team": "b"
+    },
+    "p1782015338775b8vg": {
+      "id": "p1782015338775b8vg",
+      "name": "P7",
+      "team": "b"
     }
   },
-  "matchTeams": {},
-  "innings": {},
-  "balls": {},
+  "matchTeams": {
+    "M001": {
+      "teamAIds": [
+        "p17820153387751163",
+        "p1782015338775ixri",
+        "p1782015338775gu8e",
+        "p1782015338775f3ow",
+        "p1782015338775ub9o",
+        "p1782015338775amxl",
+        "p1782015338775ky3e"
+      ],
+      "teamBIds": [
+        "p1782015338775pyjl",
+        "p1782015338775mmz6",
+        "p1782015338775u6l5",
+        "p1782015338775zfs4",
+        "p1782015338775o0m1",
+        "p1782015338775liu4",
+        "p1782015338775b8vg"
+      ],
+      "xiA": [
+        "p17820153387751163",
+        "p1782015338775ixri",
+        "p1782015338775gu8e",
+        "p1782015338775f3ow",
+        "p1782015338775ub9o",
+        "p1782015338775amxl",
+        "p1782015338775ky3e"
+      ],
+      "xiB": [
+        "p1782015338775pyjl",
+        "p1782015338775mmz6",
+        "p1782015338775u6l5",
+        "p1782015338775zfs4",
+        "p1782015338775o0m1",
+        "p1782015338775liu4",
+        "p1782015338775b8vg"
+      ]
+    }
+  },
+  "innings": {
+    "M001_1": {
+      "id": "M001_1",
+      "matchId": "M001",
+      "inningsNo": 1,
+      "batting": "jap",
+      "bowling": "ned",
+      "runs": 0,
+      "wickets": 0,
+      "balls": 0,
+      "extras": 0,
+      "currentOver": 0,
+      "currentBall": 0,
+      "battingOrder": [
+        "p17820153387751163",
+        "p1782015338775ixri",
+        "p1782015338775gu8e",
+        "p1782015338775f3ow",
+        "p1782015338775ub9o",
+        "p1782015338775amxl",
+        "p1782015338775ky3e"
+      ],
+      "strikerIdx": 0,
+      "nonStrikerIdx": 1,
+      "nextIdx": 2,
+      "batsmanStats": {
+        "p17820153387751163": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775ixri": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775gu8e": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775f3ow": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775ub9o": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775amxl": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775ky3e": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775pyjl": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775mmz6": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775u6l5": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775zfs4": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775o0m1": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775liu4": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775b8vg": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        }
+      },
+      "currentBowler": "p1782015338775pyjl",
+      "bowlerStats": {
+        "p1782015338775pyjl": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1782015338775mmz6": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1782015338775u6l5": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1782015338775zfs4": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1782015338775o0m1": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1782015338775liu4": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1782015338775b8vg": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        }
+      },
+      "overBalls": [],
+      "completed": false
+    },
+    "M001_2": {
+      "id": "M001_2",
+      "matchId": "M001",
+      "inningsNo": 2,
+      "batting": "ned",
+      "bowling": "jap",
+      "runs": 0,
+      "wickets": 0,
+      "balls": 0,
+      "extras": 0,
+      "currentOver": 0,
+      "currentBall": 0,
+      "battingOrder": [
+        "p1782015338775pyjl",
+        "p1782015338775mmz6",
+        "p1782015338775u6l5",
+        "p1782015338775zfs4",
+        "p1782015338775o0m1",
+        "p1782015338775liu4",
+        "p1782015338775b8vg"
+      ],
+      "strikerIdx": 0,
+      "nonStrikerIdx": 1,
+      "nextIdx": 2,
+      "batsmanStats": {
+        "p1782015338775pyjl": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775mmz6": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775u6l5": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775zfs4": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775o0m1": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775liu4": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775b8vg": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p17820153387751163": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775ixri": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775gu8e": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775f3ow": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775ub9o": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775amxl": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        },
+        "p1782015338775ky3e": {
+          "runs": 0,
+          "balls": 0,
+          "fours": 0,
+          "sixes": 0,
+          "dismissed": false,
+          "dismissalType": null
+        }
+      },
+      "currentBowler": "p17820153387751163",
+      "bowlerStats": {
+        "p17820153387751163": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1782015338775ixri": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1782015338775gu8e": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1782015338775f3ow": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1782015338775ub9o": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1782015338775amxl": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        },
+        "p1782015338775ky3e": {
+          "runs": 0,
+          "wickets": 0,
+          "balls": 0
+        }
+      },
+      "overBalls": [],
+      "completed": false
+    }
+  },
+  "balls": {
+    "M001": []
+  },
   "ballSeq": 492,
   "teamPresets": [
     "jap",

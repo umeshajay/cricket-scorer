@@ -165,6 +165,7 @@ select option{background:var(--surface);color:var(--text)}
   <div id="home-match-list" class="space-y-2"></div>
   <button id="home-new-match" onclick="showView('setup')" class="btn-score primary w-full py-3 text-base">+ New Match</button>
   <div id="home-local-msg" class="text-center text-xs" style="color:var(--text3)">Data saves in your browser (localStorage)</div>
+  <div class="text-center" style="margin-top:4px"><button onclick="clearLocalData()" class="pill-btn" style="font-size:11px;color:var(--text3)">🗑 Clear local data</button></div>
   <div id="home-gh-msg" class="text-center text-xs" style="color:var(--text3);display:none"></div>
 </div>
 
@@ -351,6 +352,14 @@ function getGitHubConfig() {
   return cfg;
 }
 function saveGitHubConfig(cfg) { try { localStorage.setItem('gh_sync_config', JSON.stringify(cfg)); } catch(e) { console.warn('config save failed',e); } }
+function clearLocalData() {
+  if (confirm('Delete all local data? This cannot be undone.')) {
+    localStorage.removeItem(KEY);
+    localStorage.removeItem('gh_sync_config');
+    showView('home');
+    renderHome();
+  }
+}
 function hasGitHubToken() { return !!getGitHubConfig().token; }
 function hasUserConfiguredRepo() {
   return !!getGitHubConfig().repo;

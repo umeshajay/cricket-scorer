@@ -6,77 +6,167 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<!-- v4 -->
+<!-- v5 -->
 <title>Cricket Scorer</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
 <style>
+:root {
+  --bg: #f5f5f7;
+  --surface: #ffffff;
+  --surface2: #f8f8fa;
+  --border: #e8e8ed;
+  --text: #1d1d1f;
+  --text2: #6e6e73;
+  --text3: #aeaeb2;
+  --accent: #6c5ce7;
+  --accent-hover: #5a4bd1;
+  --accent-light: rgba(108,92,231,0.1);
+  --accent-glow: rgba(108,92,231,0.2);
+  --green: #34c759;
+  --green-light: rgba(52,199,89,0.1);
+  --red: #ff3b30;
+  --red-light: rgba(255,59,48,0.1);
+  --orange: #ff9500;
+  --orange-light: rgba(255,149,0,0.1);
+  --yellow: #ffcc00;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.08);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-lg: 16px;
+  --footer-bg: rgba(255,255,255,0.92);
+  --footer-shadow: 0 -4px 20px rgba(0,0,0,0.04);
+}
+[data-theme="dark"] {
+  --bg: #0a0a0f;
+  --surface: #1a1a2e;
+  --surface2: #12121f;
+  --border: #2a2a3e;
+  --text: #f0f0f5;
+  --text2: #9e9eb0;
+  --text3: #6e6e80;
+  --accent: #7c6cf0;
+  --accent-hover: #8d7ff2;
+  --accent-light: rgba(124,108,240,0.15);
+  --accent-glow: rgba(124,108,240,0.3);
+  --green: #34c759;
+  --green-light: rgba(52,199,89,0.15);
+  --red: #ff453a;
+  --red-light: rgba(255,69,58,0.15);
+  --orange: #ff9f0a;
+  --orange-light: rgba(255,159,10,0.15);
+  --yellow: #ffd60a;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.4);
+  --footer-bg: rgba(26,26,46,0.95);
+  --footer-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f1f5f9;min-height:100dvh;touch-action:manipulation}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);min-height:100dvh;touch-action:manipulation;color:var(--text);transition:background .2s,color .2s}
 button{touch-action:manipulation}
 .view{display:none}.view.active{display:block}
-#view-scorer.active{display:block;min-height:100dvh;padding-bottom:220px}
-.scorer-history{margin-top:8px}
-.scorer-footer{position:fixed;bottom:0;left:0;right:0;z-index:20;max-width:32rem;margin:0 auto;padding:0 12px}
-.scorer-footer .inner{background:#fff;border-radius:12px 12px 0 0;border-top:1px solid #e5e7eb;box-shadow:0 -4px 12px rgba(0,0,0,.08);padding:8px}
-.scorer-footer .inner{background:#fff;border-radius:12px 12px 0 0;border-top:1px solid #e5e7eb;box-shadow:0 -4px 12px rgba(0,0,0,.08);padding:8px}
-.btn-score{user-select:none;touch-action:manipulation;transition:all .1s;min-height:48px;min-width:48px;display:flex;align-items:center;justify-content:center;font-weight:700;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.1);font-size:.9rem}
-.btn-score:active{transform:scale(.93);opacity:.8}
+#view-scorer.active{display:block;min-height:100dvh;padding-bottom:230px}
+.scorer-history{margin-top:6px}
+.scorer-footer{position:fixed;bottom:0;left:0;right:0;z-index:20;max-width:32rem;margin:0 auto;padding:0 8px}
+.scorer-footer .inner{background:var(--footer-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:var(--radius-lg) var(--radius-lg) 0 0;border-top:1px solid var(--border);box-shadow:var(--footer-shadow);padding:8px;transition:background .2s}
+.card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--border);transition:background .2s,border-color .2s,box-shadow .2s}
+.card-hover{cursor:pointer;transition:all .15s}
+.card-hover:active{transform:scale(0.98);opacity:.8}
+.btn-score{user-select:none;touch-action:manipulation;transition:all .1s;min-height:48px;min-width:48px;display:flex;align-items:center;justify-content:center;font-weight:700;border-radius:var(--radius-sm);font-size:.9rem;background:var(--surface2);color:var(--text);border:none;font-family:inherit;box-shadow:var(--shadow-sm)}
+.btn-score:active{transform:scale(.92);opacity:.7}
+.btn-score.primary{background:var(--accent);color:#fff;box-shadow:0 2px 8px var(--accent-glow)}
+.btn-score.primary:active{background:var(--accent-hover)}
+.btn-score.danger{background:var(--red-light);color:var(--red)}
+.btn-score.warning{background:var(--orange-light);color:var(--orange)}
+.btn-score.success{background:var(--green-light);color:var(--green)}
 .btn-sm{min-height:44px;font-size:.85rem}
 .ball-dot{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-size:11px;font-weight:700;color:#fff;margin:2px;flex-shrink:0}
 .ball-dot.run{background:#3b82f6}
 .ball-dot.four{background:#8b5cf6}
 .ball-dot.six{background:#ec4899}
-.ball-dot.wicket{background:#ef4444}
-.ball-dot.wide{background:#eab308;color:#000}
-.ball-dot.noball{background:#f97316}
-.over-card{border-radius:12px;background:#fff;border:1px solid #e5e7eb;overflow:hidden;margin-bottom:6px;transition:border-color .15s}
-.over-card[open]{border-color:#cbd5e1}
+.ball-dot.wicket{background:var(--red)}
+.ball-dot.wide{background:var(--yellow);color:#000}
+.ball-dot.noball{background:var(--orange)}
+.over-card{border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--border);overflow:hidden;margin-bottom:6px;transition:border-color .15s,background .2s}
+.over-card[open]{border-color:var(--accent)}
 .over-card summary{padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;-webkit-user-select:none;user-select:none;list-style:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .over-card summary::-webkit-details-marker{display:none}
-.over-label{font-weight:600;font-size:14px;color:#374151}
-.over-runs{font-size:13px;color:#6b7280;margin-left:auto}
-.over-expand-icon{font-size:12px;color:#9ca3af;transition:transform .2s ease;margin-left:4px}
+.over-label{font-weight:600;font-size:14px;color:var(--text)}
+.over-runs{font-size:13px;color:var(--text2);margin-left:auto}
+.over-expand-icon{font-size:12px;color:var(--text3);transition:transform .2s ease;margin-left:4px}
 .over-card[open] .over-expand-icon{transform:rotate(180deg)}
-.over-balls{display:flex;flex-wrap:wrap;gap:4px;padding:0 14px 10px;border-top:1px solid #f3f4f6;padding-top:8px;margin-top:0;animation:fadeIn .15s ease}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:50;display:none;align-items:center;justify-content:center;padding:16px}
+.over-balls{display:flex;flex-wrap:wrap;gap:4px;padding:0 14px 10px;border-top:1px solid var(--border);padding-top:8px;margin-top:0;animation:fadeIn .15s ease}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .modal-overlay.open{display:flex}
-.modal-content{background:#fff;border-radius:16px;padding:20px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:fadeIn .15s ease}
+.modal-content{background:var(--surface);border-radius:var(--radius-lg);padding:20px;width:100%;max-width:360px;box-shadow:var(--shadow-lg);animation:fadeIn .15s ease;transition:background .2s}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.xi-chip{display:inline-flex;align-items:center;gap:4px;background:#e0f2fe;color:#0369a1;border-radius:20px;padding:4px 12px;font-size:13px;margin:3px;cursor:pointer;border:1px solid #bae6fd;transition:all .1s}
-.xi-chip.active{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+.xi-chip{display:inline-flex;align-items:center;gap:4px;background:var(--accent-light);color:var(--accent);border-radius:20px;padding:4px 12px;font-size:13px;margin:3px;cursor:pointer;border:1px solid var(--accent);transition:all .1s}
+.xi-chip.active{background:var(--accent);color:#fff}
 .xi-chip.dim{opacity:.5}
-select,input{border:1px solid #d1d5db;border-radius:8px;padding:8px 12px;font-size:15px;width:100%;background:#fff}
-select:focus,input:focus{outline:none;border-color:#0ea5e9;box-shadow:0 0 0 3px rgba(14,165,233,.15)}
-label{font-size:13px;font-weight:600;color:#374151;margin-bottom:2px;display:block}
-.live-pulse{animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+select,input{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;font-size:15px;width:100%;color:var(--text);font-family:inherit;transition:border-color .15s,background .2s,color .2s}
+select:focus,input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+label{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:4px;display:block}
+select option{background:var(--surface);color:var(--text)}
+.theme-btn{background:none;border:none;cursor:pointer;font-size:20px;padding:6px;border-radius:50%;transition:all .15s;display:flex;align-items:center;justify-content:center;width:36px;height:36px;color:var(--text2)}
+.theme-btn:hover{background:var(--surface2);color:var(--text)}
+.header{display:flex;align-items:center;justify-content:space-between;padding:4px 0}
+.header h1{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.header-actions{display:flex;gap:6px}
+.pill-btn{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 16px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .15s;font-family:inherit}
+.pill-btn:hover{background:var(--accent-light);color:var(--accent);border-color:var(--accent)}
+.pill-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.pill-btn.primary:hover{background:var(--accent-hover)}
+.scoreboard{text-align:center;padding:16px}
+.scoreboard .inn-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
+.scoreboard .score{font-size:44px;font-weight:800;color:var(--text);letter-spacing:-1px;line-height:1.1;margin:4px 0}
+.scoreboard .score .num{color:var(--accent)}
+.scoreboard .meta{font-size:12px;color:var(--text2);margin-top:4px}
+.bowler-card{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;margin-top:8px}
+.bowler-card .label{font-size:12px;color:var(--text2)}
+.bowler-card .name{font-weight:600;color:var(--text)}
+.bowler-card .stats{font-size:12px;color:var(--text2);font-variant-numeric:tabular-nums}
+.empty-state{padding:32px 0;text-align:center;color:var(--text3);font-size:14px}
+.match-card{padding:14px}
+.match-card .match-title{font-weight:600;font-size:14px;color:var(--text)}
+.match-card .match-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.match-card .score-display{text-align:right}
+.match-card .score-display .score-num{font-size:20px;font-weight:800;color:var(--accent)}
+.match-card .score-display .ov{font-size:12px;color:var(--text2)}
+[data-theme="dark"] .btn-score{box-shadow:0 1px 3px rgba(0,0,0,.2)}
+[data-theme="dark"] select option{background:var(--surface)}
 </style>
 </head>
 <body>
 
-<div class="max-w-lg mx-auto px-3 py-4 space-y-4" id="app">
+<div class="max-w-lg mx-auto px-3 py-3 space-y-3" id="app">
 
 <!-- ══ HOME ══ -->
 <div id="view-home" class="view active">
-  <div class="flex items-center justify-between">
-    <h1 class="text-2xl font-bold text-gray-900">Cricket Scorer</h1>
-    <button onclick="showView('leaderboard')" class="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium text-gray-700">Team Stats</button>
-    <button onclick="openSettingsModal()" class="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 text-xl leading-none">⚙️</button>
+  <div class="header">
+    <h1>Cricket Scorer</h1>
+    <div class="header-actions">
+      <button onclick="showView('leaderboard')" class="pill-btn">Log</button>
+      <button onclick="openSettingsModal()" class="pill-btn">⚙️</button>
+      <button onclick="toggleTheme()" class="theme-btn" id="theme-btn">☀️</button>
+    </div>
   </div>
   <div id="home-match-list" class="space-y-2"></div>
-  <button onclick="showView('setup')" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 rounded-xl text-base shadow-sm active:scale-95 transition">+ New Match</button>
-  <div class="text-center text-xs text-gray-400">Data saves in your browser (localStorage)</div>
+  <button onclick="showView('setup')" class="btn-score primary w-full py-3 text-base">+ New Match</button>
+  <div class="text-center text-xs" style="color:var(--text3)">Data saves in your browser (localStorage)</div>
 </div>
 
 <!-- ══ SETUP ══ -->
 <div id="view-setup" class="view">
-  <div class="flex items-center gap-2">
-    <button onclick="showView('home')" class="text-cyan-600 font-medium text-sm">&larr; Back</button>
-    <h2 class="text-xl font-bold text-gray-900">New Match</h2>
+  <div class="header">
+    <button onclick="showView('home')" class="pill-btn">&larr; Back</button>
+    <h1>New Match</h1>
+    <div></div>
   </div>
-  <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm space-y-3">
+  <div class="card p-4 space-y-3">
     <div><label>Match ID (optional)</label><input id="setup-mid" placeholder="Auto if blank" class="text-sm"></div>
     <div><label>Overs</label><select id="setup-overs"><option>4</option><option>5</option><option selected>6</option><option>7</option></select></div>
     <div class="grid grid-cols-2 gap-3">
@@ -93,63 +183,63 @@ label{font-size:13px;font-weight:600;color:#374151;margin-bottom:2px;display:blo
     </div>
     <datalist id="team-presets"></datalist>
     <div id="setup-team-presets" class="flex flex-wrap gap-1.5" style="display:none"></div>
-    <button onclick="startMatch()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 rounded-xl text-base shadow-sm active:scale-95 transition">Start Match</button>
-    <div id="setup-err" class="text-xs text-red-500 text-center"></div>
+    <button onclick="startMatch()" class="btn-score primary w-full py-3 text-base">Start Match</button>
+    <div id="setup-err" class="text-xs text-center" style="color:var(--red)"></div>
   </div>
 </div>
 
 <!-- ══ SCORER ══ -->
 <div id="view-scorer" class="view">
   <!-- Top bar -->
-  <div class="flex items-center justify-between flex-shrink-0">
-    <button onclick="showView('home')" class="text-cyan-600 font-medium text-sm">&larr; Home</button>
-    <span id="scorer-title" class="text-sm font-semibold text-gray-700 truncate mx-1"></span>
-    <button onclick="endInnings()" class="text-red-500 text-sm font-medium">End Inns</button>
+  <div class="header">
+    <button onclick="showView('home')" class="pill-btn">&larr; Home</button>
+    <span id="scorer-title" class="text-sm font-semibold truncate mx-1" style="color:var(--text)"></span>
+    <button onclick="endInnings()" class="pill-btn" style="color:var(--red);border-color:var(--red-light)">End Inns</button>
   </div>
 
   <!-- Innings toggle -->
   <div id="scorer-inns-toggle" class="flex gap-2 justify-center flex-shrink-0" style="display:none">
-    <button id="inns-btn-1" onclick="switchInnings(1)" class="px-4 py-1.5 rounded-lg text-sm font-semibold transition bg-cyan-500 text-white">Innings 1</button>
-    <button id="inns-btn-2" onclick="switchInnings(2)" class="px-4 py-1.5 rounded-lg text-sm font-semibold transition bg-gray-200 text-gray-500">Innings 2</button>
+    <button id="inns-btn-1" onclick="switchInnings(1)" class="pill-btn primary">Innings 1</button>
+    <button id="inns-btn-2" onclick="switchInnings(2)" class="pill-btn">Innings 2</button>
   </div>
 
-  <!-- Score banner (fixed) -->
+  <!-- Score board -->
   <div class="flex-shrink-0">
-    <div id="scorer-scoreboard" class="bg-white rounded-xl p-3 border border-gray-200 shadow-sm text-center">
-      <div class="text-xs text-gray-400 font-medium uppercase tracking-wide">Innings <span id="sb-inns-no">1</span></div>
-      <div class="text-3xl font-black text-cyan-600"><span id="sb-runs">0</span>/<span id="sb-wkts">0</span></div>
-      <div class="text-xs text-gray-500 mt-0.5">Ov <span id="sb-ov">0.0</span>/<span id="sb-maxov">0</span> &middot; RR <span id="sb-rr">0.00</span> &middot; <span id="sb-bat">Batting</span> &middot; Extras <span id="sb-ext">0</span></div>
+    <div class="card scoreboard">
+      <div class="inn-label">Innings <span id="sb-inns-no">1</span></div>
+      <div class="score"><span class="num" id="sb-runs">0</span>/<span id="sb-wkts">0</span></div>
+      <div class="meta">Ov <span id="sb-ov">0.0</span>/<span id="sb-maxov">0</span> &middot; RR <span id="sb-rr">0.00</span> &middot; <span id="sb-bat">Batting</span> &middot; Extras <span id="sb-ext">0</span></div>
     </div>
-    <div class="bg-white rounded-xl p-2 border border-gray-200 shadow-sm flex items-center justify-between mt-1.5">
-      <span class="text-xs text-gray-600"><span class="font-semibold">Bowler:</span> <span id="sb-bowler">—</span></span>
-      <span class="text-xs text-gray-500"><span id="sb-bowl-stats">0-0-0-0</span></span>
-      <button onclick="nextBowler()" class="text-xs text-cyan-600 font-medium">Change</button>
+    <div class="card bowler-card">
+      <span class="label"><span class="name" id="sb-bowler">—</span></span>
+      <span class="stats" id="sb-bowl-stats">0-0-0-0</span>
+      <button onclick="nextBowler()" class="pill-btn" style="font-size:12px">Change</button>
     </div>
   </div>
 
-  <!-- Over history (scrollable) -->
+  <!-- Over history -->
   <div id="scorer-history" class="scorer-history"></div>
 
   <!-- Action buttons (sticky footer) -->
   <div class="scorer-footer">
     <div class="inner">
       <div class="grid grid-cols-6 gap-1.5">
-        <button onclick="scoreRuns(0)" class="btn-score bg-gray-100 text-gray-800">0</button>
-        <button onclick="scoreRuns(1)" class="btn-score bg-gray-100 text-gray-800">1</button>
-        <button onclick="scoreRuns(2)" class="btn-score bg-gray-100 text-gray-800">2</button>
-        <button onclick="scoreRuns(3)" class="btn-score bg-gray-100 text-gray-800">3</button>
-        <button onclick="scoreRuns(4)" class="btn-score bg-blue-100 text-blue-800">4</button>
-        <button onclick="scoreRuns(6)" class="btn-score bg-purple-100 text-purple-800">6</button>
+        <button onclick="scoreRuns(0)" class="btn-score">0</button>
+        <button onclick="scoreRuns(1)" class="btn-score">1</button>
+        <button onclick="scoreRuns(2)" class="btn-score">2</button>
+        <button onclick="scoreRuns(3)" class="btn-score">3</button>
+        <button onclick="scoreRuns(4)" class="btn-score" style="background:var(--accent-light);color:var(--accent)">4</button>
+        <button onclick="scoreRuns(6)" class="btn-score" style="background:rgba(236,72,153,0.15);color:#ec4899">6</button>
       </div>
       <div class="grid grid-cols-3 gap-1.5 mt-1.5">
-        <button onclick="openExtraModal('wide')" class="btn-score bg-yellow-50 text-yellow-800 border border-yellow-200">Wide</button>
-        <button onclick="openExtraModal('noball')" class="btn-score bg-orange-50 text-orange-800 border border-orange-200">No-Ball</button>
-        <button onclick="openWicketModal()" class="btn-score bg-red-50 text-red-800 border border-red-200">Wkt</button>
+        <button onclick="openExtraModal('wide')" class="btn-score warning">Wide</button>
+        <button onclick="openExtraModal('noball')" class="btn-score warning">No-Ball</button>
+        <button onclick="openWicketModal()" class="btn-score danger">Wkt</button>
       </div>
       <div class="grid grid-cols-3 gap-1.5 mt-1.5">
-        <button onclick="undoLast()" class="btn-score bg-gray-100 text-gray-600 border border-gray-200">↩ Undo</button>
-        <button onclick="endOver()" class="btn-score bg-gray-100 text-gray-600 border border-gray-200">End Over</button>
-        <button onclick="showWhatsAppShare()" class="btn-score bg-green-50 text-green-700 border border-green-200 font-semibold">📱 Share</button>
+        <button onclick="undoLast()" class="btn-score">↩ Undo</button>
+        <button onclick="endOver()" class="btn-score">End Over</button>
+        <button onclick="showWhatsAppShare()" class="btn-score success">📱 Share</button>
       </div>
     </div>
   </div>
@@ -157,52 +247,50 @@ label{font-size:13px;font-weight:600;color:#374151;margin-bottom:2px;display:blo
 
 <!-- ══ MATCH LOG ══ -->
 <div id="view-leaderboard" class="view">
-  <div class="flex items-center gap-2">
-    <button onclick="showView('home')" class="text-cyan-600 font-medium text-sm">&larr; Back</button>
-    <h2 class="text-xl font-bold text-gray-900">Match Log</h2>
-    <button onclick="renderLeaderboard()" class="ml-auto bg-gray-100 border px-3 py-1.5 rounded-lg text-xs font-medium">↻</button>
+  <div class="header">
+    <button onclick="showView('home')" class="pill-btn">&larr; Back</button>
+    <h1>Match Log</h1>
+    <button onclick="renderLeaderboard()" class="pill-btn">↻</button>
   </div>
   <div id="lb-teams" class="space-y-3"></div>
 </div>
 
 <!-- ══ MATCH REPORT ══ -->
 <div id="view-report" class="view">
-  <div class="flex items-center gap-2 flex-shrink-0">
-    <button onclick="showView('home')" class="text-cyan-600 font-medium text-sm">&larr; Back</button>
-    <h2 class="text-xl font-bold text-gray-900" id="report-title">Match Stats</h2>
-    <div class="ml-auto flex gap-2">
-      <button onclick="shareReport()" class="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-1.5 rounded-lg text-sm">📱 Share</button>
-    </div>
+  <div class="header">
+    <button onclick="showView('home')" class="pill-btn">&larr; Back</button>
+    <h1 id="report-title">Match Stats</h1>
+    <button onclick="shareReport()" class="pill-btn success">📱 Share</button>
   </div>
-  <div id="report-content" class="space-y-4 pb-4">
-    <div class="bg-white rounded-xl p-3 border border-gray-200 shadow-sm text-center">
-      <div class="font-bold text-gray-900" id="report-match-name"></div>
-      <div class="text-xs text-gray-500" id="report-match-date"></div>
-      <div class="text-sm font-semibold mt-1 text-emerald-600" id="report-match-result"></div>
+  <div id="report-content" class="space-y-3 pb-4">
+    <div class="card p-4 text-center">
+      <div class="font-bold" id="report-match-name" style="font-size:16px"></div>
+      <div class="text-xs" style="color:var(--text2);margin-top:2px" id="report-match-date"></div>
+      <div class="text-sm font-semibold mt-1" style="color:var(--green)" id="report-match-result"></div>
     </div>
-    <div class="bg-white rounded-xl p-3 border border-gray-200 shadow-sm">
-      <div class="text-xs font-semibold text-gray-500 uppercase mb-2">📈 Run Rate Progression</div>
+    <div class="card p-3">
+      <div class="text-xs font-semibold uppercase mb-2" style="color:var(--text2)">📈 Run Rate Progression</div>
       <canvas id="chart-worm"></canvas>
     </div>
-    <div class="bg-white rounded-xl p-3 border border-gray-200 shadow-sm">
-      <div class="text-xs font-semibold text-gray-500 uppercase mb-2">🔥 Required vs Current Run Rate</div>
+    <div class="card p-3">
+      <div class="text-xs font-semibold uppercase mb-2" style="color:var(--text2)">🔥 Required vs Current Run Rate</div>
       <canvas id="chart-rr"></canvas>
-      <div id="rr-fallback" class="text-xs text-gray-400 py-4 text-center" style="display:none">RR progression available after 2nd innings starts</div>
+      <div id="rr-fallback" class="text-xs py-4 text-center" style="color:var(--text3);display:none">RR progression available after 2nd innings starts</div>
     </div>
-    <div class="bg-white rounded-xl p-3 border border-gray-200 shadow-sm">
-      <div class="text-xs font-semibold text-gray-500 uppercase mb-2">🏏 Manhattan (Runs per Over)</div>
+    <div class="card p-3">
+      <div class="text-xs font-semibold uppercase mb-2" style="color:var(--text2)">🏏 Manhattan (Runs per Over)</div>
       <canvas id="chart-wkts"></canvas>
     </div>
-    <button onclick="shareReport()" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-xl text-base shadow-sm">📱 Share Match Report</button>
+    <button onclick="shareReport()" class="btn-score primary w-full py-3 text-base">📱 Share Match Report</button>
   </div>
 </div>
 
 <!-- ══ MODAL ══ -->
 <div id="modal-overlay" class="modal-overlay" onclick="if(event.target===this)closeModal()">
   <div class="modal-content space-y-3">
-    <div id="modal-title" class="font-bold text-lg text-gray-800"></div>
+    <div id="modal-title" class="font-bold text-lg" style="color:var(--text)"></div>
     <div id="modal-body"></div>
-    <button onclick="closeModal()" class="w-full text-gray-400 text-sm py-2 hover:text-gray-600 font-medium">Cancel</button>
+    <button onclick="closeModal()" class="w-full text-sm py-2 font-medium" style="color:var(--text3)">Cancel</button>
   </div>
 </div>
 
@@ -210,19 +298,26 @@ label{font-size:13px;font-weight:600;color:#374151;margin-bottom:2px;display:blo
 <div id="wa-overlay" class="modal-overlay" onclick="if(event.target===this)hideWhatsAppShare()">
   <div class="modal-content text-center space-y-4" style="max-width:320px">
     <div class="text-5xl">📱</div>
-    <p class="text-gray-600 text-sm font-medium">Share score to WhatsApp?</p>
+    <p class="text-sm font-medium" style="color:var(--text2)">Share score to WhatsApp?</p>
     <a id="wa-link" href="#" target="_blank" onclick="setTimeout(hideWhatsAppShare,500)"
-       class="inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-xl text-base transition shadow-sm active:scale-95 w-full">
+       class="inline-flex items-center justify-center gap-2 btn-score success font-semibold px-6 py-3 text-base w-full text-decoration-none">
       <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
       Open WhatsApp
     </a>
-    <button onclick="hideWhatsAppShare()" class="text-gray-400 text-sm hover:text-gray-600">Close</button>
+    <button onclick="hideWhatsAppShare()" class="text-sm" style="color:var(--text3)">Close</button>
   </div>
 </div>
 
 </div>
 
 <script>
+// ─────── THEME ───────
+const themeKey = 'cricket_scorer_theme';
+function getTheme() { return localStorage.getItem(themeKey) || 'light'; }
+function setTheme(t) { localStorage.setItem(themeKey, t); document.documentElement.setAttribute('data-theme', t); document.getElementById('theme-btn').textContent = t === 'dark' ? '🌙' : '☀️'; }
+function toggleTheme() { setTheme(getTheme() === 'dark' ? 'light' : 'dark'); }
+setTheme(getTheme());
+
 // ─────── DATA LAYER ───────
 const KEY = 'cricket_scorer_data';
 
@@ -464,12 +559,8 @@ function renderScorer() {
   const toggleEl = document.getElementById('scorer-inns-toggle');
   if (inn1 && inn1.completed && inn2) {
     toggleEl.style.display = 'flex';
-    document.getElementById('inns-btn-1').className = currentState.inningsNo === 1
-      ? 'px-4 py-1.5 rounded-lg text-sm font-semibold transition bg-cyan-500 text-white'
-      : 'px-4 py-1.5 rounded-lg text-sm font-semibold transition bg-gray-200 text-gray-500';
-    document.getElementById('inns-btn-2').className = currentState.inningsNo === 2
-      ? 'px-4 py-1.5 rounded-lg text-sm font-semibold transition bg-cyan-500 text-white'
-      : 'px-4 py-1.5 rounded-lg text-sm font-semibold transition bg-gray-200 text-gray-500';
+    document.getElementById('inns-btn-1').className = 'pill-btn' + (currentState.inningsNo === 1 ? ' primary' : '');
+    document.getElementById('inns-btn-2').className = 'pill-btn' + (currentState.inningsNo === 2 ? ' primary' : '');
   } else {
     toggleEl.style.display = 'none';
   }
@@ -499,7 +590,7 @@ function renderScorer() {
   if (!historyEl) return;
 
   if (!overKeys.length) {
-    historyEl.innerHTML = '<div class="text-xs text-gray-400 text-center py-8">No balls bowled yet</div>';
+    historyEl.innerHTML = '<div class="empty-state">No balls bowled yet</div>';
     return;
   }
 
@@ -654,11 +745,11 @@ function openExtraModal(type) {
   extraCtx = { type, extraRuns: 0, wicket: false, wicketType: null };
   document.getElementById('modal-title').textContent = type === 'wide' ? 'Wide' : 'No-Ball';
   document.getElementById('modal-body').innerHTML =
-    '<p class="text-sm text-gray-500 mb-3">Runs?</p>' +
+    '<p style="font-size:14px;color:var(--text2);margin-bottom:12px">Runs?</p>' +
     '<div class="grid grid-cols-5 gap-2 mb-3">' +
-      [0,1,2,3,4].map(r => '<button onclick="extraRuns('+r+')" class="btn-score btn-sm bg-gray-100 border border-gray-200">'+(r||'0')+'</button>').join('') +
+      [0,1,2,3,4].map(r => '<button onclick="extraRuns('+r+')" class="btn-score btn-sm">'+r+'</button>').join('') +
     '</div>' +
-    '<button onclick="extraWicket()" class="w-full btn-score btn-sm bg-red-50 text-red-700 border border-red-200">Wicket</button>';
+    '<button onclick="extraWicket()" class="w-full btn-score btn-sm" style="background:var(--red-light);color:var(--red)">Wicket</button>';
   document.getElementById('modal-overlay').classList.add('open');
 }
 
@@ -671,10 +762,10 @@ function extraRuns(r) {
 function extraWicket() {
   document.getElementById('modal-title').textContent = 'Dismissal';
   document.getElementById('modal-body').innerHTML =
-    '<p class="text-sm text-gray-500 mb-3">Dismissal type?</p>' +
+    '<p style="font-size:14px;color:var(--text2);margin-bottom:12px">Dismissal type?</p>' +
     '<div class="grid grid-cols-2 gap-2 mb-2">' +
       ['Bowled','Caught','LBW','Run Out','Stumped','Hit Wicket'].map(t =>
-        '<button onclick="extraWicketType(\''+t+'\')" class="btn-score btn-sm bg-red-50 text-red-700 border border-red-200">'+t+'</button>'
+        '<button onclick="extraWicketType(\''+t+'\')" class="btn-score btn-sm" style="background:var(--red-light);color:var(--red)">'+t+'</button>'
       ).join('') +
     '</div>';
 }
@@ -750,10 +841,10 @@ function openWicketModal() {
 
   document.getElementById('modal-title').textContent = 'Wicket';
   document.getElementById('modal-body').innerHTML =
-    '<p class="text-sm text-gray-500 mb-3">Dismissal type?</p>' +
+    '<p style="font-size:14px;color:var(--text2);margin-bottom:12px">Dismissal type?</p>' +
     '<div class="grid grid-cols-2 gap-2 mb-2">' +
       ['Bowled','Caught','LBW','Run Out','Stumped','Hit Wicket'].map(t =>
-        '<button onclick="processWicket(\''+t+'\')" class="btn-score btn-sm bg-red-50 text-red-700 border border-red-200">'+t+'</button>'
+        '<button onclick="processWicket(\''+t+'\')" class="btn-score btn-sm" style="background:var(--red-light);color:var(--red)">'+t+'</button>'
       ).join('') +
     '</div>';
   document.getElementById('modal-overlay').classList.add('open');
@@ -1024,7 +1115,7 @@ function renderHome() {
   const matches = Object.values(d.matches || {}).sort((a, b) => (b.created || '').localeCompare(a.created || ''));
   const el = document.getElementById('home-match-list');
   if (!matches.length) {
-    el.innerHTML = '<div class="bg-white rounded-xl p-6 text-center text-gray-400 text-sm border border-gray-200 shadow-sm">No matches yet. Create one!</div>';
+    el.innerHTML = '<div class="card p-6 empty-state">No matches yet. Create one!</div>';
     return;
   }
   el.innerHTML = matches.map(m => {
@@ -1038,13 +1129,13 @@ function renderHome() {
     const ov1 = inn1 && inn1.currentOver != null ? inn1.currentOver + '.' + (inn1.currentBall != null ? inn1.currentBall : 0) : '—';
     const score2 = inn2 && inn1 && inn1.completed && inn2.runs != null ? inn2.runs + '/' + inn2.wickets : null;
     const ov2 = inn2 && inn2.currentOver != null ? inn2.currentOver + '.' + (inn2.currentBall != null ? inn2.currentBall : 0) : null;
-    return '<div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">' +
-      '<div onclick="openScorer(\'' + m.id + '\')" class="flex items-center justify-between cursor-pointer active:scale-[0.98] transition">' +
-      '<div><div class="font-semibold text-gray-900 text-sm">' + ta + ' vs ' + tb + '</div>' +
-      '<div class="text-xs text-gray-500">' + m.id + ' &middot; ' + mov + ' ov &middot; <span class="' + (isOn ? 'text-green-600' : 'text-gray-400') + ' font-medium">' + m.status + '</span></div></div>' +
-      '<div class="text-right"><div class="text-lg font-black ' + (isOn ? 'text-cyan-600' : 'text-gray-500') + '">' + score1 + (score2 ? ' & ' + score2 : '') + '</div>' +
-      '<div class="text-xs text-gray-400">Ov ' + ov1 + (ov2 ? ' & ' + ov2 : '') + '</div></div></div>' +
-      (isOn ? '' : '<button onclick="event.stopPropagation();openReport(\'' + m.id + '\')" class="mt-2 w-full bg-cyan-50 hover:bg-cyan-100 text-cyan-700 font-semibold py-1.5 rounded-lg text-xs border border-cyan-200">📊 Stats</button>') +
+    return '<div class="card match-card">' +
+      '<div onclick="openScorer(\'' + m.id + '\')" class="flex items-center justify-between card-hover">' +
+      '<div><div class="match-title">' + ta + ' vs ' + tb + '</div>' +
+      '<div class="match-sub">' + m.id + ' &middot; ' + mov + ' ov &middot; <span style="color:' + (isOn ? 'var(--green)' : 'var(--text3)') + '" class="font-medium">' + m.status + '</span></div></div>' +
+      '<div class="score-display"><div class="score-num">' + score1 + (score2 ? ' & ' + score2 : '') + '</div>' +
+      '<div class="ov">Ov ' + ov1 + (ov2 ? ' & ' + ov2 : '') + '</div></div></div>' +
+      (isOn ? '' : '<button onclick="event.stopPropagation();openReport(\'' + m.id + '\')" class="mt-2 w-full btn-score primary py-2 text-xs">📊 Stats</button>') +
       '</div>';
   }).join('');
 }
@@ -1056,7 +1147,7 @@ function renderLeaderboard() {
   const el = document.getElementById('lb-teams');
   const completed = mids.filter(mid => d.matches[mid].status === 'completed');
   if (!completed.length) {
-    el.innerHTML = '<div class="bg-white rounded-xl p-6 text-center text-gray-400 text-sm border border-gray-200 shadow-sm">No completed matches yet</div>';
+    el.innerHTML = '<div class="card p-6 empty-state">No completed matches yet</div>';
     return;
   }
   el.innerHTML = '';
@@ -1066,70 +1157,57 @@ function renderLeaderboard() {
     const inn2 = d.innings[mid + '_2'];
     const p = d.players || {};
 
-    // Helper: compute RR string
     function rrStr(inn) {
       return inn && inn.balls > 0 ? (inn.runs / (inn.balls / 6)).toFixed(2) : '0.00';
     }
 
-    // Result summary
     let resultLine = '';
     if (inn1 && inn2 && inn1.completed && inn2.completed) {
       if (inn1.runs > inn2.runs) {
         const diff = inn1.runs - inn2.runs;
-        resultLine = '<span class="text-emerald-600 font-bold">' + inn1.batting + ' won by ' + diff + ' runs</span>';
+        resultLine = '<span style="color:var(--green);font-weight:700">' + inn1.batting + ' won by ' + diff + ' runs</span>';
       } else if (inn2.runs > inn1.runs) {
         const dismissed = (inn2.battingOrder || []).filter(id => inn2.batsmanStats[id]?.dismissed).length;
         const wktsLeft = (inn2.battingOrder || []).length - dismissed;
-        resultLine = '<span class="text-emerald-600 font-bold">' + inn2.batting + ' won by ' + wktsLeft + ' wicket' + (wktsLeft > 1 ? 's' : '') + '</span>';
+        resultLine = '<span style="color:var(--green);font-weight:700">' + inn2.batting + ' won by ' + wktsLeft + ' wicket' + (wktsLeft > 1 ? 's' : '') + '</span>';
       } else {
-        resultLine = '<span class="text-gray-500 font-bold">Match Tied</span>';
+        resultLine = '<span style="color:var(--text2);font-weight:700">Match Tied</span>';
       }
     } else if (m.status === 'ongoing') {
-      resultLine = '<span class="text-cyan-600 font-medium">Ongoing</span>';
+      resultLine = '<span style="color:var(--accent);font-weight:500">Ongoing</span>';
     }
 
-    // Format date
     const date = m.created ? new Date(m.created).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
 
-    // Birdie-style scorecard HTML
     const card = document.createElement('div');
-    card.className = 'bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden';
+    card.className = 'card overflow-hidden';
     card.innerHTML =
       '<div class="p-4">' +
-        // Title row
         '<div class="flex items-start justify-between mb-2">' +
-          '<div class="font-bold text-gray-900 text-sm leading-tight">' + m.teamA + ' vs ' + m.teamB + '</div>' +
-          '<div class="text-xs text-gray-400 whitespace-nowrap ml-2">' + date + '</div>' +
+          '<div class="font-bold" style="color:var(--text);font-size:14px">' + m.teamA + ' vs ' + m.teamB + '</div>' +
+          '<div class="text-xs" style="color:var(--text3)">' + date + '</div>' +
         '</div>' +
-        // Result
         (resultLine ? '<div class="mb-3 text-sm">' + resultLine + '</div>' : '') +
-        // Comparison table
-        '<div class="grid grid-cols-3 gap-0 border border-gray-200 rounded-lg text-sm mb-2">' +
-          '<div class="bg-gray-50 font-semibold text-gray-600 text-xs uppercase tracking-wide px-3 py-2 border-b border-r border-gray-200"></div>' +
-          '<div class="bg-gray-50 font-semibold text-gray-600 text-xs uppercase tracking-wide px-3 py-2 border-b border-r border-gray-200 text-center">' + (inn1 ? inn1.batting : m.teamA) + '</div>' +
-          '<div class="bg-gray-50 font-semibold text-gray-600 text-xs uppercase tracking-wide px-3 py-2 border-b border-gray-200 text-center">' + (inn2 ? inn2.batting : m.teamB) + '</div>' +
-          // Runs row
-          '<div class="px-3 py-2 text-xs text-gray-500 border-r border-gray-200 font-medium">Runs</div>' +
-          '<div class="px-3 py-2 text-center font-bold text-cyan-700 border-r border-gray-200 tabular-nums">' + (inn1 ? inn1.runs : '—') + '</div>' +
-          '<div class="px-3 py-2 text-center font-bold text-cyan-700 tabular-nums">' + (inn2 ? inn2.runs : '—') + '</div>' +
-          // Wkts row
-          '<div class="px-3 py-2 text-xs text-gray-500 border-r border-gray-200 font-medium">Wickets</div>' +
-          '<div class="px-3 py-2 text-center border-r border-gray-200 tabular-nums font-medium text-gray-800">' + (inn1 ? inn1.wickets : '—') + '</div>' +
-          '<div class="px-3 py-2 text-center tabular-nums font-medium text-gray-800">' + (inn2 ? inn2.wickets : '—') + '</div>' +
-          // Overs row
-          '<div class="px-3 py-2 text-xs text-gray-500 border-r border-gray-200 font-medium">Overs</div>' +
-          '<div class="px-3 py-2 text-center border-r border-gray-200 tabular-nums text-gray-600">' + (inn1 ? inn1.currentOver + '.' + inn1.currentBall : '—') + '</div>' +
-          '<div class="px-3 py-2 text-center tabular-nums text-gray-600">' + (inn2 ? inn2.currentOver + '.' + inn2.currentBall : '—') + '</div>' +
-          // RR row
-          '<div class="px-3 py-2 text-xs text-gray-500 border-r border-gray-200 font-medium">Run Rate</div>' +
-          '<div class="px-3 py-2 text-center border-r border-gray-200 tabular-nums text-gray-600">' + rrStr(inn1) + '</div>' +
-          '<div class="px-3 py-2 text-center tabular-nums text-gray-600">' + rrStr(inn2) + '</div>' +
+        '<div class="grid grid-cols-3 gap-0" style="border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;margin-bottom:8px">' +
+          '<div style="background:var(--surface2);font-weight:600;color:var(--text2);text-transform:uppercase;font-size:11px;padding:8px 12px;border-bottom:1px solid var(--border);border-right:1px solid var(--border)"></div>' +
+          '<div style="background:var(--surface2);font-weight:600;color:var(--text2);text-transform:uppercase;font-size:11px;padding:8px 12px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);text-align:center">' + (inn1 ? inn1.batting : m.teamA) + '</div>' +
+          '<div style="background:var(--surface2);font-weight:600;color:var(--text2);text-transform:uppercase;font-size:11px;padding:8px 12px;border-bottom:1px solid var(--border);text-align:center">' + (inn2 ? inn2.batting : m.teamB) + '</div>' +
+          '<div style="padding:8px 12px;font-size:12px;color:var(--text2);border-right:1px solid var(--border);font-weight:500">Runs</div>' +
+          '<div style="padding:8px 12px;text-align:center;font-weight:700;color:var(--accent);border-right:1px solid var(--border)">' + (inn1 ? inn1.runs : '—') + '</div>' +
+          '<div style="padding:8px 12px;text-align:center;font-weight:700;color:var(--accent)">' + (inn2 ? inn2.runs : '—') + '</div>' +
+          '<div style="padding:8px 12px;font-size:12px;color:var(--text2);border-right:1px solid var(--border);font-weight:500">Wickets</div>' +
+          '<div style="padding:8px 12px;text-align:center;border-right:1px solid var(--border);font-weight:500;color:var(--text)">' + (inn1 ? inn1.wickets : '—') + '</div>' +
+          '<div style="padding:8px 12px;text-align:center;font-weight:500;color:var(--text)">' + (inn2 ? inn2.wickets : '—') + '</div>' +
+          '<div style="padding:8px 12px;font-size:12px;color:var(--text2);border-right:1px solid var(--border);font-weight:500">Overs</div>' +
+          '<div style="padding:8px 12px;text-align:center;border-right:1px solid var(--border);color:var(--text2)">' + (inn1 ? inn1.currentOver + '.' + inn1.currentBall : '—') + '</div>' +
+          '<div style="padding:8px 12px;text-align:center;color:var(--text2)">' + (inn2 ? inn2.currentOver + '.' + inn2.currentBall : '—') + '</div>' +
+          '<div style="padding:8px 12px;font-size:12px;color:var(--text2);border-right:1px solid var(--border);font-weight:500">Run Rate</div>' +
+          '<div style="padding:8px 12px;text-align:center;border-right:1px solid var(--border);color:var(--text2)">' + rrStr(inn1) + '</div>' +
+          '<div style="padding:8px 12px;text-align:center;color:var(--text2)">' + rrStr(inn2) + '</div>' +
         '</div>' +
-        // View Scorecard link
-        '<div class="flex gap-2 mt-1"><button onclick="toggleScorecard(\'' + mid + '\',this)" class="text-xs text-cyan-600 font-medium hover:underline">📋 Scorecard</button>' +
-        '<button onclick="openReport(\'' + mid + '\')" class="text-xs text-emerald-600 font-medium hover:underline">📊 Stats</button></div>' +
-        // Scorecard (hidden)
-        '<div id="sc-' + mid + '" class="hidden mt-3 border-t border-gray-100 pt-3 space-y-1.5"></div>' +
+        '<div class="flex gap-2 mt-1"><button onclick="toggleScorecard(\'' + mid + '\',this)" class="pill-btn" style="font-size:12px">📋 Scorecard</button>' +
+        '<button onclick="openReport(\'' + mid + '\')" class="pill-btn" style="font-size:12px">📊 Stats</button></div>' +
+        '<div id="sc-' + mid + '" class="hidden mt-3" style="border-top:1px solid var(--border);padding-top:12px"></div>' +
       '</div>';
     el.appendChild(card);
   });
@@ -1144,7 +1222,7 @@ function toggleScorecard(mid, btn) {
       const d = load();
       const balls = (d.balls[mid] || []).sort((a, b) => a.id - b.id);
       if (!balls.length) {
-        sc.innerHTML = '<div class="text-xs text-gray-400">No ball data recorded</div>';
+        sc.innerHTML = '<div style="color:var(--text3);font-size:13px">No ball data recorded</div>';
         return;
       }
       let html = '';
@@ -1154,7 +1232,7 @@ function toggleScorecard(mid, btn) {
           if (overBalls.length) { html += overRow(curOver, overBalls); overBalls = []; }
           curInn = b.inningsNo;
           curOver = 0;
-          html += '<div class="text-xs font-semibold text-gray-500 mb-1 mt-1">▸ Innings ' + curInn + '</div>';
+          html += '<div style="color:var(--text2);font-size:12px;font-weight:600;margin-bottom:4px;margin-top:4px">▸ Innings ' + curInn + '</div>';
         }
         if (b.over !== curOver) {
           if (overBalls.length) { html += overRow(curOver, overBalls); overBalls = []; }
@@ -1183,10 +1261,10 @@ function overRow(overNum, balls) {
     return '<span class="ball-dot ' + cls + '" style="width:24px;height:24px;font-size:10px;margin:1px">' + lbl + '</span>';
   }).join('');
   const total = balls.reduce((s, b) => s + (b.totalRuns || b.runs || 0), 0);
-  return '<div class="text-xs flex items-center gap-2">' +
-    '<span class="text-gray-400 font-medium w-6">Ov ' + overNum + '</span>' +
-    '<span class="flex-1 text-right">' + dots + '</span>' +
-    '<span class="text-gray-400 w-12 text-right">' + total + ' runs</span>' +
+  return '<div style="font-size:12px;display:flex;align-items:center;gap:8px">' +
+    '<span style="color:var(--text3);font-weight:500;width:24px">Ov ' + overNum + '</span>' +
+    '<span style="flex:1;text-align:right">' + dots + '</span>' +
+    '<span style="color:var(--text3);width:48px;text-align:right">' + total + ' runs</span>' +
   '</div>';
 }
 
@@ -1236,16 +1314,16 @@ function openManageTeamsModal() {
     '<div class="space-y-2 mb-3">' +
       (presets.length
         ? presets.map(n =>
-            '<div class="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2">' +
-              '<span class="text-sm font-medium text-gray-700">' + n + '</span>' +
-              '<button onclick="removeTeamPreset(\'' + n.replace(/'/g,"\\'") + '\')" class="text-red-400 text-sm hover:text-red-600">✕</button>' +
+            '<div class="flex items-center justify-between" style="background:var(--surface2);border-radius:var(--radius-sm);padding:8px 12px">' +
+              '<span style="font-size:14px;font-weight:500;color:var(--text)">' + n + '</span>' +
+              '<button onclick="removeTeamPreset(\'' + n.replace(/'/g,"\\'") + '\')" style="color:var(--red);font-size:14px">✕</button>' +
             '</div>'
           ).join('')
-        : '<div class="text-gray-400 text-sm text-center">No saved teams</div>') +
+        : '<div style="color:var(--text3);font-size:14px;text-align:center">No saved teams</div>') +
     '</div>' +
     '<div class="flex gap-2">' +
       '<input id="new-team-name" placeholder="New team name" class="text-sm flex-1">' +
-      '<button onclick="addTeamPreset(load(),document.getElementById(\'new-team-name\').value.trim());populateTeamPresets();closeModal();openManageTeamsModal()" class="btn-score btn-sm bg-cyan-50 text-cyan-700 border border-cyan-200 font-semibold px-4">+ Add</button>' +
+      '<button onclick="addTeamPreset(load(),document.getElementById(\'new-team-name\').value.trim());populateTeamPresets();closeModal();openManageTeamsModal()" class="btn-score btn-sm" style="background:var(--accent-light);color:var(--accent);font-weight:600;padding:0 16px">+ Add</button>' +
     '</div>';
   document.getElementById('modal-overlay').classList.add('open');
 }
@@ -1254,30 +1332,31 @@ function openManageTeamsModal() {
 function openSettingsModal() {
   const cfg = getGitHubConfig();
   document.getElementById('modal-title').textContent = '⚙️ Settings';
+  const s = 'style="color:var(--text2);font-size:12px"';
   document.getElementById('modal-body').innerHTML =
-    '<button onclick="closeModal();openManageTeamsModal()" class="w-full btn-score btn-sm bg-blue-50 text-blue-700 border border-blue-200 font-semibold mb-2">🏷️ Manage team presets</button>' +
-    '<button onclick="sendCompletedToWhatsApp();closeModal()" class="w-full btn-score btn-sm bg-green-50 text-green-700 border border-green-200 font-semibold mb-2">📱 Send completed matches to WhatsApp</button>' +
-    '<div class="border-t border-gray-200 my-3"></div>' +
-    '<div class="text-sm font-bold text-gray-700 mb-2">☁️ GitHub Sync</div>' +
-    '<label class="text-xs text-gray-500">Token (<a class="text-cyan-600" href="https://github.com/settings/tokens" target="_blank">create one</a> with repo scope)</label>' +
+    '<button onclick="closeModal();openManageTeamsModal()" class="w-full btn-score btn-sm mb-2" style="background:var(--accent-light);color:var(--accent);font-weight:600">🏷️ Manage team presets</button>' +
+    '<button onclick="sendCompletedToWhatsApp();closeModal()" class="w-full btn-score btn-sm mb-2" style="background:var(--green-light);color:var(--green);font-weight:600">📱 Send completed matches to WhatsApp</button>' +
+    '<div style="border-top:1px solid var(--border);margin:12px 0"></div>' +
+    '<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px">☁️ GitHub Sync</div>' +
+    '<label ' + s + '>Token (<a style="color:var(--accent)" href="https://github.com/settings/tokens" target="_blank">create one</a> with repo scope)</label>' +
     '<input id="gh-token" type="password" value="' + (cfg.token || '') + '" class="w-full text-sm mb-2" placeholder="ghp_...">' +
-    '<label class="text-xs text-gray-500">Repo (owner/repo)</label>' +
+    '<label ' + s + '>Repo (owner/repo)</label>' +
     '<input id="gh-repo" value="' + (cfg.repo || '') + '" class="w-full text-sm mb-2" placeholder="username/repo">' +
-    '<label class="text-xs text-gray-500">File path</label>' +
+    '<label ' + s + '>File path</label>' +
     '<input id="gh-path" value="' + (cfg.path || 'cricket-scorer-data.json') + '" class="w-full text-sm mb-2">' +
-    '<label class="text-xs text-gray-500">Branch</label>' +
+    '<label ' + s + '>Branch</label>' +
     '<input id="gh-branch" value="' + (cfg.branch || 'main') + '" class="w-full text-sm mb-2">' +
     '<div class="flex gap-2 mb-2">' +
-    '<button onclick="saveGitHubConfigFromUI()" class="flex-1 btn-score btn-sm bg-cyan-50 text-cyan-700 border border-cyan-200 font-semibold">💾 Save Config</button>' +
-    '<button onclick="githubSync()" class="flex-1 btn-score btn-sm bg-blue-50 text-blue-700 border border-blue-200 font-semibold">⬆ Sync Now</button>' +
+    '<button onclick="saveGitHubConfigFromUI()" class="flex-1 btn-score btn-sm" style="background:var(--accent-light);color:var(--accent);font-weight:600">💾 Save Config</button>' +
+    '<button onclick="githubSync()" class="flex-1 btn-score btn-sm" style="background:var(--accent-light);color:var(--accent);font-weight:600">⬆ Sync Now</button>' +
     '</div>' +
-    '<button onclick="githubRestore()" class="w-full btn-score btn-sm bg-amber-50 text-amber-700 border border-amber-200 font-semibold mb-2">⬇ Restore from GitHub</button>' +
-    '<div id="gh-status" class="text-xs text-gray-400 text-center min-h-[1.2em]"></div>' +
-    '<div class="border-t border-gray-200 my-3"></div>' +
-    '<button onclick="exportData()" class="w-full btn-score btn-sm bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold mb-2">💾 Export data (download .json)</button>' +
-    '<button onclick="importData()" class="w-full btn-score btn-sm bg-amber-50 text-amber-700 border border-amber-200 font-semibold mb-2">📂 Import data (upload .json)</button>' +
-    '<div class="border-t border-gray-200 my-3"></div>' +
-    '<button onclick="closeModal();openManageMatchesModal()" class="w-full btn-score btn-sm bg-red-50 text-red-700 border border-red-200 font-semibold">🗑️ Manage completed matches</button>';
+    '<button onclick="githubRestore()" class="w-full btn-score btn-sm mb-2" style="background:var(--accent-light);color:var(--accent);font-weight:600">⬇ Restore from GitHub</button>' +
+    '<div id="gh-status" class="text-xs text-center" style="color:var(--text3);min-height:1.2em"></div>' +
+    '<div style="border-top:1px solid var(--border);margin:12px 0"></div>' +
+    '<button onclick="exportData()" class="w-full btn-score btn-sm mb-2" style="background:var(--green-light);color:var(--green);font-weight:600">💾 Export data (download .json)</button>' +
+    '<button onclick="importData()" class="w-full btn-score btn-sm mb-2" style="background:var(--accent-light);color:var(--accent);font-weight:600">📂 Import data (upload .json)</button>' +
+    '<div style="border-top:1px solid var(--border);margin:12px 0"></div>' +
+    '<button onclick="closeModal();openManageMatchesModal()" class="w-full btn-score btn-sm" style="background:var(--red-light);color:var(--red);font-weight:600">🗑️ Manage completed matches</button>';
   document.getElementById('modal-overlay').classList.add('open');
 }
 
@@ -1359,26 +1438,26 @@ function openManageMatchesModal() {
   const completed = Object.values(d.matches || {}).filter(m => m.status === 'completed');
   document.getElementById('modal-title').textContent = '🗑️ Manage Completed Matches';
   if (!completed.length) {
-    document.getElementById('modal-body').innerHTML = '<div class="text-center text-gray-400 text-sm py-4">No completed matches</div><button onclick="closeModal()" class="w-full text-gray-400 text-sm py-2 hover:text-gray-600 font-medium">Back</button>';
+    document.getElementById('modal-body').innerHTML = '<div style="color:var(--text3);text-align:center;font-size:14px;padding:16px 0">No completed matches</div><button onclick="closeModal()" class="w-full" style="color:var(--text3);font-size:14px;padding:8px 0;font-weight:500">Back</button>';
     document.getElementById('modal-overlay').classList.add('open');
     return;
   }
-  let html = '<div class="space-y-2 mb-3 max-h-64 overflow-y-auto">';
+  let html = '<div style="max-height:256px;overflow-y:auto;margin-bottom:12px">';
   const mids = Object.keys(d.matches || {}).filter(mid => d.matches[mid].status === 'completed')
     .sort((a, b) => ((d.matches[b].created || '') + b).localeCompare((d.matches[a].created || '') + a));
   mids.forEach(mid => {
     const m = d.matches[mid];
     const inn1 = d.innings[mid + '_1'];
     const s = (inn1 ? inn1.runs + '/' + inn1.wickets : '?');
-    html += '<label class="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 cursor-pointer">' +
-      '<input type="checkbox" class="match-del-cb" value="' + mid + '" style="width:18px;height:18px;accent-color:#dc2626">' +
-      '<span class="text-sm font-medium text-gray-700 flex-1">' + m.teamA + ' vs ' + m.teamB + ' — ' + s + '</span>' +
-      '<span class="text-xs text-gray-400">' + (m.created ? new Date(m.created).toLocaleDateString() : '') + '</span>' +
+    html += '<label style="display:flex;align-items:center;gap:8px;background:var(--surface2);border-radius:var(--radius-sm);padding:8px 12px;cursor:pointer">' +
+      '<input type="checkbox" class="match-del-cb" value="' + mid + '" style="width:18px;height:18px;accent-color:var(--red)">' +
+      '<span style="font-size:14px;font-weight:500;color:var(--text);flex:1">' + m.teamA + ' vs ' + m.teamB + ' — ' + s + '</span>' +
+      '<span style="font-size:12px;color:var(--text3)">' + (m.created ? new Date(m.created).toLocaleDateString() : '') + '</span>' +
       '</label>';
   });
   html += '</div>' +
-    '<button onclick="deleteSelectedMatches()" class="w-full btn-score btn-sm bg-red-500 hover:bg-red-600 text-white font-semibold">🗑️ Delete selected</button>' +
-    '<button onclick="closeModal()" class="w-full text-gray-400 text-sm py-2 hover:text-gray-600 font-medium">Cancel</button>';
+    '<button onclick="deleteSelectedMatches()" class="w-full btn-score btn-sm" style="background:var(--red);color:#fff;font-weight:600">🗑️ Delete selected</button>' +
+    '<button onclick="closeModal()" class="w-full" style="color:var(--text3);font-size:14px;padding:8px 0;font-weight:500">Cancel</button>';
   document.getElementById('modal-body').innerHTML = html;
   document.getElementById('modal-overlay').classList.add('open');
 }
@@ -1542,9 +1621,11 @@ function openReport(mid) {
   buildCharts(d, mid, inn1, inn2);
 }
 
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
 function buildCharts(d, mid, inn1, inn2) {
   if (typeof Chart === 'undefined') {
-    document.getElementById('report-content').innerHTML = '<div class="text-center text-gray-400 py-8 text-sm">Charts library not loaded. Please reload and try again.</div>';
+    document.getElementById('report-content').innerHTML = '<div class="empty-state" style="padding:32px 0">Charts library not loaded. Please reload and try again.</div>';
     return;
   }
   const overData = getOverData(d, mid);
@@ -1570,27 +1651,31 @@ function buildCharts(d, mid, inn1, inn2) {
     }
   }
 
+  const accent = cssVar('--accent');
+  const green = cssVar('--green');
+  const red = cssVar('--red');
+
   const ctx1 = document.getElementById('chart-worm').getContext('2d');
   reportCharts.push(new Chart(ctx1, {
     type: 'line',
     data: {
       labels: wormLabels,
       datasets: [
-        { label: inn1 ? inn1.batting : 'Innings 1', data: wormInn1, borderColor: '#0891b2', backgroundColor: 'rgba(8,145,178,0.1)', fill: true, tension: 0.3, pointRadius: 3, spanGaps: false },
-        { label: inn2 ? inn2.batting : 'Innings 2', data: wormInn2, borderColor: '#059669', backgroundColor: 'rgba(5,150,105,0.1)', fill: true, tension: 0.3, pointRadius: 3, spanGaps: false }
+        { label: inn1 ? inn1.batting : 'Innings 1', data: wormInn1, borderColor: accent, backgroundColor: accent + '18', fill: true, tension: 0.3, pointRadius: 3, spanGaps: false },
+        { label: inn2 ? inn2.batting : 'Innings 2', data: wormInn2, borderColor: green, backgroundColor: green + '18', fill: true, tension: 0.3, pointRadius: 3, spanGaps: false }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: true,
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } },
+      color: cssVar('--text2'),
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 }, color: cssVar('--text2') } } },
       scales: {
-        x: { ticks: { font: { size: 9 }, maxTicksLimit: 10 } },
-        y: { beginAtZero: true, ticks: { font: { size: 9 } }, title: { display: true, text: 'Cumulative Runs', font: { size: 10 } } }
+        x: { ticks: { font: { size: 9 }, color: cssVar('--text3') }, grid: { color: cssVar('--border') } },
+        y: { beginAtZero: true, ticks: { font: { size: 9 }, color: cssVar('--text3') }, title: { display: true, text: 'Cumulative Runs', font: { size: 10 }, color: cssVar('--text2') } }
       }
     }
   }));
 
-  // RR Progression: current run rate vs required run rate (2nd innings only)
   const rrCanvas = document.getElementById('chart-rr');
   if (overData[2].length && inn1 && inn1.runs != null) {
     const ctx2 = rrCanvas.getContext('2d');
@@ -1614,16 +1699,17 @@ function buildCharts(d, mid, inn1, inn2) {
       data: {
         labels: rrLabels,
         datasets: [
-          { label: 'CRR (' + inn2.batting + ')', data: currentRR, borderColor: '#0891b2', backgroundColor: 'rgba(8,145,178,0.1)', fill: true, tension: 0.3, pointRadius: 3 },
-          { label: 'Req RR', data: requiredRR, borderColor: '#dc2626', borderDash: [5,3], tension: 0.3, pointRadius: 3, spanGaps: true }
+          { label: 'CRR (' + inn2.batting + ')', data: currentRR, borderColor: accent, backgroundColor: accent + '18', fill: true, tension: 0.3, pointRadius: 3 },
+          { label: 'Req RR', data: requiredRR, borderColor: red, borderDash: [5,3], tension: 0.3, pointRadius: 3, spanGaps: true }
         ]
       },
       options: {
         responsive: true, maintainAspectRatio: true,
-        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } },
+        color: cssVar('--text2'),
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 }, color: cssVar('--text2') } } },
         scales: {
-          x: { ticks: { font: { size: 9 }, maxTicksLimit: 10 } },
-          y: { beginAtZero: true, ticks: { font: { size: 9 } }, title: { display: true, text: 'Run Rate', font: { size: 10 } } }
+          x: { ticks: { font: { size: 9 }, color: cssVar('--text3') }, grid: { color: cssVar('--border') } },
+          y: { beginAtZero: true, ticks: { font: { size: 9 }, color: cssVar('--text3') }, title: { display: true, text: 'Run Rate', font: { size: 10 }, color: cssVar('--text2') } }
         }
       }
     }));
@@ -1634,7 +1720,6 @@ function buildCharts(d, mid, inn1, inn2) {
     document.getElementById('rr-fallback').style.display = '';
   }
 
-  // Manhattan chart: runs per over with wicket markers
   const ctx3 = document.getElementById('chart-wkts').getContext('2d');
   const manLabels = [], manInn1 = [], manInn2 = [], manWkt1 = [], manWkt2 = [];
   for (let i = 0; i < maxOvers; i++) {
@@ -1649,8 +1734,8 @@ function buildCharts(d, mid, inn1, inn2) {
     data: {
       labels: manLabels,
       datasets: [
-        { label: inn1 ? inn1.batting : 'Innings 1', data: manInn1, backgroundColor: 'rgba(8,145,178,0.8)', borderRadius: 3, wickets: manWkt1 },
-        { label: inn2 ? inn2.batting : 'Innings 2', data: manInn2, backgroundColor: 'rgba(5,150,105,0.8)', borderRadius: 3, wickets: manWkt2 }
+        { label: inn1 ? inn1.batting : 'Innings 1', data: manInn1, backgroundColor: accent + '99', borderRadius: 3, wickets: manWkt1 },
+        { label: inn2 ? inn2.batting : 'Innings 2', data: manInn2, backgroundColor: green + '99', borderRadius: 3, wickets: manWkt2 }
       ]
     },
     options: {
@@ -1731,7 +1816,7 @@ function shareReport() {
       else if (inn2.runs > inn1.runs) text += '🏆 *' + inn2.batting + ' won!*\n';
       else text += '🤝 *Tied!*\n';
     }
-    text += '━━━━━━━━━━━━━━━\n🔗 *Live Scorecard:* https://umeshajay.github.io/cricket-scorer/scorer';
+    text += '━━━━━━━━━━━━━━━\n🔗 *Live Scorecard:* ' + window.location.href;
     const link = document.getElementById('wa-link');
     link.href = 'https://wa.me/?text=' + encodeURIComponent(text);
     document.getElementById('wa-overlay').classList.add('open');
@@ -1742,7 +1827,7 @@ function shareReport() {
       (inn1 ? inn1.batting + ': ' + inn1.runs + '/' + inn1.wickets + ' (RR ' + rr1 + ')\n' : '') +
       (inn2 ? inn2.batting + ': ' + inn2.runs + '/' + inn2.wickets + ' (RR ' + rr2 + ')\n' : '') +
       '━━━━━━━━━━━━━━━\n' +
-      '🔗 *Live Scorecard:* https://umeshajay.github.io/cricket-scorer/scorer';
+      '🔗 *Live Scorecard:* ' + window.location.href;
     const link = document.getElementById('wa-link');
     link.href = 'https://wa.me/?text=' + encodeURIComponent(text);
     document.getElementById('wa-overlay').classList.add('open');

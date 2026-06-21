@@ -375,16 +375,14 @@ function applyViewerMode() {
   }
 }
 
-let _ghSyncTimer = null;
+let _ghSyncing = false;
 function queueGithubSync() {
   const cfg = getGitHubConfig();
   if (!cfg.token || !cfg.repo) return;
-  if (_ghSyncTimer) return;
-  _ghSyncTimer = setTimeout(() => {
-    _ghSyncTimer = null;
-    const d = load();
-    githubPush(d).catch(e => console.warn('auto-sync failed', e));
-  }, 5000);
+  if (_ghSyncing) return;
+  _ghSyncing = true;
+  const d = load();
+  githubPush(d).catch(e => console.warn('auto-sync failed', e)).finally(() => { _ghSyncing = false; });
 }
 
 // ─── View-only mode: auto-refresh from raw GitHub for non-scorers ───
@@ -412,7 +410,7 @@ function viewerPollStart() {
       .catch(() => {});
   };
   poll();
-  _viewerPoll = setInterval(poll, 10000);
+  _viewerPoll = setInterval(poll, 3000);
 }
 
 function defaultData() {
@@ -1215,7 +1213,7 @@ function checkInningsEnd() {
   const active = inn.battingOrder.filter(id => !inn.batsmanStats[id]?.dismissed).length;
   const oversDone = inn.currentOver >= match.overs;
 
-  if (active <= 1 || (oversDone && inn.currentBall === 0)) {
+  if (active <= 0 || (oversDone && inn.currentBall === 0)) {
     if (currentState.inningsNo === 1) {
       endInnings(); // transitions to innings 2
     } else {

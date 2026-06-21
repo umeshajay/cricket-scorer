@@ -1,4 +1,4 @@
-# Cricket Scorer
+# Cricket Scorer  : https://umeshajay.github.io/cricket-scorer/
 
 A single-file cricket scoring web app with light/dark mode, ball-by-ball tracking, 2-innings support, match reports with charts, and WhatsApp share.
 

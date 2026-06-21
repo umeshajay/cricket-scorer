@@ -76,15 +76,14 @@ button{touch-action:manipulation}
 .scorer-footer .inner{background:var(--footer-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:var(--radius-lg) var(--radius-lg) 0 0;border-top:1px solid var(--border);box-shadow:var(--footer-shadow);padding:8px;transition:background .2s}
 .viewer-mode .scorer-footer{display:none}
 .viewer-mode #end-inns-btn{display:none}
-.viewer-mode #scorer-inns-toggle{display:none!important}
 .viewer-mode .nav-btn-setup{display:none}
 .viewer-mode .nav-btn-export{display:none}
 .viewer-mode #home-new-match{display:none}
 .viewer-mode #home-local-msg{display:none}
-.viewer-mode #scorer-inns-toggle{display:none!important}
 .viewer-mode .header .pill-btn[style*="delete"]{display:none}
 .viewer-mode #view-home .btn-score.primary{display:none}
 .viewer-mode .pill-btn.danger{display:none}
+.viewer-mode .pill-btn.change-bowler{display:none}
 .card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--border);transition:background .2s,border-color .2s,box-shadow .2s}
 .card-hover{cursor:pointer;transition:all .15s}
 .card-hover:active{transform:scale(0.98);opacity:.8}
@@ -207,6 +206,7 @@ select option{background:var(--surface);color:var(--text)}
     <button onclick="showView('home')" class="pill-btn">&larr; Home</button>
     <span id="scorer-title" class="text-sm font-semibold truncate mx-1" style="color:var(--text)"></span>
     <span id="viewer-badge" style="display:none;background:var(--surface2);color:var(--text3);font-size:11px;padding:2px 8px;border-radius:var(--radius-sm);font-weight:500">👁 Viewing</span>
+    <button id="scorer-stats-btn" onclick="showMatchReport(currentState.matchId)" class="pill-btn" style="display:none;color:var(--accent);border-color:var(--accent-light)">📊 Stats</button>
     <button id="end-inns-btn" onclick="endInnings()" class="pill-btn" style="color:var(--red);border-color:var(--red-light)">End Inns</button>
   </div>
 
@@ -226,7 +226,7 @@ select option{background:var(--surface);color:var(--text)}
     <div class="card bowler-card">
       <span class="label"><span class="name" id="sb-bowler">—</span></span>
       <span class="stats" id="sb-bowl-stats">0-0-0-0</span>
-      <button onclick="nextBowler()" class="pill-btn" style="font-size:12px">Change</button>
+      <button onclick="nextBowler()" class="pill-btn change-bowler" style="font-size:12px">Change</button>
     </div>
   </div>
 
@@ -271,7 +271,7 @@ select option{background:var(--surface);color:var(--text)}
 <!-- ══ MATCH REPORT ══ -->
 <div id="view-report" class="view">
   <div class="header">
-    <button onclick="showView('home')" class="pill-btn">&larr; Back</button>
+    <button onclick="backFromReport()" class="pill-btn">&larr; Back</button>
     <h1 id="report-title">Match Stats</h1>
     <button onclick="shareReport()" class="pill-btn success">📱 Share</button>
   </div>
@@ -407,7 +407,7 @@ function defaultData() {
 function nextBallId() { const d = load(); d.ballSeq = (d.ballSeq || 0) + 1; save(d); return d.ballSeq; }
 
 // ─────── STATE ───────
-let currentState = { matchId: null, inningsNo: 1 };
+let currentState = { matchId: null, inningsNo: 1, prevView: null };
 
 function innKey(mid, innNo) {
   return mid + '_' + (innNo != null ? innNo : currentState.inningsNo);
@@ -613,6 +613,15 @@ function renderScorer() {
   const totalDeliveries = inn.balls;
   const rr = totalDeliveries > 0 ? (inn.runs / (totalDeliveries / 6)).toFixed(2) : '0.00';
   document.getElementById('sb-rr').textContent = rr;
+
+  // Stats button: show for viewers & when there's ball data
+  const statsBtn = document.getElementById('scorer-stats-btn');
+  const allBallsList = d.balls[mid] || [];
+  if (allBallsList.length > 0) {
+    statsBtn.style.display = '';
+  } else {
+    statsBtn.style.display = 'none';
+  }
 
   // Innings toggle
   const inn1 = getInnings(mid, 1);
@@ -1701,6 +1710,22 @@ let reportCharts = [];
 function destroyReportCharts() {
   reportCharts.forEach(c => { try { c.destroy(); } catch(e) {} });
   reportCharts = [];
+}
+
+function backFromReport() {
+  if (currentState.prevView === 'scorer' && currentState.matchId) {
+    currentState.prevView = null;
+    showView('scorer');
+    renderScorer();
+  } else {
+    showView('home');
+  }
+}
+
+function showMatchReport(mid) {
+  if (!mid) return;
+  currentState.prevView = 'scorer';
+  openReport(mid);
 }
 
 function openReport(mid) {

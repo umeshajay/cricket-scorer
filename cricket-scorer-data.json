@@ -5,7 +5,7 @@
       "teamA": "jap",
       "teamB": "ned",
       "overs": 5,
-      "status": "ongoing",
+      "status": "completed",
       "created": "2026-06-21T03:15:00.944Z"
     }
   },
@@ -947,11 +947,11 @@
       "inningsNo": 2,
       "batting": "ned",
       "bowling": "jap",
-      "runs": 32,
-      "wickets": 1,
-      "balls": 18,
+      "runs": 47,
+      "wickets": 4,
+      "balls": 30,
       "extras": 0,
-      "currentOver": 3,
+      "currentOver": 5,
       "currentBall": 0,
       "battingOrder": [
         "p17820117009448vi4",
@@ -962,9 +962,9 @@
         "p1782011700945zfjz",
         "p1782011700945l8h3"
       ],
-      "strikerIdx": 1,
-      "nonStrikerIdx": 2,
-      "nextIdx": 3,
+      "strikerIdx": 4,
+      "nonStrikerIdx": 5,
+      "nextIdx": 6,
       "batsmanStats": {
         "p17820117009448vi4": {
           "runs": 13,
@@ -976,31 +976,31 @@
         },
         "p1782011700944jurv": {
           "runs": 19,
-          "balls": 7,
+          "balls": 8,
           "fours": 2,
           "sixes": 0,
-          "dismissed": false,
-          "dismissalType": null
+          "dismissed": true,
+          "dismissalType": "Stumped"
         },
         "p1782011700945uw4u": {
-          "runs": 0,
-          "balls": 1,
+          "runs": 3,
+          "balls": 3,
           "fours": 0,
           "sixes": 0,
-          "dismissed": false,
-          "dismissalType": null
+          "dismissed": true,
+          "dismissalType": "Hit Wicket"
         },
         "p1782011700945io2e": {
-          "runs": 0,
-          "balls": 0,
+          "runs": 9,
+          "balls": 8,
           "fours": 0,
           "sixes": 0,
-          "dismissed": false,
-          "dismissalType": null
+          "dismissed": true,
+          "dismissalType": "Bowled"
         },
         "p1782011700945bkcb": {
-          "runs": 0,
-          "balls": 0,
+          "runs": 3,
+          "balls": 1,
           "fours": 0,
           "sixes": 0,
           "dismissed": false,
@@ -1082,9 +1082,9 @@
       "currentBowler": "p1782011700944wjk6",
       "bowlerStats": {
         "p1782011700944wjk6": {
-          "runs": 32,
-          "wickets": 1,
-          "balls": 18
+          "runs": 47,
+          "wickets": 4,
+          "balls": 30
         },
         "p1782011700944olod": {
           "runs": 0,
@@ -1118,7 +1118,7 @@
         }
       },
       "overBalls": [],
-      "completed": false
+      "completed": true
     }
   },
   "balls": {
@@ -1906,10 +1906,202 @@
         "bowlerId": "p1782011700944wjk6",
         "totalRuns": 0,
         "timestamp": "2026-06-21T03:16:08.770Z"
+      },
+      {
+        "id": 481,
+        "inningsNo": 2,
+        "over": 4,
+        "ballInOver": 1,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": true,
+        "wicketType": "Stumped",
+        "strikerId": "p1782011700944jurv",
+        "nonStrikerId": "p1782011700945uw4u",
+        "bowlerId": "p1782011700944wjk6",
+        "totalRuns": 0,
+        "timestamp": "2026-06-21T03:16:14.348Z"
+      },
+      {
+        "id": 482,
+        "inningsNo": 2,
+        "over": 4,
+        "ballInOver": 2,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1782011700945io2e",
+        "nonStrikerId": "p1782011700945uw4u",
+        "bowlerId": "p1782011700944wjk6",
+        "totalRuns": 0,
+        "timestamp": "2026-06-21T03:16:15.112Z"
+      },
+      {
+        "id": 483,
+        "inningsNo": 2,
+        "over": 4,
+        "ballInOver": 3,
+        "runs": 1,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1782011700945io2e",
+        "nonStrikerId": "p1782011700945uw4u",
+        "bowlerId": "p1782011700944wjk6",
+        "totalRuns": 1,
+        "timestamp": "2026-06-21T03:16:15.497Z"
+      },
+      {
+        "id": 484,
+        "inningsNo": 2,
+        "over": 4,
+        "ballInOver": 4,
+        "runs": 3,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1782011700945uw4u",
+        "nonStrikerId": "p1782011700945io2e",
+        "bowlerId": "p1782011700944wjk6",
+        "totalRuns": 3,
+        "timestamp": "2026-06-21T03:16:15.851Z"
+      },
+      {
+        "id": 485,
+        "inningsNo": 2,
+        "over": 4,
+        "ballInOver": 5,
+        "runs": 3,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1782011700945io2e",
+        "nonStrikerId": "p1782011700945uw4u",
+        "bowlerId": "p1782011700944wjk6",
+        "totalRuns": 3,
+        "timestamp": "2026-06-21T03:16:16.245Z"
+      },
+      {
+        "id": 486,
+        "inningsNo": 2,
+        "over": 4,
+        "ballInOver": 6,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": true,
+        "wicketType": "Hit Wicket",
+        "strikerId": "p1782011700945uw4u",
+        "nonStrikerId": "p1782011700945io2e",
+        "bowlerId": "p1782011700944wjk6",
+        "totalRuns": 0,
+        "timestamp": "2026-06-21T03:16:22.933Z"
+      },
+      {
+        "id": 487,
+        "inningsNo": 2,
+        "over": 5,
+        "ballInOver": 1,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1782011700945io2e",
+        "nonStrikerId": "p1782011700945bkcb",
+        "bowlerId": "p1782011700944wjk6",
+        "totalRuns": 0,
+        "timestamp": "2026-06-21T03:16:25.109Z"
+      },
+      {
+        "id": 488,
+        "inningsNo": 2,
+        "over": 5,
+        "ballInOver": 2,
+        "runs": 2,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1782011700945io2e",
+        "nonStrikerId": "p1782011700945bkcb",
+        "bowlerId": "p1782011700944wjk6",
+        "totalRuns": 2,
+        "timestamp": "2026-06-21T03:16:25.591Z"
+      },
+      {
+        "id": 489,
+        "inningsNo": 2,
+        "over": 5,
+        "ballInOver": 3,
+        "runs": 3,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1782011700945io2e",
+        "nonStrikerId": "p1782011700945bkcb",
+        "bowlerId": "p1782011700944wjk6",
+        "totalRuns": 3,
+        "timestamp": "2026-06-21T03:16:26.001Z"
+      },
+      {
+        "id": 490,
+        "inningsNo": 2,
+        "over": 5,
+        "ballInOver": 4,
+        "runs": 3,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1782011700945bkcb",
+        "nonStrikerId": "p1782011700945io2e",
+        "bowlerId": "p1782011700944wjk6",
+        "totalRuns": 3,
+        "timestamp": "2026-06-21T03:16:26.523Z"
+      },
+      {
+        "id": 491,
+        "inningsNo": 2,
+        "over": 5,
+        "ballInOver": 5,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": false,
+        "wicketType": null,
+        "strikerId": "p1782011700945io2e",
+        "nonStrikerId": "p1782011700945bkcb",
+        "bowlerId": "p1782011700944wjk6",
+        "totalRuns": 0,
+        "timestamp": "2026-06-21T03:16:27.442Z"
+      },
+      {
+        "id": 492,
+        "inningsNo": 2,
+        "over": 5,
+        "ballInOver": 6,
+        "runs": 0,
+        "extras": 0,
+        "extraType": null,
+        "wicket": true,
+        "wicketType": "Bowled",
+        "strikerId": "p1782011700945io2e",
+        "nonStrikerId": "p1782011700945bkcb",
+        "bowlerId": "p1782011700944wjk6",
+        "totalRuns": 0,
+        "timestamp": "2026-06-21T03:16:29.907Z"
       }
     ]
   },
-  "ballSeq": 480,
+  "ballSeq": 492,
   "teamPresets": [
     "jap",
     "ned"

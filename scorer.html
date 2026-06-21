@@ -78,10 +78,7 @@ button{touch-action:manipulation}
 .viewer-mode #end-inns-btn{display:none}
 .viewer-mode .nav-btn-setup{display:none}
 .viewer-mode .nav-btn-export{display:none}
-.viewer-mode #home-new-match{display:none}
-.viewer-mode #home-local-msg{display:none}
 .viewer-mode .header .pill-btn[style*="delete"]{display:none}
-.viewer-mode #view-home .btn-score.primary{display:none}
 .viewer-mode .pill-btn.danger{display:none}
 .viewer-mode .pill-btn.change-bowler{display:none}
 .card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--border);transition:background .2s,border-color .2s,box-shadow .2s}
@@ -354,10 +351,8 @@ function getGitHubConfig() {
 }
 function saveGitHubConfig(cfg) { try { localStorage.setItem('gh_sync_config', JSON.stringify(cfg)); } catch(e) { console.warn('config save failed',e); } }
 function hasGitHubToken() { return !!getGitHubConfig().token; }
-function hasMatchData() { const d = load(); return Object.keys(d.matches || {}).length > 0; }
 function applyViewerMode() {
-  const cfg = getGitHubConfig();
-  const viewer = !hasGitHubToken() && cfg.repo && hasMatchData();
+  const viewer = !hasGitHubToken();
   document.body.classList.toggle('viewer-mode', viewer);
   document.getElementById('viewer-badge').style.display = viewer ? '' : 'none';
   document.getElementById('home-viewer-badge').style.display = viewer ? '' : 'none';
@@ -383,7 +378,6 @@ function viewerPollStart() {
   if (hasGitHubToken()) { document.getElementById('viewer-badge').style.display = 'none'; clearInterval(_viewerPoll); _viewerPoll = null; return; }
   const cfg = getGitHubConfig();
   if (!cfg.repo) return;
-  if (!hasMatchData()) return;
   _viewerRawUrl = 'https://raw.githubusercontent.com/' + cfg.repo + '/' + (cfg.branch || 'main') + '/' + (cfg.path || 'cricket-scorer-data.json');
   document.getElementById('viewer-badge').style.display = '';
   const poll = () => {
@@ -1230,13 +1224,7 @@ function renderHome() {
   const matches = Object.values(d.matches || {}).sort((a, b) => (b.created || '').localeCompare(a.created || ''));
   const el = document.getElementById('home-match-list');
   if (!matches.length) {
-    const cfg = getGitHubConfig();
-    const noToken = !hasGitHubToken();
-    const noRepo = !cfg.repo;
-    const msg = noToken && noRepo
-      ? 'No matches yet. Create your own match!'
-      : 'No matches yet.';
-    el.innerHTML = '<div class="card p-6 empty-state">' + msg + '</div>';
+    el.innerHTML = '<div class="card p-6 empty-state">No matches yet. Create your own match!</div>';
     return;
   }
   el.innerHTML = matches.map(m => {
@@ -2078,17 +2066,19 @@ function openMatchFromHash() {
 
 // ─────── INIT ───────
 const cfg = getGitHubConfig();
-const hasData = hasMatchData();
 if (!hasGitHubToken()) {
-  if (cfg.repo && hasData) {
-    viewerPollStart();
-    if (!openMatchFromHash()) renderHome();
-  } else if (cfg.repo && !hasData) {
-    const rawUrl = 'https://raw.githubusercontent.com/' + cfg.repo + '/' + (cfg.branch || 'main') + '/' + (cfg.path || 'cricket-scorer-data.json');
-    fetch(rawUrl + '?_=' + Date.now())
-      .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data && Object.keys(data.matches || {}).length > 0) { save(data); viewerPollStart(); if (!openMatchFromHash()) renderHome(); } else { renderHome(); } })
-      .catch(() => renderHome());
+  if (cfg.repo) {
+    const d = load();
+    if (Object.keys(d.matches || {}).length === 0) {
+      const rawUrl = 'https://raw.githubusercontent.com/' + cfg.repo + '/' + (cfg.branch || 'main') + '/' + (cfg.path || 'cricket-scorer-data.json');
+      fetch(rawUrl + '?_=' + Date.now())
+        .then(r => r.ok ? r.json() : null)
+        .then(data => { if (data && Object.keys(data.matches || {}).length > 0) { save(data); viewerPollStart(); if (!openMatchFromHash()) renderHome(); } else { renderHome(); } })
+        .catch(() => renderHome());
+    } else {
+      viewerPollStart();
+      if (!openMatchFromHash()) renderHome();
+    }
   } else {
     if (!openMatchFromHash()) renderHome();
   }

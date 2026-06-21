@@ -353,10 +353,9 @@ function getGitHubConfig() {
 }
 function saveGitHubConfig(cfg) { try { localStorage.setItem('gh_sync_config', JSON.stringify(cfg)); } catch(e) { console.warn('config save failed',e); } }
 function clearLocalData() {
-  if (confirm('Delete all local data? This cannot be undone.')) {
+  if (confirm('Delete all match data? This cannot be undone.')) {
     localStorage.removeItem(KEY);
-    localStorage.removeItem('gh_sync_config');
-    showView('home');
+    if (window.location.hash) window.location.hash = '';
     renderHome();
   }
 }

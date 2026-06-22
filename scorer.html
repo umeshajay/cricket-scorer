@@ -21,17 +21,17 @@
   --text: #1d1d1f;
   --text2: #6e6e73;
   --text3: #aeaeb2;
-  --accent: #6c5ce7;
-  --accent-hover: #5a4bd1;
-  --accent-light: rgba(108,92,231,0.1);
-  --accent-glow: rgba(108,92,231,0.2);
+  --accent: #2A398D;
+  --accent-hover: #1D2870;
+  --accent-light: rgba(42,57,141,0.1);
+  --accent-glow: rgba(42,57,141,0.2);
   --green: #34c759;
   --green-light: rgba(52,199,89,0.1);
-  --red: #ff3b30;
-  --red-light: rgba(255,59,48,0.1);
-  --orange: #ff9500;
-  --orange-light: rgba(255,149,0,0.1);
-  --yellow: #ffcc00;
+  --red: #EE2364;
+  --red-light: rgba(238,35,100,0.1);
+  --orange: #FDB719;
+  --orange-light: rgba(253,183,25,0.1);
+  --yellow: #FDB719;
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
   --shadow-lg: 0 8px 30px rgba(0,0,0,0.08);
@@ -49,17 +49,17 @@
   --text: #f0f0f5;
   --text2: #9e9eb0;
   --text3: #6e6e80;
-  --accent: #7c6cf0;
-  --accent-hover: #8d7ff2;
-  --accent-light: rgba(124,108,240,0.15);
-  --accent-glow: rgba(124,108,240,0.3);
+  --accent: #4A5FD0;
+  --accent-hover: #6377E0;
+  --accent-light: rgba(74,95,208,0.15);
+  --accent-glow: rgba(74,95,208,0.3);
   --green: #34c759;
   --green-light: rgba(52,199,89,0.15);
-  --red: #ff453a;
-  --red-light: rgba(255,69,58,0.15);
-  --orange: #ff9f0a;
-  --orange-light: rgba(255,159,10,0.15);
-  --yellow: #ffd60a;
+  --red: #FF4D7E;
+  --red-light: rgba(255,77,126,0.15);
+  --orange: #FDCF19;
+  --orange-light: rgba(253,207,25,0.15);
+  --yellow: #FDCF19;
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
   --shadow-lg: 0 8px 30px rgba(0,0,0,0.4);
@@ -93,9 +93,9 @@ button{touch-action:manipulation}
 .btn-score.success{background:var(--green-light);color:var(--green)}
 .btn-sm{min-height:44px;font-size:.85rem}
 .ball-dot{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-size:11px;font-weight:700;color:#fff;margin:2px;flex-shrink:0}
-.ball-dot.run{background:#3b82f6}
-.ball-dot.four{background:#8b5cf6}
-.ball-dot.six{background:#ec4899}
+.ball-dot.run{background:#2A398D}
+.ball-dot.four{background:#EE2364}
+.ball-dot.six{background:#FDB719}
 .ball-dot.wicket{background:var(--red)}
 .ball-dot.wide{background:var(--yellow);color:#000}
 .ball-dot.noball{background:var(--orange)}
@@ -240,7 +240,7 @@ select option{background:var(--surface);color:var(--text)}
         <button onclick="scoreRuns(2)" class="btn-score">2</button>
         <button onclick="scoreRuns(3)" class="btn-score">3</button>
         <button onclick="scoreRuns(4)" class="btn-score" style="background:var(--accent-light);color:var(--accent)">4</button>
-        <button onclick="scoreRuns(6)" class="btn-score" style="background:rgba(236,72,153,0.15);color:#ec4899">6</button>
+        <button onclick="scoreRuns(6)" class="btn-score" style="background:rgba(253,183,25,0.15);color:#FDB719">6</button>
       </div>
       <div class="grid grid-cols-3 gap-1.5 mt-1.5">
         <button onclick="openExtraModal('wide')" class="btn-score warning">Wide</button>
@@ -1725,7 +1725,7 @@ function githubPull() {
 function setStatus(msg, isErr) {
   const el = document.getElementById('gh-status');
   if (el) el.textContent = msg;
-  if (el) el.style.color = isErr ? '#dc2626' : '#6b7280';
+  if (el) el.style.color = isErr ? '#EE2364' : '#6b7280';
 }
 
 function githubSync() {
